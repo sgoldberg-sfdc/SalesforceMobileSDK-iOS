@@ -82,6 +82,10 @@ static NSString * const kDefaultCommunityName = @"internal";
 }
 
 - (NSString*)directoryForUser:(SFUserAccount *)user scope:(SFUserAccountScope)scope type:(NSSearchPathDirectory)type components:(NSArray *)components {
+    if (nil == user.credentials.organizationId) {
+        // do nothing
+        return nil;
+    }
     switch (scope) {
         case SFUserAccountScopeGlobal:
             return [self directoryForOrg:nil user:nil community:nil type:type components:components];
@@ -104,6 +108,9 @@ static NSString * const kDefaultCommunityName = @"internal";
 
 - (NSString*)directoryForUser:(SFUserAccount*)user type:(NSSearchPathDirectory)type components:(NSArray*)components {
     if (user) {
+        if (!user.credentials.organizationId) {
+            return nil;
+        }
         NSAssert(user.credentials.organizationId, @"Organization ID must be set");
         NSAssert(user.credentials.userId, @"User ID must be set");
         // Note: if the user communityId is nil, we use the default (internal) name for it.
