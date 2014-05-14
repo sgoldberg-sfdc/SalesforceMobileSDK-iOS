@@ -511,7 +511,7 @@ static NSString * const kHttpPostContentType                    = @"application/
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     
     if (self.credentials.logLevel < kSFOAuthLogLevelWarning) {
-        NSLog(@"SFOAuthCoordinator:webView:shouldStartLoadWithRequest: (navType=%ld): host=%@ : path=%@",
+        NSLog(@"SFOAuthCoordinator:webView:shouldStartLoadWithRequest: (navType=%d): host=%@ : path=%@",
               navigationType, request.URL.host, request.URL.path);
     }
     
