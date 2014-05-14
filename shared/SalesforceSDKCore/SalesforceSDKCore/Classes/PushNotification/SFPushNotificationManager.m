@@ -31,7 +31,9 @@
 
 static NSString* const kSFDeviceToken = @"deviceToken";
 static NSString* const kSFPushNotificationEndPoint = @"services/data/v29.0/sobjects/MobilePushServiceDevice";
-
+#if !TARGET_IPHONE_SIMULATOR
+static UIRemoteNotificationType const kRemoteNotificationTypes = UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert;
+#endif
 
 @interface SFPushNotificationManager ()
 
