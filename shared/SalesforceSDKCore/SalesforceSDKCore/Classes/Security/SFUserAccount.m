@@ -178,7 +178,7 @@ NSString *SFKeyForUserAndScope(SFUserAccount *user, SFUserAccountScope scope) {
         return kGlobalScopingKey;
     } else {
         assert(user);
-        NSString *key;
+        NSString *key = nil;
         switch (scope) {
             case SFUserAccountScopeGlobal:
                 key = kGlobalScopingKey;
@@ -196,9 +196,9 @@ NSString *SFKeyForUserAndScope(SFUserAccount *user, SFUserAccountScope scope) {
                 break;
                 
             case SFUserAccountScopeCommunity:
-                assert(user.credentials.organizationId);
-                assert(user.credentials.userId);
-                key = [NSString stringWithFormat:@"%@-%@-%@", user.credentials.organizationId, user.credentials.userId, user.communityId];
+                if (user.credentials.organizationId && user.credentials.userId) {
+                    key = [NSString stringWithFormat:@"%@-%@-%@", user.credentials.organizationId, user.credentials.userId, user.communityId];
+                }
                 break;
         }
         return key;
