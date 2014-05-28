@@ -58,8 +58,8 @@ static NSString * const kSFUserAccountOAuthLoginHostDefault = @"login.salesforce
 static NSString * const kSFUserAccountOAuthLoginHost = @"SFDCOAuthLoginHost";
 static NSString * const kSFUserAccountOAuthRedirectUri = @"SFDCOAuthRedirectUri";
 
-// Public Space
-static NSString * const kSFUserAccountSuportPublicSpace = @"SFDCSupportPublicSpace";
+// Anonymous Support
+static NSString * const kSFUserAccountSupportAnonymousUsage = @"SFDCSupportAnonymousUsage";
 
 // Key for storing the user's configured login host (deprecated, use kSFUserAccountOAuthLoginHost)
 static NSString * const kDeprecatedLoginHostPrefKey = @"login_host_pref";
@@ -115,11 +115,6 @@ static NSString * const kUserPrefix = @"005";
 @property (nonatomic, strong) NSString *lastChangedUserId;
 @property (nonatomic, strong) NSString *lastChangedCommunityId;
 
-/** Set this property to YES to support public space. Default NO
- 
- When this flag is set to YES, `currentUser` will not return existing user that not active
- */
-@property (nonatomic, assign) BOOL supportPublicSpace;
 /**
  Executes the given block for each configured delegate.
  @param block The block to execute for each delegate.
@@ -174,7 +169,7 @@ static NSString * const kUserPrefix = @"005";
         if (bundleOAuthCompletionUrl != nil) {
             self.oauthCompletionUrl = bundleOAuthCompletionUrl;
         }
-        self.supportPublicSpace = [[[NSBundle mainBundle] objectForInfoDictionaryKey:kSFUserAccountSuportPublicSpace] boolValue];
+        self.supportAnonymousUsage = [[[NSBundle mainBundle] objectForInfoDictionaryKey:kSFUserAccountSupportAnonymousUsage] boolValue];
         
         _userAccountMap = [[NSMutableDictionary alloc] init];
         
@@ -573,10 +568,10 @@ static NSString * const kUserPrefix = @"005";
     
     NSString *curUserId = [self activeUserId];
     
-    // If public space is not supported, do the following additional logic
+    // If anonymous usage is not supported, do the following additional logic
     // In case the most recently used account was removed, or the most recent account is the temporary account,
     // see if we can load another available account.
-    if (!self.supportPublicSpace && (nil == curUserId || [curUserId isEqualToString:SFUserAccountManagerTemporaryUserAccountId])) {
+    if (!self.supportAnonymousUsage && (nil == curUserId || [curUserId isEqualToString:SFUserAccountManagerTemporaryUserAccountId])) {
         for (SFUserAccount *account in self.userAccountMap.allValues) {
             if (account.credentials.userId) {
                 curUserId = account.credentials.userId;

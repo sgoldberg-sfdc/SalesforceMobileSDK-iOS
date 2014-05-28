@@ -184,6 +184,12 @@ extern NSString * const SFUserAccountManagerTemporaryUserAccountId;
  */
 @property (nonatomic, copy) NSSet *scopes;
 
+/** Returns YES if support anonymous usge. Default NO
+ 
+This value is set by adding a booelean value with key 'SFDCSupportAnonymousUsage' in application's info.plist
+ */
+@property (nonatomic, assign) BOOL supportAnonymousUsage;
+
 /** Shared singleton
  */
 + (instancetype)sharedInstance;
