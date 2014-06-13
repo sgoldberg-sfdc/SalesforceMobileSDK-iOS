@@ -792,6 +792,10 @@ static NSString * const kUserPrefix = @"005";
     [self userChanged:change];
 }
 
+- (void)applyCustomDataToCurrentUser:(NSDictionary *)customData {
+    self.currentUser.customData = customData;
+}
+
 - (void)switchToNewUser {
     [self switchToUser:nil];
 }

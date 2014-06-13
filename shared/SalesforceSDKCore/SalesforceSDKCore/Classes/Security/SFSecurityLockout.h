@@ -25,22 +25,37 @@
 #import <Foundation/Foundation.h>
 #import "SFAbstractPasscodeViewController.h"
 
-/** Notification that will be posted when passcode is reset. This notification will have userInfo populated with old hashed passcode stored with `SFPasscodeResetOldPasscodeKey` key and new hashed passcode stored with `SFPasscodeResetNewPasscodeKey` key
+/**
+ The action that was taken as the result of calling into the security lockout functionality.
+ Note: This value should denote the action actually taken, as opposed to an expected action
+ going in.  Callbacks will use this value to determine what action took place.
  */
-extern NSString *const SFPasscodeResetNotification;
-
-/** Key in userInfo published by `SFPasscodeResetNotification`.
- 
- The value of this key is the old hashed passcode before the passcode reset
- */
-extern NSString *const SFPasscodeResetOldPasscodeKey;
-
-
-/** Key in userInfo published by `SFPasscodeResetNotification`.
- 
- The value of this key is the new hashed passcode that triggers the new passcode reset
- */
-extern NSString *const SFPasscodeResetNewPasscodeKey;
+typedef NS_ENUM(NSUInteger, SFSecurityLockoutAction) {
+    /**
+     No action taken
+     */
+    SFSecurityLockoutActionNone = 0,
+    
+    /**
+     Passcode creation functionality was called.
+     */
+    SFSecurityLockoutActionPasscodeCreated,
+    
+    /**
+     Passcode change functionality was called.
+     */
+    SFSecurityLockoutActionPasscodeChanged,
+    
+    /**
+     Passcode verification functionality was called.
+     */
+    SFSecurityLockoutActionPasscodeVerified,
+    
+    /**
+     Passcode removal functionality was called.
+     */
+    SFSecurityLockoutActionPasscodeRemoved
+};
 
 /** Notification sent when the passcode screen will be displayed.
  */
@@ -51,9 +66,14 @@ extern NSString * const kSFPasscodeFlowWillBegin;
 extern NSString * const kSFPasscodeFlowCompleted;
 
 /**
- Block typedef for post-passcode screen callbacks.
+ Block typedef for post-passcode screen success callback.
  */
-typedef void (^SFLockScreenCallbackBlock)(void);
+typedef void (^SFLockScreenSuccessCallbackBlock)(SFSecurityLockoutAction);
+
+/**
+ Block typedef for post-passcode screen failure callback.
+ */
+typedef void (^SFLockScreenFailureCallbackBlock)(void);
 
 /**
  Block typedef for creating the passcode view controller.
@@ -112,10 +132,28 @@ typedef void (^SFPasscodeViewControllerPresentationBlock)(UIViewController*);
  */
 + (NSUInteger)lockoutTime;
 
-/** Set the lockout timer.
- @param seconds The number of seconds for the timer to wait before locking.
+/**
+ Gets the configured passcode length.
+ @return The minimum passcode length.
  */
-+ (void)setLockoutTime:(NSUInteger)seconds;
++ (NSInteger)passcodeLength;
+
+/**
+ Set the passcode length and lockout time.  This asynchronous method will trigger passcode creation
+ or passcode change, when necessary.
+ @param newPasscodeLength The new passcode length to configure.  This can only be greater than or equal
+ to the currently configured length, to support the most restrictive passcode policy across users.
+ @param newLockoutTime The new lockout time to configure.  This can only be less than the currently
+ configured time, to support the most restrictive passcode policy across users.
+ */
++ (void)setPasscodeLength:(NSInteger)newPasscodeLength lockoutTime:(NSUInteger)newLockoutTime;
+
+/**
+ Resets the passcode state of the app, *if* there aren't other users with an overriding passcode
+ policy.  I.e. passcode state can only be cleared if the current user is the only user who would
+ be subject to that policy.
+ */
++ (void)clearPasscodeState;
 
 /** Initialize the timer
  */
@@ -139,6 +177,11 @@ typedef void (^SFPasscodeViewControllerPresentationBlock)(UIViewController*);
  */
 + (BOOL)inactivityExpired;
 
+/**
+ Starts monitoring for user activity, to determine activity expiration and passcode screen display.
+ */
++ (void)startActivityMonitoring;
+
 /** Lock the device immediately.
  */
 + (void)lock;
@@ -146,8 +189,9 @@ typedef void (^SFPasscodeViewControllerPresentationBlock)(UIViewController*);
 /** Unlock the device
  @param success Whether the device is being unlocked as the result of a successful passcode
  challenge, as opposed to unlocking to reset the application to to a failed challenge.
+ @param action In a successful challenge, what was the action taken?
  */
-+ (void)unlock:(BOOL)success;
++ (void)unlock:(BOOL)success action:(SFSecurityLockoutAction)action;
 
 /** Toggle the locked state
  @param locked Locks the device if `YES`, otherwise unlocks the device.
@@ -166,16 +210,6 @@ typedef void (^SFPasscodeViewControllerPresentationBlock)(UIViewController*);
  */
 + (BOOL)isPasscodeNeeded;
 
-/** Set the passcode
- @param passcode The passcode to set.
- */
-+ (void)setPasscode:(NSString *)passcode;
-
-/** Set the required length of the passcode.
- @param passcodeLength The required length of the passcode.
- */
-+ (void)setPasscodeLength:(NSInteger)passcodeLength;
-
 /** Show the passcode view. Used by unit tests.
  */
 + (void)setCanShowPasscode:(BOOL)showPasscode;
@@ -185,24 +219,24 @@ typedef void (^SFPasscodeViewControllerPresentationBlock)(UIViewController*);
  successfully.  Optional.
  @param block The block to be executed on successful unlock.
  */
-+ (void)setLockScreenSuccessCallbackBlock:(SFLockScreenCallbackBlock)block;
++ (void)setLockScreenSuccessCallbackBlock:(SFLockScreenSuccessCallbackBlock)block;
 
 /**
  Returns the callback block to be executed on successful screen unlock.
  */
-+ (SFLockScreenCallbackBlock)lockScreenSuccessCallbackBlock;
++ (SFLockScreenSuccessCallbackBlock)lockScreenSuccessCallbackBlock;
 
 /**
  Sets the callback block to be called on any action that triggers screen lock, and fails to
  verify the passcode to unlock the screen.  Optional.
  @param block The block to be executed on a failed unlock.
  */
-+ (void)setLockScreenFailureCallbackBlock:(SFLockScreenCallbackBlock)block;
++ (void)setLockScreenFailureCallbackBlock:(SFLockScreenFailureCallbackBlock)block;
 
 /**
  Returns the callback block to be executed on a screen unlock failure.
  */
-+ (SFLockScreenCallbackBlock)lockScreenFailureCallbackBlock;
++ (SFLockScreenFailureCallbackBlock)lockScreenFailureCallbackBlock;
 
 /**
  @return The block used to create the passcode view controller
@@ -260,6 +294,17 @@ typedef void (^SFPasscodeViewControllerPresentationBlock)(UIViewController*);
  * @return Whether or not the app is configured to force the display of the passcode screen.
  */
 + (BOOL)forcePasscodeDisplay;
+
+/**
+ * @return Whether or not to validate the passcode at app startup.
+ */
++ (BOOL)validatePasscodeAtStartup;
+
+/**
+ * Sets whether or not to validate the passcode at app startup.
+ * @param validateAtStartup YES to validate at startup, NO otherwise.
+ */
++ (void)setValidatePasscodeAtStartup:(BOOL)validateAtStartup;
 
 @end
 

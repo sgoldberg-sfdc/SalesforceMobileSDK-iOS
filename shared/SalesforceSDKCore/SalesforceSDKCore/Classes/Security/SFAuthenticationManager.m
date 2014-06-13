@@ -150,11 +150,6 @@ static NSString * const kAlertVersionMismatchErrorKey = @"authAlertVersionMismat
 
 @interface SFAuthenticationManager ()
 {
-    /**
-     Will be YES when the app is launching, vs. NO when the app is simply being foregrounded.
-     */
-    BOOL _isAppLaunch;
-    
     NSMutableOrderedSet *_delegates;
 }
 
@@ -205,18 +200,14 @@ static NSString * const kAlertVersionMismatchErrorKey = @"authAlertVersionMismat
 
 /**
  Called after initial authentication has completed.
+ @param fromOffline Whether or not the method was called from an offline state.
  */
-- (void)loggedIn;
+- (void)loggedIn:(BOOL)fromOffline;
 
 /**
  Called after identity data is retrieved from the service.
  */
 - (void)retrievedIdentityData;
-
-/**
- Manages the passcode checking after authentication.
- */
-- (void)postAuthenticationToPasscodeProcessing;
 
 /**
  The final method in the auth completion flow, before the configured completion
@@ -457,16 +448,14 @@ static Class InstanceClass = nil;
     }
 }
 
-- (void)loggedIn
+- (void)loggedIn:(BOOL)fromOffline
 {
-    // If this is the initial login, or there's no persisted identity data, get the data
-    // from the service.
-    if (self.authInfo.authType == SFOAuthTypeUserAgent || self.idCoordinator.idData == nil) {
-        [self.idCoordinator initiateIdentityDataRetrieval];
+    if (!fromOffline) {
+    [self.idCoordinator initiateIdentityDataRetrieval];
     } else {
-        // Identity data should exist.  Validate passcode.
-        [self postAuthenticationToPasscodeProcessing];
+        [self retrievedIdentityData];
     }
+    
     NSNotification *loggedInNotification = [NSNotification notificationWithName:kSFUserLoggedInNotification object:self];
     [[NSNotificationCenter defaultCenter] postNotification:loggedInNotification];
 }
@@ -490,7 +479,7 @@ static Class InstanceClass = nil;
         [userAccountManager deleteAccountForUserId:user.credentials.userId error:nil];
         [user.credentials revoke];
 #warning TODO: SmartStore clear stores per user, once available.
-#warning TODO: Clear per-user Push Notification token, once available.
+        [[SFPushNotificationManager sharedInstance] unregisterSalesforceNotifications:user];
         return;
     }
     
@@ -549,13 +538,6 @@ static Class InstanceClass = nil;
     return ([self.authBlockList count] > 0);
 }
 
-- (BOOL)mobilePinPolicyConfigured {
-    return (self.idCoordinator.idData != nil
-            && self.idCoordinator.idData.mobilePoliciesConfigured
-            && self.idCoordinator.idData.mobileAppPinLength > 0
-            && self.idCoordinator.idData.mobileAppScreenLockTimeout > 0);
-}
-
 - (BOOL)haveValidSession {
     // Check that we have a valid current user
     NSString *userId = [[SFUserAccountManager sharedInstance] currentUserId];
@@ -592,13 +574,11 @@ static Class InstanceClass = nil;
 
 - (void)appDidFinishLaunching:(NSNotification *)notification
 {
-    _isAppLaunch = YES;
+    [SFSecurityLockout setValidatePasscodeAtStartup:YES];
 }
 
 - (void)appWillEnterForeground:(NSNotification *)notification
 {
-    _isAppLaunch = NO;
-    
     [self removeSnapshotView];
     
     BOOL shouldLogout = [self logoutSettingEnabled];
@@ -709,14 +689,16 @@ static Class InstanceClass = nil;
 
 + (NSURL *)frontDoorUrlWithReturnUrl:(NSString *)returnUrl returnUrlIsEncoded:(BOOL)isEncoded
 {
-    NSString *encodedUrl = (isEncoded ? returnUrl : [returnUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]);
     SFOAuthCredentials *creds = [SFAuthenticationManager sharedManager].coordinator.credentials;
-    NSMutableString *frontDoorUrl = [NSMutableString stringWithString:[creds.instanceUrl absoluteString]];
+    NSString *instUrl = creds.apiUrl.absoluteString;
+    NSMutableString *mutableReturnUrl = [NSMutableString stringWithString:instUrl];
+    [mutableReturnUrl appendString:returnUrl];
+    NSString *encodedUrl = (isEncoded ? mutableReturnUrl : [mutableReturnUrl stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]);
+    NSMutableString *frontDoorUrl = [NSMutableString stringWithString:instUrl];
     if (![frontDoorUrl hasSuffix:@"/"])
         [frontDoorUrl appendString:@"/"];
     NSString *encodedSidValue = [creds.accessToken stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     [frontDoorUrl appendFormat:@"secur/frontdoor.jsp?sid=%@&retURL=%@&display=touch", encodedSidValue, encodedUrl];
-    
     return [NSURL URLWithString:frontDoorUrl];
 }
 
@@ -818,8 +800,8 @@ static Class InstanceClass = nil;
 - (UIView *)createDefaultSnapshotView
 {
     UIView *opaqueView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    opaqueView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     opaqueView.backgroundColor = [UIColor whiteColor];
-    opaqueView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     return opaqueView;
 }
 
@@ -831,34 +813,10 @@ static Class InstanceClass = nil;
 	}
 }
 
-- (void)postAuthenticationToPasscodeProcessing
-{
-    if ([self mobilePinPolicyConfigured]) {
-        // Auth checks are subject to an inactivity check.
-        [SFSecurityLockout setLockScreenSuccessCallbackBlock:^{
-            [self finalizeAuthCompletion];
-        }];
-        [SFSecurityLockout setLockScreenFailureCallbackBlock:^{
-            [self logout];
-        }];
-        
-        // If the is app startup, we always lock "the first time".  Otherwise, pin code screen
-        // display depends on inactivity.
-        if (_isAppLaunch) {
-            [SFSecurityLockout lock];
-        } else {
-            [SFSecurityLockout validateTimer];
-        }
-    } else {
-        [self finalizeAuthCompletion];
-    }
-}
-
 - (void)finalizeAuthCompletion
 {
-    if ([self mobilePinPolicyConfigured]) {
-        [[SFUserActivityMonitor sharedInstance] startMonitoring];
-    }
+    [SFSecurityLockout setValidatePasscodeAtStartup:NO];
+    [SFSecurityLockout startActivityMonitoring];
     
     // Apply the credentials that will ensure there is a current user and that this
     // current user as the proper credentials.
@@ -955,7 +913,8 @@ static Class InstanceClass = nil;
 {
     if (user.credentials.refreshToken != nil) {
         [self log:SFLogLevelInfo format:@"Revoking credentials on the server for '%@'.", user.userName];
-        NSMutableString *host = [NSMutableString stringWithString:[user.credentials.instanceUrl absoluteString]];
+        NSMutableString *host = [NSMutableString stringWithFormat:@"%@://", user.credentials.protocol];
+        [host appendString:user.credentials.domain];
         [host appendString:@"/services/oauth2/revoke?token="];
         [host appendString:user.credentials.refreshToken];
         NSURL *url = [NSURL URLWithString:host];
@@ -1081,24 +1040,33 @@ static Class InstanceClass = nil;
 
 - (void)retrievedIdentityData
 {
-    // NB: This method is assumed to run after identity data has been refreshed from the service.
+    // NB: This method is assumed to run after identity data has been refreshed from the service, or otherwise
+    // already exists.
     NSAssert(self.idCoordinator.idData != nil, @"Identity data should not be nil/empty at this point.");
     
-    if ([self mobilePinPolicyConfigured]) {
-        // Set the callback actions for post-passcode entry/configuration.
-        [SFSecurityLockout setLockScreenSuccessCallbackBlock:^{
+    // Post-passcode verification callbacks, where we'll check for passcode creation/update.  Passcode verification section is below.
+    [SFSecurityLockout setLockScreenSuccessCallbackBlock:^(SFSecurityLockoutAction action) {
+        [SFSecurityLockout setLockScreenSuccessCallbackBlock:^(SFSecurityLockoutAction action) {
             [self finalizeAuthCompletion];
         }];
-        [SFSecurityLockout setLockScreenFailureCallbackBlock:^{  // Don't know how this would happen, but if it does....
+        [SFSecurityLockout setLockScreenFailureCallbackBlock:^{
             [self execFailureBlocks];
         }];
         
-        // setLockoutTime triggers passcode creation.  We could consider a more explicit call for visibility here?
-        [SFSecurityLockout setPasscodeLength:self.idCoordinator.idData.mobileAppPinLength];
-        [SFSecurityLockout setLockoutTime:(self.idCoordinator.idData.mobileAppScreenLockTimeout * 60)];
+        // Check to see if a passcode needs to be created or updated, based on passcode policy data from the
+        // identity service.
+        [SFSecurityLockout setPasscodeLength:self.idCoordinator.idData.mobileAppPinLength
+                                 lockoutTime:(self.idCoordinator.idData.mobileAppScreenLockTimeout * 60)];
+    }];
+    [SFSecurityLockout setLockScreenFailureCallbackBlock:^{
+        [self execFailureBlocks];
+    }];
+    
+    // If we're in app startup, we always lock "the first time". Otherwise, pin code screen display depends on inactivity.
+    if ([SFSecurityLockout validatePasscodeAtStartup]) {
+        [SFSecurityLockout lock];
     } else {
-        // No additional mobile policies.  So no passcode.
-        [self finalizeAuthCompletion];
+        [SFSecurityLockout validateTimer];
     }
 }
 
@@ -1178,7 +1146,7 @@ static Class InstanceClass = nil;
                                                              return NO;  // Default error handler will show the error.
                                                          } else {
                                                              [weakSelf log:SFLogLevelInfo msg:@"Network failure for OAuth Refresh flow (existing credentials)  Try to continue."];
-                                                             [weakSelf loggedIn];
+                                                             [weakSelf loggedIn:YES];
                                                              return YES;
                                                          }
                                                      }
@@ -1298,6 +1266,12 @@ static Class InstanceClass = nil;
 {
     [self log:SFLogLevelDebug msg:@"oauthCoordinator:didBeginAuthenticationWithView"];
     
+    [self enumerateDelegates:^(id<SFAuthenticationManagerDelegate> delegate) {
+        if ([delegate respondsToSelector:@selector(authManager:willDisplayAuthWebView:)]) {
+            [delegate authManager:self willDisplayAuthWebView:view];
+        }
+    }];
+    
     // Ensure this runs on the main thread.  Has to be sync, because the coordinator expects the auth view
     // to be added to a superview by the end of this method.
     if (![NSThread isMainThread]) {
@@ -1324,7 +1298,7 @@ static Class InstanceClass = nil;
         }
     }];
     
-    [self loggedIn];
+    [self loggedIn:NO];
 }
 
 - (void)oauthCoordinator:(SFOAuthCoordinator *)coordinator didFailWithError:(NSError *)error authInfo:(SFOAuthInfo *)info

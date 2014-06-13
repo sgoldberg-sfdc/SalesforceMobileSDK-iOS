@@ -184,11 +184,16 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
     return [self initWithMode:SFPasscodeControllerModeCreate minPasscodeLength:minPasscodeLength];
 }
 
+- (id)initForPasscodeChange:(NSInteger)minPasscodeLength
+{
+    return [self initWithMode:SFPasscodeControllerModeChange minPasscodeLength:minPasscodeLength];
+}
+
 - (id)initWithMode:(SFPasscodeControllerMode)mode minPasscodeLength:(NSInteger)minPasscodeLength
 {
     self = [super initWithMode:mode minPasscodeLength:minPasscodeLength];
     if (self) {
-        if (mode == SFPasscodeControllerModeCreate) {
+        if (mode == SFPasscodeControllerModeCreate || mode == SFPasscodeControllerModeChange) {
             _firstPasscodeValidated = NO;
             [self addPasscodeCreationNav];
         } else {
@@ -211,7 +216,7 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
 - (void)loadView
 {
     [super loadView];
-    
+
     // Passcode
     self.passcodeField = [[UITextField alloc] initWithFrame:CGRectZero];
     self.passcodeField.secureTextEntry = YES;
@@ -223,7 +228,7 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
     self.passcodeField.accessibilityLabel = @"Passcode";
     self.passcodeField.delegate = self;
     [self.view addSubview:self.passcodeField];
-    
+
     // Error label
     self.errorLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     [self.errorLabel setBackgroundColor:[UIColor clearColor]];
@@ -234,7 +239,7 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
     self.errorLabel.textAlignment = NSTextAlignmentCenter;
     self.errorLabel.accessibilityLabel = @"Error";
     [self.view addSubview:self.errorLabel];
-    
+
     // Instructions label
     self.instructionsLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     [self.instructionsLabel setBackgroundColor:[UIColor clearColor]];
@@ -247,7 +252,7 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
     [self.view addSubview:self.instructionsLabel];
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.view.autoresizesSubviews = YES;
-    
+
     // 'Forgot Passcode' button
     self.forgotPasscodeButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.forgotPasscodeButton setTitle:[SFSDKResourceUtils localizedString:@"forgotPasscodeTitle"] forState:UIControlStateNormal];
@@ -265,14 +270,14 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
 {
     [super viewDidLoad];
     NSLog(@"SFPasscodeViewController viewDidLoad");
-    
     if ([self respondsToSelector:@selector(setEdgesForExtendedLayout:)]) {
         [self setEdgesForExtendedLayout:UIRectEdgeNone];
     }
-    
     [self layoutSubviews];
     if (self.mode == SFPasscodeControllerModeCreate) {
         [self updateInstructionsLabel:[SFSDKResourceUtils localizedString:@"passcodeCreateInstructions"]];
+    } else if (self.mode == SFPasscodeControllerModeChange) {
+        [self updateInstructionsLabel:[SFSDKResourceUtils localizedString:@"passcodeChangeInstructions"]];
     } else {
         [self updateInstructionsLabel:[SFSDKResourceUtils localizedString:@"passcodeVerifyInstructions"]];
         [self.forgotPasscodeButton setHidden:NO];
@@ -380,7 +385,6 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
     for (int i = 0; i < length; i++) {
         [s appendString:@"a"];
     }
-    
     return s;
 }
 
@@ -499,10 +503,8 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
         } else {
             [self finishedValidatePasscode];
         }
-        
         return NO;
     }
-    
     return YES;
 }
 

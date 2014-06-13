@@ -31,10 +31,14 @@
 
 static NSString * const kUser_ACCESS_SCOPES     = @"accessScopes";
 static NSString * const kUser_CREDENTIALS       = @"credentials";
+static NSString * const kUser_EMAIL             = @"email";
+static NSString * const kUser_FULL_NAME         = @"fullName";
 static NSString * const kUser_ORGANIZATION_NAME = @"organizationName";
+static NSString * const kUser_USER_NAME         = @"userName";
 static NSString * const kUser_COMMUNITY_ID      = @"communityId";
 static NSString * const kUser_COMMUNITIES       = @"communities";
 static NSString * const kUser_ID_DATA           = @"idData";
+static NSString * const kUser_CUSTOM_DATA       = @"customData";
 
 /** Key that identifies the global scope
  */
@@ -65,41 +69,36 @@ static NSString * const kGlobalScopingKey = @"-global-";
 
 - (void)encodeWithCoder:(NSCoder*)encoder {
     [encoder encodeObject:_accessScopes forKey:kUser_ACCESS_SCOPES];
+    [encoder encodeObject:_email forKey:kUser_EMAIL];
+    [encoder encodeObject:_fullName forKey:kUser_FULL_NAME];
     [encoder encodeObject:_organizationName forKey:kUser_ORGANIZATION_NAME];
+    [encoder encodeObject:_userName forKey:kUser_USER_NAME];
     [encoder encodeObject:_credentials forKey:kUser_CREDENTIALS];
     [encoder encodeObject:_idData forKey:kUser_ID_DATA];
     [encoder encodeObject:_communityId forKey:kUser_COMMUNITY_ID];
     [encoder encodeObject:_communities forKey:kUser_COMMUNITIES];
+    [encoder encodeObject:_customData forKey:kUser_CUSTOM_DATA];
 }
 
 - (id)initWithCoder:(NSCoder*)decoder {
 	self = [super init];
 	if (self) {
         _accessScopes = [decoder decodeObjectForKey:kUser_ACCESS_SCOPES];
+        _email = [decoder decodeObjectForKey:kUser_EMAIL];
+        _fullName = [decoder decodeObjectForKey:kUser_FULL_NAME];
         _credentials = [decoder decodeObjectForKey:kUser_CREDENTIALS];
         _idData = [decoder decodeObjectForKey:kUser_ID_DATA];
         _organizationName = [decoder decodeObjectForKey:kUser_ORGANIZATION_NAME];
+        _userName = [decoder decodeObjectForKey:kUser_USER_NAME];
         _communityId = [decoder decodeObjectForKey:kUser_COMMUNITY_ID];
         _communities = [decoder decodeObjectForKey:kUser_COMMUNITIES];
+        _customData = [decoder decodeObjectForKey:kUser_CUSTOM_DATA];
 	}
 	return self;
 }
 
 - (NSURL*)apiUrl {
-    if (nil == self.communityId) {
-        // If there is no current community, let's use the instanceUrl which always refers
-        // to the base organization URL (aka internal community or community zero)
-        return self.credentials.instanceUrl;
-    } else {
-        // If there is a current community, let's grab its data
-        SFCommunityData *communityData = [self communityWithId:self.communityId];
-        if (nil == communityData) {
-            [self log:SFLogLevelError format:@"Unable to find any data for community %@, switching to base org URL", self.communityId];
-            return self.credentials.instanceUrl;
-        } else {
-            return communityData.siteUrl;
-        }
-    }
+    return self.credentials.apiUrl;
 }
 
 - (SFCommunityData*)communityWithId:(NSString*)communityId {
@@ -149,16 +148,15 @@ static NSString * const kGlobalScopingKey = @"-global-";
     [self didChangeValueForKey:@"photo"];
 }
 
-- (NSString *)fullName {
-    return _idData.displayName;
-}
-
-- (NSString *)userName {
-    return _idData.username;
-}
-
-- (NSString *)email {
-    return _idData.email;
+- (void)setIdData:(SFIdentityData *)idData {
+    if (idData != _idData) {
+        _idData = idData;
+    }
+    
+    // Set other account properties from latest identity data.
+    self.fullName = idData.displayName;
+    self.email = idData.email;
+    self.userName = idData.username;
 }
 
 - (BOOL)isSessionValid {

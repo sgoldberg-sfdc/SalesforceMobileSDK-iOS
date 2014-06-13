@@ -179,9 +179,9 @@ static dispatch_once_t _sharedInstanceGuard;
     networkCoordinator.userId = oAuthCoordinator.credentials.userId;
     networkCoordinator.accessToken = oAuthCoordinator.credentials.accessToken;
     networkCoordinator.portNumber = [oAuthCoordinator.credentials.instanceUrl port];
+    networkCoordinator.apiUrl = oAuthCoordinator.credentials.apiUrl.absoluteString;
     return networkCoordinator;
 }
-
 
 - (void)refreshSessionForNetworkEngine:(SFNetworkEngine *)networkEngine {
     [_sessionRefresher refreshAccessToken];
@@ -299,6 +299,12 @@ static dispatch_once_t _sharedInstanceGuard;
 - (SFRestRequest *)requestForQuery:(NSString *)soql {
     NSDictionary *queryParams = [NSDictionary dictionaryWithObjectsAndKeys:soql, @"q", nil];
     NSString *path = [NSString stringWithFormat:@"/%@/query", self.apiVersion];
+    return [SFRestRequest requestWithMethod:SFRestMethodGET path:path queryParams:queryParams];
+}
+
+- (SFRestRequest *)requestForQueryAll:(NSString *)soql {
+    NSDictionary *queryParams = [NSDictionary dictionaryWithObjectsAndKeys:soql, @"q", nil];
+    NSString *path = [NSString stringWithFormat:@"/%@/queryAll", self.apiVersion];
     return [SFRestRequest requestWithMethod:SFRestMethodGET path:path queryParams:queryParams];
 }
 

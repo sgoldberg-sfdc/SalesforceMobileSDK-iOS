@@ -91,7 +91,6 @@ static NSString * const kHttpMethodPost                         = @"POST";
 static NSString * const kHttpHeaderContentType                  = @"Content-Type";
 static NSString * const kHttpPostContentType                    = @"application/x-www-form-urlencoded";
 
-
 @implementation SFOAuthCoordinator
 
 @synthesize credentials          = _credentials;
@@ -512,7 +511,7 @@ static NSString * const kHttpPostContentType                    = @"application/
     
     if (self.credentials.logLevel < kSFOAuthLogLevelWarning) {
         NSLog(@"SFOAuthCoordinator:webView:shouldStartLoadWithRequest: (navType=%d): host=%@ : path=%@",
-              navigationType, request.URL.host, request.URL.path);
+              (long)navigationType, request.URL.host, request.URL.path);
     }
     
     SFOAuthInfo *authInfo = [[SFOAuthInfo alloc] initWithAuthType:SFOAuthTypeUserAgent];
