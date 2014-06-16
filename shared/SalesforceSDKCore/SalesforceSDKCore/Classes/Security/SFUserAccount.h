@@ -34,6 +34,10 @@
  */
 @interface SFUserAccount : NSObject<NSCoding>
 
+/** Returns YES if this user account is an anonymous user
+ */
+@property (nonatomic, readonly, getter = isAnonymousUser) BOOL anonymousUser;
+
 /** The access scopes for this user
  */
 @property (nonatomic, copy) NSSet *accessScopes;
@@ -95,6 +99,10 @@
 /** The custom data for the user, should be encodeable by NSCoder
  */
 @property (nonatomic, copy) NSDictionary *customData;
+
+/** Returns the anynoumous user account
+ */
++ (instancetype)anonymousUserAccount;
 
 /** Designated initializer
  @param identifier The user identifier

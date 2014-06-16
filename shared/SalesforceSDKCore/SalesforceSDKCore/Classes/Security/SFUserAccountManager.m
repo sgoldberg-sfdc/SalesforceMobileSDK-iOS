@@ -579,10 +579,20 @@ static NSString * const kUserPrefix = @"005";
             }
         }
     }
+    
+    SFUserAccount *user = nil;
     if (nil == curUserId) {
-        [self log:SFLogLevelInfo msg:@"Current active user id is nil"];
+        // If there is no current user but anonymous user is supported,
+        // let's use the anonymous user.
+        if (self.anonymousUser) {
+            user = [SFUserAccount anonymousUserAccount];
+        } else {
+            [self log:SFLogLevelInfo msg:@"Current active user id is nil"];
+        }
+    } else {
+        user = [self userAccountForUserId:curUserId];
     }
-    [self setCurrentUser:[self userAccountForUserId:curUserId]];
+    [self setCurrentUser:user];
     
     // update the client ID in case it's changed (via settings, etc)
     [[[self currentUser] credentials] setClientId:self.oauthClientId];
@@ -756,6 +766,14 @@ static NSString * const kUserPrefix = @"005";
         return [self makeUserIdSafe:uid];
     }
     return nil;
+}
+
+- (BOOL)isAnonymousUser {
+    if (self.currentUser && self.currentUser.isAnonymousUser && self.supportAnonymousUsage) {
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 - (void)applyCredentials:(SFOAuthCredentials*)credentials {

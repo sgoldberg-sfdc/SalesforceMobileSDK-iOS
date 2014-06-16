@@ -44,12 +44,29 @@ static NSString * const kUser_CUSTOM_DATA       = @"customData";
  */
 static NSString * const kGlobalScopingKey = @"-global-";
 
+@interface SFUserAccount ()
+
+@property (nonatomic, readwrite) BOOL anonymousUser;
+
+@end
+
 @implementation SFUserAccount
 
 @synthesize photo = _photo;
 
 + (NSSet*)keyPathsForValuesAffectingApiUrl {
     return [NSSet setWithObjects:@"communityId", @"credentials", nil];
+}
+
++ (instancetype)anonymousUserAccount {
+    static dispatch_once_t pred;
+    static SFUserAccount *GlobalAnonymousUser = nil;
+    dispatch_once(&pred, ^{
+        GlobalAnonymousUser = [[SFUserAccount alloc] init];
+        GlobalAnonymousUser.anonymousUser = YES;
+        GlobalAnonymousUser.credentials = nil;
+	});
+    return GlobalAnonymousUser;
 }
 
 - (id)init {
@@ -166,8 +183,13 @@ static NSString * const kGlobalScopingKey = @"-global-";
 }
 
 - (NSString*)description {
-    NSString * s = [NSString stringWithFormat:@"<SFUserAccount username=%@ fullName=%@ accessScopes=%@ credentials=%@, community=%@>",
-                    self.userName, self.fullName, self.accessScopes, self.credentials, self.communityId];
+    NSString * s;
+    if (self.isAnonymousUser) {
+        s = @"<SFUserAccount 'anonymous user'>";
+    } else {
+        s = [NSString stringWithFormat:@"<SFUserAccount username=%@ fullName=%@ accessScopes=%@ credentials=%@, community=%@>",
+             self.userName, self.fullName, self.accessScopes, self.credentials, self.communityId];
+    }
     return s;
 }
 

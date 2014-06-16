@@ -539,15 +539,22 @@ static Class InstanceClass = nil;
 }
 
 - (BOOL)haveValidSession {
+    SFUserAccountManager *userAccountManager = [SFUserAccountManager sharedInstance];
+
+    // Check if the user is anonymous
+    if (userAccountManager.isAnonymousUser) {
+        return YES;
+    }
+    
     // Check that we have a valid current user
-    NSString *userId = [[SFUserAccountManager sharedInstance] currentUserId];
+    NSString *userId = userAccountManager.currentUserId;
     if (nil == userId || [userId isEqualToString:SFUserAccountManagerTemporaryUserAccountId]) {
         return NO;
     }
     
     // Check that the current user itself has a valid session
-    SFUserAccount *userAcct = [[SFUserAccountManager sharedInstance] currentUser];
-    if ([userAcct isSessionValid]) {
+    SFUserAccount *currentUser = userAccountManager.currentUser;
+    if ([currentUser isSessionValid]) {
         return YES;
     } else {
         return NO;
@@ -928,7 +935,14 @@ static Class InstanceClass = nil;
 
 - (void)login
 {
-    SFUserAccount *account = [SFUserAccountManager sharedInstance].currentUser;
+    SFUserAccountManager *accountManager = [SFUserAccountManager sharedInstance];
+    SFUserAccount *account = accountManager.currentUser;
+    
+    if (account.isAnonymousUser && !accountManager.supportAnonymousUsage) {
+        [self log:SFLogLevelError format:@"the current user is anonymous but the app is not configured to support it. Switching to a new user..."];
+        account = nil;
+    }
+    
 	if (nil == account) {
         [self log:SFLogLevelInfo format:@"no current user account so creating a new one"];
         account = [[SFUserAccountManager sharedInstance] createUserAccount];
@@ -949,7 +963,10 @@ static Class InstanceClass = nil;
     if (self.coordinator.isAuthenticating) {
         [self.coordinator stopAuthentication];        
     }
-    [self.coordinator authenticate];
+    
+    if (!account.isAnonymousUser) {        
+        [self.coordinator authenticate];
+    }
 }
 
 - (void)setupWithUser:(SFUserAccount*)account {

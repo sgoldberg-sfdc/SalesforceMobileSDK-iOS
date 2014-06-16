@@ -190,6 +190,11 @@ This value is set by adding a booelean value with key 'SFDCSupportAnonymousUsage
  */
 @property (nonatomic, assign) BOOL supportAnonymousUsage;
 
+/** Returns YES if the current user is anonymous and
+ the `supportAnonymousUsage` is set to YES
+ */
+@property (nonatomic, readonly, getter = isAnonymousUser) BOOL anonymousUser;
+
 /** Shared singleton
  */
 + (instancetype)sharedInstance;
