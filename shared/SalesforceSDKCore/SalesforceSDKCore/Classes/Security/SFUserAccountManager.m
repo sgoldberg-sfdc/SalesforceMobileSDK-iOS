@@ -58,9 +58,6 @@ static NSString * const kSFUserAccountOAuthLoginHostDefault = @"login.salesforce
 static NSString * const kSFUserAccountOAuthLoginHost = @"SFDCOAuthLoginHost";
 static NSString * const kSFUserAccountOAuthRedirectUri = @"SFDCOAuthRedirectUri";
 
-// Anonymous Support
-static NSString * const kSFUserAccountSupportAnonymousUsage = @"SFDCSupportAnonymousUsage";
-
 // Key for storing the user's configured login host (deprecated, use kSFUserAccountOAuthLoginHost)
 static NSString * const kDeprecatedLoginHostPrefKey = @"login_host_pref";
 
@@ -169,7 +166,6 @@ static NSString * const kUserPrefix = @"005";
         if (bundleOAuthCompletionUrl != nil) {
             self.oauthCompletionUrl = bundleOAuthCompletionUrl;
         }
-        self.supportAnonymousUsage = [[[NSBundle mainBundle] objectForInfoDictionaryKey:kSFUserAccountSupportAnonymousUsage] boolValue];
         
         _userAccountMap = [[NSMutableDictionary alloc] init];
         
@@ -568,10 +564,9 @@ static NSString * const kUserPrefix = @"005";
     
     NSString *curUserId = [self activeUserId];
     
-    // If anonymous usage is not supported, do the following additional logic
     // In case the most recently used account was removed, or the most recent account is the temporary account,
     // see if we can load another available account.
-    if (!self.supportAnonymousUsage && (nil == curUserId || [curUserId isEqualToString:SFUserAccountManagerTemporaryUserAccountId])) {
+    if (nil == curUserId || [curUserId isEqualToString:SFUserAccountManagerTemporaryUserAccountId]) {
         for (SFUserAccount *account in self.userAccountMap.allValues) {
             if (account.credentials.userId) {
                 curUserId = account.credentials.userId;
@@ -579,20 +574,10 @@ static NSString * const kUserPrefix = @"005";
             }
         }
     }
-    
-    SFUserAccount *user = nil;
     if (nil == curUserId) {
-        // If there is no current user but anonymous user is supported,
-        // let's use the anonymous user.
-        if (self.anonymousUser) {
-            user = [SFUserAccount anonymousUserAccount];
-        } else {
-            [self log:SFLogLevelInfo msg:@"Current active user id is nil"];
-        }
-    } else {
-        user = [self userAccountForUserId:curUserId];
+        [self log:SFLogLevelInfo msg:@"Current active user id is nil"];
     }
-    [self setCurrentUser:user];
+    [self setCurrentUser:[self userAccountForUserId:curUserId]];
     
     // update the client ID in case it's changed (via settings, etc)
     [[[self currentUser] credentials] setClientId:self.oauthClientId];
@@ -766,14 +751,6 @@ static NSString * const kUserPrefix = @"005";
         return [self makeUserIdSafe:uid];
     }
     return nil;
-}
-
-- (BOOL)isAnonymousUser {
-    if (self.currentUser && self.currentUser.isAnonymousUser && self.supportAnonymousUsage) {
-        return YES;
-    } else {
-        return NO;
-    }
 }
 
 - (void)applyCredentials:(SFOAuthCredentials*)credentials {
