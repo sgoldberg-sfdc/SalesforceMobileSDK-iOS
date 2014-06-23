@@ -22,7 +22,7 @@
  WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "SFUserAccountManager.h"
+#import "SFUserAccountManager+Internal.h"
 #import "SFDirectoryManager.h"
 #import "SFCommunityData.h"
 
@@ -57,9 +57,6 @@ static NSString * const kUserDefaultsLastUserIdKey = @"LastUserId";
 static NSString * const kSFUserAccountOAuthLoginHostDefault = @"login.salesforce.com"; // last resort default OAuth host
 static NSString * const kSFUserAccountOAuthLoginHost = @"SFDCOAuthLoginHost";
 static NSString * const kSFUserAccountOAuthRedirectUri = @"SFDCOAuthRedirectUri";
-
-// Anonymous Support
-static NSString * const kSFUserAccountSupportAnonymousUsage = @"SFDCSupportAnonymousUsage";
 
 // Key for storing the user's configured login host (deprecated, use kSFUserAccountOAuthLoginHost)
 static NSString * const kDeprecatedLoginHostPrefKey = @"login_host_pref";
@@ -102,34 +99,6 @@ static NSString * const kUserPrefix = @"005";
 
 @end
 
-@interface SFUserAccountManager ()
-{
-    NSMutableOrderedSet *_delegates;
-}
-
-/** A map of user accounts by user ID
- */
-@property (nonatomic, strong) NSMutableDictionary *userAccountMap;
-
-@property (nonatomic, strong) NSString *lastChangedOrgId;
-@property (nonatomic, strong) NSString *lastChangedUserId;
-@property (nonatomic, strong) NSString *lastChangedCommunityId;
-
-/**
- Executes the given block for each configured delegate.
- @param block The block to execute for each delegate.
- */
-- (void)enumerateDelegates:(void (^)(id<SFUserAccountManagerDelegate>))block;
-
-/**
- Updates the login host in app settings, for apps that utilize login host switching from
- the Settings app.
- @param newLoginHost The login host to update.
- */
-- (void)updateAppSettingsLoginHost:(NSString *)newLoginHost;
-
-@end
-
 @implementation SFUserAccountManager
 
 + (instancetype)sharedInstance {
@@ -169,7 +138,6 @@ static NSString * const kUserPrefix = @"005";
         if (bundleOAuthCompletionUrl != nil) {
             self.oauthCompletionUrl = bundleOAuthCompletionUrl;
         }
-        self.supportAnonymousUsage = [[[NSBundle mainBundle] objectForInfoDictionaryKey:kSFUserAccountSupportAnonymousUsage] boolValue];
         
         _userAccountMap = [[NSMutableDictionary alloc] init];
         
@@ -568,10 +536,9 @@ static NSString * const kUserPrefix = @"005";
     
     NSString *curUserId = [self activeUserId];
     
-    // If anonymous usage is not supported, do the following additional logic
     // In case the most recently used account was removed, or the most recent account is the temporary account,
     // see if we can load another available account.
-    if (!self.supportAnonymousUsage && (nil == curUserId || [curUserId isEqualToString:SFUserAccountManagerTemporaryUserAccountId])) {
+    if (nil == curUserId || [curUserId isEqualToString:SFUserAccountManagerTemporaryUserAccountId]) {
         for (SFUserAccount *account in self.userAccountMap.allValues) {
             if (account.credentials.userId) {
                 curUserId = account.credentials.userId;
@@ -579,20 +546,10 @@ static NSString * const kUserPrefix = @"005";
             }
         }
     }
-    
-    SFUserAccount *user = nil;
     if (nil == curUserId) {
-        // If there is no current user but anonymous user is supported,
-        // let's use the anonymous user.
-        if (self.anonymousUser) {
-            user = [SFUserAccount anonymousUserAccount];
-        } else {
-            [self log:SFLogLevelInfo msg:@"Current active user id is nil"];
-        }
-    } else {
-        user = [self userAccountForUserId:curUserId];
+        [self log:SFLogLevelInfo msg:@"Current active user id is nil"];
     }
-    [self setCurrentUser:user];
+    [self setCurrentUser:[self userAccountForUserId:curUserId]];
     
     // update the client ID in case it's changed (via settings, etc)
     [[[self currentUser] credentials] setClientId:self.oauthClientId];
@@ -768,14 +725,6 @@ static NSString * const kUserPrefix = @"005";
     return nil;
 }
 
-- (BOOL)isAnonymousUser {
-    if (self.currentUser && self.currentUser.isAnonymousUser && self.supportAnonymousUsage) {
-        return YES;
-    } else {
-        return NO;
-    }
-}
-
 - (void)applyCredentials:(SFOAuthCredentials*)credentials {
     SFUserAccountChange change = SFUserAccountChangeCredentials;
     
@@ -830,14 +779,8 @@ static NSString * const kUserPrefix = @"005";
     SFUserAccount *tempNewCurrentUser = newCurrentUser;
     
     // If newCurrentUser is nil, we're switching to a "new" (unconfigured) user.
-    if (newCurrentUser == nil) {
-        if (self.temporaryUser == nil) {
-            tempNewCurrentUser = [self createUserAccount];
-        } else {
-            // Don't know what the app state would be that you would be switching to a new user while the temporary
-            // account still exists, but in any case, don't create an additional temporary account instance.
-            tempNewCurrentUser = self.temporaryUser;
-        }
+    if (tempNewCurrentUser == nil) {
+        tempNewCurrentUser = [self createUserAccount];
     }
     
     SFUserAccount *origCurrentUser = self.currentUser;
