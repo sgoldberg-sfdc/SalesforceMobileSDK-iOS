@@ -592,7 +592,6 @@
 		A5D3963218F854C90048114F /* Internal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -622,10 +621,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					armv7s,
-					armv7,
-				);
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DSTROOT = /tmp/SalesforceOAuth.dst;
@@ -733,7 +728,6 @@
 		CFA9ADDC13AA86DA0024260E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -762,7 +756,6 @@
 		CFA9ADDD13AA86DA0024260E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
@@ -788,10 +781,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					armv7s,
-					armv7,
-				);
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DSTROOT = /tmp/SalesforceOAuth.dst;
@@ -807,10 +796,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					armv7s,
-					armv7,
-				);
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DSTROOT = /tmp/SalesforceOAuth.dst;
