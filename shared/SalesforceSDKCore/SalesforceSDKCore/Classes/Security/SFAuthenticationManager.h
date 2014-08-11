@@ -109,14 +109,6 @@ typedef void (^SFOAuthFlowFailureCallbackBlock)(SFOAuthInfo *, NSError *);
 - (BOOL)authManagerIsNetworkAvailable:(SFAuthenticationManager*)manager;
 
 /**
- Called when the login host changes from one value to another.
- @param manager The instance of SFAuthenticationManager making the call.
- @param updateResult The results of the update, including previous login host, new login host, and whether there was
- an actual change.
- */
-- (void)authManager:(SFAuthenticationManager *)manager didChangeLoginHost:(SFLoginHostUpdateResult *)updateResult;
-
-/**
  Called after the auth manager logs out.
  @param manager The instance of SFAuthenticationManager making the call.
  */
@@ -259,12 +251,6 @@ extern NSString * const kSFAuthenticationManagerFinishedNotification;
 @property (nonatomic, strong) SFIdentityCoordinator *idCoordinator;
 
 /**
- * Whether or not there is a mobile pin code policy configured for this app.
- * @return YES if so, NO if not.
- */
-@property (nonatomic, readonly) BOOL mobilePinPolicyConfigured;
-
-/**
  Adds a delegate to the list of authentication manager delegates.
  @param delegate The delegate to add to the list.
  */
@@ -348,22 +334,6 @@ extern NSString * const kSFAuthenticationManagerFinishedNotification;
  OAuth credentials.
  */
 + (void)resetSessionCookie;
-
-/**
- Creates an absolute URL to frontdoor with the given destination URL.
- @param returnUrl The destination URL to hit after going through frontdoor.
- @param isEncoded Whether or not the returnUrl value is URL-encoded.
- @return An NSURL object representing the configured frontdoor URL.
- */
-+ (NSURL *)frontDoorUrlWithReturnUrl:(NSString *)returnUrl returnUrlIsEncoded:(BOOL)isEncoded;
-
-/**
- Whether or not the given URL can be identified as a redirect to the login URL, loaded when the
- session expires.
- @param url The URL to evaluate.
- @return YES if the URL matches the login redirect URL pattern, NO otherwise.
- */
-+ (BOOL)isLoginRedirectUrl:(NSURL *)url;
 
 /**
  Determines whether an error is due to invalid auth credentials.

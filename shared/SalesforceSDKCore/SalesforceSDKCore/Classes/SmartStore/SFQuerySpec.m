@@ -72,7 +72,6 @@ NSString * const kQuerySpecParamSmartSql = @"smartSql";
         querySpec.order = order;
         querySpec.pageSize = pageSize;
         [querySpec computeSmartAndCountSql];
-        NSLog(@"newExactQuerySpec: %@", querySpec);
     }
     return querySpec;
 }
@@ -310,7 +309,7 @@ NSString * const kQuerySpecParamSmartSql = @"smartSql";
      
     switch (self.queryType) {
         case kSFSoupQueryTypeRange:
-            if (nil != self.beginKey) 
+            if (nil != self.beginKey)
                 [result setObject:self.beginKey forKey:kQuerySpecParamBeginKey];
             if (nil != self.endKey)
                 [result setObject:self.endKey forKey:kQuerySpecParamEndKey];
