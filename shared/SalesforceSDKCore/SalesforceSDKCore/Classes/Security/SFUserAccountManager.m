@@ -52,6 +52,7 @@ NSString * const kOAuthRedirectUriKey = @"oauth_redirect_uri";
 // Persistence Keys
 static NSString * const kUserAccountsMapCodingKey  = @"accountsMap";
 static NSString * const kUserDefaultsLastUserIdKey = @"LastUserId";
+static NSString * const kUserDefaultsLastUserCommunityIdKey = @"LastUserCommunityId";
 
 // Oauth
 static NSString * const kSFUserAccountOAuthLoginHostDefault = @"login.salesforce.com"; // last resort default OAuth host
@@ -214,10 +215,12 @@ static NSString * const kUserPrefix = @"005";
 
 - (void)updateAppSettingsLoginHost:(NSString *)newLoginHost {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
-    newLoginHost = [newLoginHost lowercaseString];
+  
     newLoginHost = [newLoginHost stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    if (![newLoginHost isEqualToString:@"login.salesforce.com"]
-        && ![newLoginHost isEqualToString:@"test.salesforce.com"]) {
+    
+    NSString *newLoginHostLowercase = [newLoginHost lowercaseString];
+    if (![newLoginHostLowercase isEqualToString:@"login.salesforce.com"]
+        && ![newLoginHostLowercase isEqualToString:@"test.salesforce.com"]) {
         // Custom login host.
         [userDefaults setObject:kAppSettingsLoginHostIsCustom forKey:kAppSettingsLoginHost];
         [userDefaults setObject:newLoginHost forKey:kAppSettingsLoginHostCustomValue];
@@ -416,7 +419,7 @@ static NSString * const kUserPrefix = @"005";
         
         return accounts;
     } else {
-        [self log:SFLogLevelError format:@"Error querying for all existing accounts in the keychain: %ld", result];
+        [self log:SFLogLevelDebug format:@"Error querying for all existing accounts in the keychain: %ld", result];
         return nil;
     }
 }
@@ -493,7 +496,7 @@ static NSString * const kUserPrefix = @"005";
     // ~/Library/<appBundleId>/<orgId>/<userId>/UserAccount.plist
     NSArray *rootContents = [fm contentsOfDirectoryAtPath:rootDirectory error:error];
     if (nil == rootContents) {
-        [self log:SFLogLevelError format:@"Unable to enumerate the content at %@: %@", rootDirectory, error];
+        [self log:SFLogLevelDebug format:@"Unable to enumerate the content at %@: %@", rootDirectory, error];
         return NO;
     } else {
         for (NSString *rootContent in rootContents) {
@@ -505,7 +508,7 @@ static NSString * const kUserPrefix = @"005";
             // Fetch the content of the org directory
             NSArray *orgContents = [fm contentsOfDirectoryAtPath:rootPath error:error];
             if (nil == orgContents) {
-                [self log:SFLogLevelError format:@"Unable to enumerate the content at %@: %@", rootPath, error];
+                [self log:SFLogLevelDebug format:@"Unable to enumerate the content at %@: %@", rootPath, error];
                 continue;
             }
             
@@ -525,10 +528,10 @@ static NSString * const kUserPrefix = @"005";
                     }
                     @catch (NSException *exception) {
                         [[NSFileManager defaultManager] removeItemAtPath:userAccountPath error:nil];
-                        [self log:SFLogLevelError format:@"Error decrypting user account %@: %@", userAccountPath, exception];
+                        [self log:SFLogLevelDebug format:@"Error decrypting user account %@: %@", userAccountPath, exception];
                     }
                 } else {
-                    [self log:SFLogLevelWarning format:@"There is no user account file in this user directory: %@", orgPath];
+                    [self log:SFLogLevelDebug format:@"There is no user account file in this user directory: %@", orgPath];
                 }
             }
         }
@@ -549,7 +552,12 @@ static NSString * const kUserPrefix = @"005";
     if (nil == curUserId) {
         [self log:SFLogLevelInfo msg:@"Current active user id is nil"];
     }
-    [self setCurrentUser:[self userAccountForUserId:curUserId]];
+    
+    self.previousCommunityId = [self activeCommunityId];
+    
+    SFUserAccount *account = [self userAccountForUserId:curUserId];
+    account.communityId = nil;
+    [self setCurrentUser:account];
     
     // update the client ID in case it's changed (via settings, etc)
     [[[self currentUser] credentials] setClientId:self.oauthClientId];
@@ -576,14 +584,14 @@ static NSString * const kUserPrefix = @"005";
         NSFileManager *fm = [NSFileManager defaultManager];
         if ([fm fileExistsAtPath:userAccountPath]) {
             if (![fm removeItemAtPath:userAccountPath error:error]) {
-                [self log:SFLogLevelError format:@"failed to remove old user account %@: %@", userAccountPath, error];
+                [self log:SFLogLevelDebug format:@"failed to remove old user account %@: %@", userAccountPath, error];
                 return NO;
             }
         }
         
         // And now save its content
         if (![NSKeyedArchiver archiveRootObject:user toFile:userAccountPath]) {
-            [self log:SFLogLevelError format:@"failed to archive user account: %@", userAccountPath];
+            [self log:SFLogLevelDebug format:@"failed to archive user account: %@", userAccountPath];
             return NO;
         }
     }
@@ -647,7 +655,7 @@ static NSString * const kUserPrefix = @"005";
             NSError *folderRemovalError = nil;
             BOOL removeUserFolderSucceeded = [[NSFileManager defaultManager] removeItemAtPath:userDirectory error:&folderRemovalError];
             if (!removeUserFolderSucceeded) {
-                [self log:SFLogLevelError
+                [self log:SFLogLevelDebug
                    format:@"Error removing the user folder for '%@': %@", acct.userName, [folderRemovalError localizedDescription]];
                 if (error) {
                     *error = folderRemovalError;
@@ -655,7 +663,7 @@ static NSString * const kUserPrefix = @"005";
                 return removeUserFolderSucceeded;
             }
         } else {
-            [self log:SFLogLevelInfo format:@"User folder for user '%@' does not exist on the filesystem.  Continuing.", acct.userName];
+            [self log:SFLogLevelDebug format:@"User folder for user '%@' does not exist on the filesystem.  Continuing.", acct.userName];
         }
         [self.userAccountMap removeObjectForKey:safeUserId];
     }
@@ -676,13 +684,24 @@ static NSString * const kUserPrefix = @"005";
     return result;
 }
 
-- (void)setActiveUserId:(NSString*)userId {
+- (NSString *)activeCommunityId {
+    return [[NSUserDefaults standardUserDefaults] stringForKey:kUserDefaultsLastUserCommunityIdKey];
+}
+
+- (void)setActiveUser:(SFUserAccount *)user {
     NSUserDefaults *defs = [NSUserDefaults standardUserDefaults]; 
-    if (nil == userId) {
+    if (nil == user) {
         [defs removeObjectForKey:kUserDefaultsLastUserIdKey];
+        [defs removeObjectForKey:kUserDefaultsLastUserCommunityIdKey];
     } else {
-        NSString *safeUserId = [self makeUserIdSafe:userId];
-        [defs setValue:safeUserId forKey:kUserDefaultsLastUserIdKey]; 
+        NSString *safeUserId = [self makeUserIdSafe:user.credentials.userId];
+        [defs setValue:safeUserId forKey:kUserDefaultsLastUserIdKey];
+        NSString *communityId = user.communityId;
+        if (communityId) {
+            [defs setObject:communityId forKey:kUserDefaultsLastUserCommunityIdKey];
+        } else {
+            [defs removeObjectForKey:kUserDefaultsLastUserCommunityIdKey];
+        }
     }
     [defs synchronize];
 }
@@ -695,14 +714,13 @@ static NSString * const kUserPrefix = @"005";
     
     NSString *defUserId = [self activeUserId];
     if (!defUserId || [defUserId isEqualToString:oldUserId]) {
-        [self setActiveUserId:newUserId];
+        [self setActiveUser:newUser];
     }
 }
 
-- (void)setCurrentUser:(SFUserAccount*)user {    
+- (void)setCurrentUser:(SFUserAccount*)user {
+    [self setActiveUser:user];
     if (![_currentUser isEqual:user]) {
-        NSString *userId = [self makeUserIdSafe:user.credentials.userId];
-        [self setActiveUserId:userId];
         
         [self willChangeValueForKey:@"currentUser"];
         _currentUser = user;
@@ -723,6 +741,10 @@ static NSString * const kUserPrefix = @"005";
         return [self makeUserIdSafe:uid];
     }
     return nil;
+}
+
+- (NSString *)currentCommunityId {
+    return self.currentUser.communityId;
 }
 
 - (void)applyCredentials:(SFOAuthCredentials*)credentials {
@@ -752,15 +774,15 @@ static NSString * const kUserPrefix = @"005";
     //if our default user id is currently the temporary user id,
     //we need to update it with the latest known good user id
     if ([[self activeUserId] isEqualToString:SFUserAccountManagerTemporaryUserAccountId]) {
-        [self log:SFLogLevelInfo format:@"Replacing temp user ID with %@",self.currentUser];
+        [self log:SFLogLevelDebug format:@"Replacing temp user ID with %@",self.currentUser];
         [self replaceOldUser:SFUserAccountManagerTemporaryUserAccountId withUser:self.currentUser];
     }
     
     [self userChanged:change];
 }
 
-- (void)applyCustomDataToCurrentUser:(NSDictionary *)customData {
-    self.currentUser.customData = customData;
+- (void)setObjectForCurrentUserCustomData:(NSObject<NSCoding> *)object forKey:(NSString *)key {
+    [self.currentUser setCustomDataObject:object forKey:key];
 }
 
 - (void)switchToNewUser {

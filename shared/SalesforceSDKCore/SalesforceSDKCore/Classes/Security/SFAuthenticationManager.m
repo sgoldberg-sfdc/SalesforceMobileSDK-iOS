@@ -363,6 +363,8 @@ static Class InstanceClass = nil;
                                     [weakSelf dismissAuthViewControllerIfPresent];
                                 }];
         
+        [[SFUserAccountManager sharedInstance] addDelegate:self];
+        
         // Set up default auth error handlers.
         self.authErrorHandlerList = [self populateDefaultAuthErrorHandlerList];
         
@@ -433,7 +435,7 @@ static Class InstanceClass = nil;
     SFAuthBlockPair *blockPair = [[SFAuthBlockPair alloc] initWithSuccessBlock:completionBlock
                                                                   failureBlock:failureBlock];
     @synchronized (self.authBlockList) {
-        if (!self.authenticating) {
+        if (!self.authenticating || !self.coordinator.isAuthenticating) {
             // Kick off (async) authentication.
             [self log:SFLogLevelDebug msg:@"No authentication in progress.  Initiating new authentication request."];
             [self.authBlockList addObject:blockPair];
@@ -465,6 +467,18 @@ static Class InstanceClass = nil;
     [[NSNotificationCenter defaultCenter] postNotification:loggedInNotification];
 }
 
+- (void)logoutAllUsers
+{
+    // Log out all other users, then the current user.
+    NSArray *userAccounts = [[SFUserAccountManager sharedInstance] allUserAccounts];
+    for (SFUserAccount *account in userAccounts) {
+        if (account != [SFUserAccountManager sharedInstance].currentUser) {
+            [self logoutUser:account];
+        }
+    }
+    [self logoutUser:[SFUserAccountManager sharedInstance].currentUser];
+}
+
 - (void)logout
 {
     [self logoutUser:[SFUserAccountManager sharedInstance].currentUser];
@@ -472,6 +486,15 @@ static Class InstanceClass = nil;
 
 - (void)logoutUser:(SFUserAccount *)user
 {
+    // No-op, if the user is not valid.
+    if (user == nil) {
+        [self log:SFLogLevelInfo msg:@"logoutUser: user is nil.  No action taken."];
+        return;
+    } else if (user == [SFUserAccountManager sharedInstance].temporaryUser) {
+        [self log:SFLogLevelInfo msg:@"logoutUser: user is the temporary account.  No action taken."];
+        return;
+    }
+    
     [self log:SFLogLevelInfo format:@"Logging out user '%@'.", user.userName];
     
     SFUserAccountManager *userAccountManager = [SFUserAccountManager sharedInstance];
@@ -564,7 +587,7 @@ static Class InstanceClass = nil;
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     [userDefaults synchronize];
 	BOOL logoutSettingEnabled =  [userDefaults boolForKey:kAppSettingsAccountLogout];
-    NSLog(@"userLogoutSettingEnabled: %d", logoutSettingEnabled);
+    [self log:SFLogLevelDebug format:@"userLogoutSettingEnabled: %d", logoutSettingEnabled];
     return logoutSettingEnabled;
 }
 
