@@ -32,7 +32,7 @@
 #import "SFAuthErrorHandler.h"
 #import "SFAuthErrorHandlerList.h"
 #import "SFAuthorizingViewController.h"
-#import "SFSecurityLockout.h"
+#import "SFSecurityLockout+Internal.h"
 #import "SFIdentityData.h"
 #import "SFSDKResourceUtils.h"
 #import "SFRootViewManager.h"
@@ -1053,6 +1053,19 @@ static Class InstanceClass = nil;
         [SFSecurityLockout lock];
     } else {
         [SFSecurityLockout validateTimer];
+    }
+}
+
+- (void)enforceSecurityLock
+{
+    // Lock only if:
+    // (1) The passcode is needed
+    // (2) There isn't a passcode view already on the screen
+    // (3) This class is not in the process of authenticating - because at the end of the authentication,
+    //     the passcode will be enforced anyway.
+    if ([SFSecurityLockout isPasscodeNeeded] && ![SFSecurityLockout passcodeScreenIsPresent] && !self.authenticating) {
+        [SFSecurityLockout setValidatePasscodeAtStartup:NO];
+        [SFSecurityLockout lock];
     }
 }
 
