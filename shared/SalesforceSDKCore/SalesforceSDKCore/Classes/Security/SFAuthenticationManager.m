@@ -1064,7 +1064,11 @@ static Class InstanceClass = nil;
     // (3) This class is not in the process of authenticating - because at the end of the authentication,
     //     the passcode will be enforced anyway.
     if ([SFSecurityLockout isPasscodeNeeded] && ![SFSecurityLockout passcodeScreenIsPresent] && !self.authenticating) {
-        [SFSecurityLockout setValidatePasscodeAtStartup:NO];
+        [SFSecurityLockout setLockScreenSuccessCallbackBlock:^(SFSecurityLockoutAction action) {
+            // Clear this flag only if the passcode has been successfully entered
+            [SFSecurityLockout setValidatePasscodeAtStartup:NO];
+        }];
+
         [SFSecurityLockout lock];
     }
 }
