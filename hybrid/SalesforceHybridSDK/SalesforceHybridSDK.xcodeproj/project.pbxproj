@@ -51,7 +51,7 @@
 		4FD72F2818C955E200610988 /* SFHybridConnectionMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FD72F2418C955E200610988 /* SFHybridConnectionMonitor.h */; };
 		4FD72F2918C955E200610988 /* SFHybridConnectionMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FD72F2518C955E200610988 /* SFHybridConnectionMonitor.m */; };
 		4FD72F2A18C955E200610988 /* SFReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4FD72F2618C955E200610988 /* SFReachability.m */; };
-		4FD72F2B18C955E200610988 /* SFReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FD72F2718C955E200610988 /* SFReachability.h */; };
+		4FD72F2B18C955E200610988 /* SFReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 4FD72F2718C955E200610988 /* SFReachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4FF6E0EB18AC1E0A004CCEA7 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8251CA1F16ECFA5E00BD1EA2 /* MessageUI.framework */; };
 		4FFF69E618AC1DC1004343EB /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82EFF30316E8049500A63CDF /* CoreGraphics.framework */; };
 		8251CA0816EC3A6D00BD1EA2 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8251CA0716EC3A6D00BD1EA2 /* libxml2.dylib */; };
