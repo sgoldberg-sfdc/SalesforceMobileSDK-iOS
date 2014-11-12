@@ -119,13 +119,6 @@
 			remoteGlobalIDString = 82EFF2FE16E8049500A63CDF;
 			remoteInfo = HybridPluginTestApp;
 		};
-		D1D7FB241A01AA0B003F3276 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D1D7FB201A01AA0B003F3276 /* CordovaLib.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 68A32D7114102E1C006B237C;
-			remoteInfo = CordovaLib;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -321,7 +314,6 @@
 		82EFF39E16E816CB00A63CDF /* SFTestRunnerPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFTestRunnerPlugin.m; sourceTree = "<group>"; };
 		CEF4FFAE170CC748001AA255 /* SFHybridViewConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFHybridViewConfig.h; sourceTree = "<group>"; };
 		CEF4FFAF170CC748001AA255 /* SFHybridViewConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFHybridViewConfig.m; sourceTree = "<group>"; };
-		D1D7FB201A01AA0B003F3276 /* CordovaLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CordovaLib.xcodeproj; path = "../../external/cordova-ios/cordova-ios/CordovaLib/CordovaLib.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -481,7 +473,6 @@
 		82EFF2D216E7C57100A63CDF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D1D7FB201A01AA0B003F3276 /* CordovaLib.xcodeproj */,
 				4F0C192B18AAFDF3000FD4E9 /* AssetsLibrary.framework */,
 				8251CA2B16ECFD4D00BD1EA2 /* libCordova.a */,
 				8251CA0B16EC3A8C00BD1EA2 /* libcrypto.a */,
@@ -693,14 +684,6 @@
 			path = Plugins;
 			sourceTree = "<group>";
 		};
-		D1D7FB211A01AA0B003F3276 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				D1D7FB251A01AA0B003F3276 /* libCordova.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -804,12 +787,6 @@
 			mainGroup = 82EFF2C716E7C57100A63CDF;
 			productRefGroup = 82EFF2D116E7C57100A63CDF /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = D1D7FB211A01AA0B003F3276 /* Products */;
-					ProjectRef = D1D7FB201A01AA0B003F3276 /* CordovaLib.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				82EFF2CF16E7C57100A63CDF /* SalesforceHybridSDK */,
@@ -819,16 +796,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		D1D7FB251A01AA0B003F3276 /* libCordova.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libCordova.a;
-			remoteRef = D1D7FB241A01AA0B003F3276 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		82EFF2FD16E8049500A63CDF /* Resources */ = {
