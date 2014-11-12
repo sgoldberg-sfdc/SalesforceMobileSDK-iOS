@@ -174,7 +174,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
     
     // Only post the login host change notification if the host actually changed.
     if (![host isEqualToString:oldLoginHost]) {
-        NSDictionary *userInfoDict = [NSDictionary dictionaryWithObjectsAndKeys:oldLoginHost, kSFLoginHostChangedNotificationOriginalHostKey, host, kSFLoginHostChangedNotificationUpdatedHostKey, nil];
+        NSDictionary *userInfoDict = @{kSFLoginHostChangedNotificationOriginalHostKey: oldLoginHost, kSFLoginHostChangedNotificationUpdatedHostKey: host};
         NSNotification *loginHostUpdateNotification = [NSNotification notificationWithName:kSFLoginHostChangedNotification object:self userInfo:userInfoDict];
         [[NSNotificationCenter defaultCenter] postNotification:loginHostUpdateNotification];
     }
@@ -405,9 +405,9 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
  */
 - (NSSet*)allExistingAccountNames {
     NSMutableDictionary *tokenQuery = [[NSMutableDictionary alloc] init];
-    [tokenQuery setObject:(__bridge id)kSecClassGenericPassword forKey:(__bridge id)kSecClass];
-    [tokenQuery setObject:(__bridge id)kSecMatchLimitAll        forKey:(__bridge id)kSecMatchLimit];
-    [tokenQuery setObject:(id)kCFBooleanTrue           forKey:(__bridge id)kSecReturnAttributes];
+    tokenQuery[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
+    tokenQuery[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitAll;
+    tokenQuery[(__bridge id)kSecReturnAttributes] = (id)kCFBooleanTrue;
     
     CFArrayRef outArr = nil;
     OSStatus result = SecItemCopyMatching((__bridge CFDictionaryRef)[NSDictionary dictionaryWithDictionary:tokenQuery], (CFTypeRef *)&outArr);
@@ -720,13 +720,10 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
     for (SFUserAccountIdentity *key in self.userAccountMap) {
         SFUserAccount *account = (self.userAccountMap)[key];
         NSString *accountOrg = account.credentials.organizationId;
-        accountOrg = [accountOrg entityId18];
-        
         if ([accountOrg isEqualToString:org]) {
             [array addObject:account];
         }
     }
-    
     return array;
 }
 
@@ -833,6 +830,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         self.activeCommunityId = user.communityId;
     }
 }
+
 
 - (void)replaceOldUser:(SFUserAccountIdentity *)oldUserIdentity withUser:(SFUserAccount *)newUser {
     [self.userAccountMap removeObjectForKey:oldUserIdentity];

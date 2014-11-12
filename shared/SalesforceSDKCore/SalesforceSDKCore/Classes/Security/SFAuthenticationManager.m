@@ -350,8 +350,8 @@ static Class InstanceClass = nil;
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidFinishLaunching:) name:UIApplicationDidFinishLaunchingNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillResignActive:) name:UIApplicationWillResignActiveNotification object:nil];
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(appWillTerminate:) name:UIApplicationWillTerminateNotification object:nil];
         self.useSnapshotView = YES;
         
@@ -699,8 +699,8 @@ static Class InstanceClass = nil;
 
 + (void)resetSessionCookie
 {
-    [self removeCookies:[NSArray arrayWithObjects:@"sid", nil]
-            fromDomains:[NSArray arrayWithObjects:@".salesforce.com", @".force.com", @".cloudforce.com", nil]];
+    [self removeCookies:@[@"sid"]
+            fromDomains:@[@".salesforce.com", @".force.com", @".cloudforce.com"]];
     [self addSidCookieForInstance];
 }
 
@@ -756,7 +756,7 @@ static Class InstanceClass = nil;
                                                    @"TRUE", NSHTTPCookieDiscard,
                                                    nil];
     if ([[SFAuthenticationManager sharedManager].coordinator.credentials.protocol isEqualToString:@"https"]) {
-        [newSidCookieProperties setObject:@"TRUE" forKey:NSHTTPCookieSecure];
+        newSidCookieProperties[NSHTTPCookieSecure] = @"TRUE";
     }
     
     NSHTTPCookie *sidCookie0 = [NSHTTPCookie cookieWithProperties:newSidCookieProperties];
@@ -1226,7 +1226,7 @@ static Class InstanceClass = nil;
     BOOL errorHandled = NO;
     NSArray *authHandlerArray = self.authErrorHandlerList.authHandlerArray;
     while (i < [authHandlerArray count] && !errorHandled) {
-        SFAuthErrorHandler *currentHandler = [self.authErrorHandlerList.authHandlerArray objectAtIndex:i];
+        SFAuthErrorHandler *currentHandler = (self.authErrorHandlerList.authHandlerArray)[i];
         errorHandled = currentHandler.evalBlock(error, info);
         i++;
     }

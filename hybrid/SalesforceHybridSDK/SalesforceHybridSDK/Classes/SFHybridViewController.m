@@ -31,7 +31,7 @@
 #import <SalesforceSDKCore/SFAuthErrorHandlerList.h>
 #import <SalesforceSDKCore/SFSDKWebUtils.h>
 #import <SalesforceSDKCore/SFSDKResourceUtils.h>
-#import "CDVConnection.h"
+#import "SFHybridConnectionMonitor.h"
 
 // Public constants
 NSString * const kSFMobileSDKHybridDesignator = @"Hybrid";
@@ -184,11 +184,10 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
 
 - (void)viewDidLoad
 {
-    if (self.useSplashScreen) {
-        [self showSplashScreen];
-    }
+    NSString *hybridViewUserAgentString = [[self class] sfHybridViewUserAgentString];
+    [SFSDKWebUtils configureUserAgent:hybridViewUserAgentString];
+    [[self class] overrideCdvOriginalUserAgent:hybridViewUserAgentString];
     
-    [SFSDKWebUtils configureUserAgent:[[self class] sfHybridViewUserAgentString]];
     if ([self isOffline] && (!_hybridViewConfig.isLocal || _hybridViewConfig.shouldAuthenticate)) {
         // Device is offline, and we have to try to load cached content.
         if (_hybridViewConfig.attemptOfflineLoad) {
@@ -227,11 +226,6 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
     }
 }
 
-- (BOOL)prefersStatusBarHidden
-{
-    return YES;
-}
-
 #pragma mark - Property implementations
 
 - (NSString *)remoteAccessConsumerKey
@@ -258,6 +252,11 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
 {
     [[NSUserDefaults standardUserDefaults] setURL:appHomeUrl forKey:kAppHomeUrlPropKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (SFHybridViewConfig *)hybridViewConfig
+{
+    return _hybridViewConfig;
 }
 
 #pragma mark - Public methods
@@ -290,7 +289,7 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
 {
     // If authDict does not contain an access token, authenticate first. Otherwise, send current credentials.
     NSDictionary *authDict = [[self class] credentialsAsDictionary];
-    if ([[authDict objectForKey:kAccessTokenCredentialsDictKey] length] == 0) {
+    if ([authDict[kAccessTokenCredentialsDictKey] length] == 0) {
         [self authenticateWithCompletionBlock:completionBlock failureBlock:failureBlock];
     } else {
         if (completionBlock != NULL) {
@@ -326,16 +325,14 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
         NSString *instanceUrl = creds.instanceUrl.absoluteString;
         NSString *loginUrl = [NSString stringWithFormat:@"%@://%@", creds.protocol, creds.domain];
         NSString *uaString = [self sfHybridViewUserAgentString];
-        credentialsDict = [NSDictionary dictionaryWithObjectsAndKeys:
-                           creds.accessToken, kAccessTokenCredentialsDictKey,
-                           creds.refreshToken, kRefreshTokenCredentialsDictKey,
-                           creds.clientId, kClientIdCredentialsDictKey,
-                           creds.userId, kUserIdCredentialsDictKey,
-                           creds.organizationId, kOrgIdCredentialsDictKey,
-                           loginUrl, kLoginUrlCredentialsDictKey,
-                           instanceUrl, kInstanceUrlCredentialsDictKey,
-                           uaString, kUserAgentCredentialsDictKey,
-                           nil];
+        credentialsDict = @{kAccessTokenCredentialsDictKey: creds.accessToken,
+                           kRefreshTokenCredentialsDictKey: creds.refreshToken,
+                           kClientIdCredentialsDictKey: creds.clientId,
+                           kUserIdCredentialsDictKey: creds.userId,
+                           kOrgIdCredentialsDictKey: creds.organizationId,
+                           kLoginUrlCredentialsDictKey: loginUrl,
+                           kInstanceUrlCredentialsDictKey: instanceUrl,
+                           kUserAgentCredentialsDictKey: uaString};
     }
     return credentialsDict;
 }
@@ -349,8 +346,8 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
         NSString *currentUserAgent = [SFSDKWebUtils currentUserAgentForApp];
         
         UIDevice *curDevice = [UIDevice currentDevice];
-        NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString*)kCFBundleNameKey];
-        NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:(NSString*)kCFBundleVersionKey];
+        NSString *appName = [[NSBundle mainBundle] infoDictionary][(NSString*)kCFBundleNameKey];
+        NSString *appVersion = [[NSBundle mainBundle] infoDictionary][(NSString*)kCFBundleVersionKey];
         
         singletonUserAgentString = [NSString stringWithFormat:
                                     @"SalesforceMobileSDK/%@ %@/%@ (%@) %@/%@ %@ %@",
@@ -412,14 +409,14 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
 {
     // TODO: This piece of code has got to go at some point, once we standardize on the correct redirection for communities as well.
     if ([[url absoluteString] rangeOfString:kLoginRedirect].location != NSNotFound) {
-        return self.startPage;
+        return _hybridViewConfig.startPage;
     }
     return nil;
 }
 
 - (BOOL)isOffline
 {
-    CDVConnection *connection = [self getCommandInstance:@"NetworkStatus"];
+    SFHybridConnectionMonitor *connection = [SFHybridConnectionMonitor sharedInstance];
     NSString *connectionType = [[connection.connectionType stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] lowercaseString];
     return (connectionType == nil || [connectionType length] == 0 || [connectionType isEqualToString:@"unknown"] || [connectionType isEqualToString:@"none"]);
 }
@@ -500,7 +497,7 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     [self log:SFLogLevelDebug format:@"webView:shouldStartLoadWithRequest: Loading URL '%@'",
-     [request.URL redactedAbsoluteString:[NSArray arrayWithObject:@"sid"]]];
+     [request.URL redactedAbsoluteString:@[@"sid"]]];
     
     // Hidden ping page load.
     if ([webView isEqual:self.vfPingPageHiddenWebView]) {
@@ -547,7 +544,7 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
 - (void)webViewDidFinishLoad:(UIWebView *)theWebView
 {
     NSURL *requestUrl = theWebView.request.URL;
-    NSArray *redactParams = [NSArray arrayWithObjects:@"sid", nil];
+    NSArray *redactParams = @[@"sid"];
     NSString *redactedUrl = [requestUrl redactedAbsoluteString:redactParams];
     [self log:SFLogLevelDebug format:@"webViewDidFinishLoad: Loaded %@", redactedUrl];
     
@@ -591,17 +588,15 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
 {
     static NSArray *reservedUrlStrings = nil;
     if (reservedUrlStrings == nil) {
-        reservedUrlStrings = [NSArray arrayWithObjects:
-                               @"/secur/frontdoor.jsp",
-                               @"/secur/contentDoor",
-                               nil];
+        reservedUrlStrings = @[@"/secur/frontdoor.jsp",
+                               @"/secur/contentDoor"];
     }
     if (url == nil || [url absoluteString] == nil || [[url absoluteString] length] == 0) {
         return NO;    
     }
     NSString *inputUrlString = [url absoluteString];
     for (int i = 0; i < [reservedUrlStrings count]; i++) {
-        NSString *reservedString = [reservedUrlStrings objectAtIndex:i];
+        NSString *reservedString = reservedUrlStrings[i];
         NSRange range = [[inputUrlString lowercaseString] rangeOfString:[reservedString lowercaseString]];
         if (range.location != NSNotFound)
             return YES;
@@ -643,11 +638,23 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
 
 #pragma mark - Cordova overrides
 
-+ (NSString *)originalUserAgent
+//
+// TODO: Remove this once https://issues.apache.org/jira/browse/CB-2520 is resolved.
+//
++ (void)overrideCdvOriginalUserAgent:(NSString *)userAgentString
 {
-    // Overriding Cordova's method because we don't want the chance of our user agent not being
-    // configured first, and thus overwritten with a bad value.
-    return [self sfHybridViewUserAgentString];
+    NSString * const cdvUserAgentKey = @"Cordova-User-Agent";
+    NSString * const cdvUserAgentVersionKey = @"Cordova-User-Agent-Version";
+    
+    NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+    NSString* systemVersion = [[UIDevice currentDevice] systemVersion];
+    NSString* localeStr = [[NSLocale currentLocale] localeIdentifier];
+    NSString* model = [UIDevice currentDevice].model;
+    NSString* systemAndLocale = [NSString stringWithFormat:@"%@ %@ %@", model, systemVersion, localeStr];
+    
+    [userDefaults setObject:userAgentString forKey:cdvUserAgentKey];
+    [userDefaults setObject:systemAndLocale forKey:cdvUserAgentVersionKey];
+    [userDefaults synchronize];
 }
 
 @end

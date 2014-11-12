@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2011, salesforce.com, inc. All rights reserved.
+ Copyright (c) 2011-2014, salesforce.com, inc. All rights reserved.
  
  Redistribution and use of this software in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
@@ -154,35 +154,47 @@ static NSString * const OAuthRedirectURI        = @"testsfdc:///mobilesdk/detect
     self.window.rootViewController = rootVC;
 }
 
+- (void)resetViewState:(void (^)(void))postResetBlock
+{
+    if ([self.window.rootViewController presentedViewController]) {
+        [self.window.rootViewController dismissViewControllerAnimated:NO completion:^{
+            postResetBlock();
+        }];
+    } else {
+        postResetBlock();
+    }
+}
+
 #pragma mark - SFAuthenticationManagerDelegate
 
 - (void)authManagerDidLogout:(SFAuthenticationManager *)manager
 {
     [self log:SFLogLevelDebug msg:@"SFAuthenticationManager logged out.  Resetting app."];
-    [self initializeAppViewState];
-    
-    // Multi-user pattern:
-    // - If there are two or more existing accounts after logout, let the user choose the account
-    //   to switch to.
-    // - If there is one existing account, automatically switch to that account.
-    // - If there are no further authenticated accounts, present the login screen.
-    //
-    // Alternatively, you could just go straight to re-initializing your app state, if you know
-    // your app does not support multiple accounts.  The logic below will work either way.
-    NSArray *allAccounts = [SFUserAccountManager sharedInstance].allUserAccounts;
-    if ([allAccounts count] > 1) {
-        SFDefaultUserManagementViewController *userSwitchVc = [[SFDefaultUserManagementViewController alloc] initWithCompletionBlock:^(SFUserManagementAction action) {
-            [self.window.rootViewController dismissViewControllerAnimated:YES completion:NULL];
-        }];
-        [self.window.rootViewController presentViewController:userSwitchVc animated:YES completion:NULL];
-    } else if ([[SFUserAccountManager sharedInstance].allUserAccounts count] == 1) {
-        [SFUserAccountManager sharedInstance].currentUser = [[SFUserAccountManager sharedInstance].allUserAccounts objectAtIndex:0];
-        [[SFAuthenticationManager sharedManager] loginWithCompletion:self.initialLoginSuccessBlock
-                                                             failure:self.initialLoginFailureBlock];
-    } else {
-        [[SFAuthenticationManager sharedManager] loginWithCompletion:self.initialLoginSuccessBlock
-                                                             failure:self.initialLoginFailureBlock];
-    }
+    [self resetViewState:^{
+        [self initializeAppViewState];
+        
+        // Multi-user pattern:
+        // - If there are two or more existing accounts after logout, let the user choose the account
+        //   to switch to.
+        // - If there is one existing account, automatically switch to that account.
+        // - If there are no further authenticated accounts, present the login screen.
+        //
+        // Alternatively, you could just go straight to re-initializing your app state, if you know
+        // your app does not support multiple accounts.  The logic below will work either way.
+        NSArray *allAccounts = [SFUserAccountManager sharedInstance].allUserAccounts;
+        if ([allAccounts count] > 1) {
+            SFDefaultUserManagementViewController *userSwitchVc = [[SFDefaultUserManagementViewController alloc] initWithCompletionBlock:^(SFUserManagementAction action) {
+                [self.window.rootViewController dismissViewControllerAnimated:YES completion:NULL];
+            }];
+            [self.window.rootViewController presentViewController:userSwitchVc animated:YES completion:NULL];
+        } else {
+            if ([allAccounts count] == 1) {
+                [SFUserAccountManager sharedInstance].currentUser = ([SFUserAccountManager sharedInstance].allUserAccounts)[0];
+            }
+            [[SFAuthenticationManager sharedManager] loginWithCompletion:self.initialLoginSuccessBlock
+                                                                 failure:self.initialLoginFailureBlock];
+        }
+    }];
 }
 
 #pragma mark - SFUserAccountManagerDelegate
@@ -193,8 +205,10 @@ static NSString * const OAuthRedirectURI        = @"testsfdc:///mobilesdk/detect
 {
     [self log:SFLogLevelDebug format:@"SFUserAccountManager changed from user %@ to %@.  Resetting app.",
      fromUser.userName, toUser.userName];
-    [self initializeAppViewState];
-    [[SFAuthenticationManager sharedManager] loginWithCompletion:self.initialLoginSuccessBlock failure:self.initialLoginFailureBlock];
+    [self resetViewState:^{
+        [self initializeAppViewState];
+        [[SFAuthenticationManager sharedManager] loginWithCompletion:self.initialLoginSuccessBlock failure:self.initialLoginFailureBlock];
+    }];
 }
 
 #pragma mark - Unit test helpers
@@ -202,14 +216,12 @@ static NSString * const OAuthRedirectURI        = @"testsfdc:///mobilesdk/detect
 - (void)exportTestingCredentials {
     //collect credentials and copy to pasteboard
     SFOAuthCredentials *creds = [SFAuthenticationManager sharedManager].coordinator.credentials;
-    NSDictionary *configDict = [NSDictionary dictionaryWithObjectsAndKeys:
-                                RemoteAccessConsumerKey, @"test_client_id",
-                                [SFUserAccountManager sharedInstance].loginHost, @"test_login_domain",
-                                OAuthRedirectURI, @"test_redirect_uri",
-                                creds.refreshToken,@"refresh_token",
-                                [creds.instanceUrl absoluteString] , @"instance_url",
-                                @"__NOT_REQUIRED__",@"access_token",
-                                nil];
+    NSDictionary *configDict = @{@"test_client_id": RemoteAccessConsumerKey,
+                                @"test_login_domain": [SFUserAccountManager sharedInstance].loginHost,
+                                @"test_redirect_uri": OAuthRedirectURI,
+                                @"refresh_token": creds.refreshToken,
+                                @"instance_url": [creds.instanceUrl absoluteString],
+                                @"access_token": @"__NOT_REQUIRED__"};
     
     NSString *configJSON = [SFJsonUtils JSONRepresentation:configDict];
     UIPasteboard *gpBoard = [UIPasteboard generalPasteboard];

@@ -24,7 +24,7 @@
 
 #import "SFAccountManagerPlugin.h"
 #import "CDVPlugin+SFAdditions.h"
-#import "CDVPluginResult.h"
+#import <Cordova/CDVPluginResult.h>
 #import <SalesforceSDKCore/SFAuthenticationManager.h>
 #import <SalesforceSDKCore/SFUserAccountManager.h>
 #import <SalesforceSDKCore/SFUserAccount.h>
@@ -124,7 +124,9 @@ NSString * const kUserAccountClientIdDictKey       = @"clientId";
     } else {
         // User data was passed in.  Assume API-level user switching.
         NSString *userId = [argsDict nonNullObjectForKey:kUserAccountUserIdDictKey];
-        SFUserAccount *account = [[SFUserAccountManager sharedInstance] userAccountForUserId:userId];
+        NSString *orgId = [argsDict nonNullObjectForKey:kUserAccountOrgIdDictKey];
+        SFUserAccountIdentity *accountIdentity = [[SFUserAccountIdentity alloc] initWithUserId:userId orgId:orgId];
+        SFUserAccount *account = [[SFUserAccountManager sharedInstance] userAccountForUserIdentity:accountIdentity];
         [self log:SFLogLevelDebug format:@"switchToUser: Switching to user account: %@", account];
         [[SFUserAccountManager sharedInstance] switchToUser:account];
     }
@@ -138,7 +140,9 @@ NSString * const kUserAccountClientIdDictKey       = @"clientId";
     
     NSDictionary *argsDict = [self getArgument:command.arguments atIndex:0];
     NSString *userId = [argsDict nonNullObjectForKey:kUserAccountUserIdDictKey];
-    SFUserAccount *account = [[SFUserAccountManager sharedInstance] userAccountForUserId:userId];
+    NSString *orgId = [argsDict nonNullObjectForKey:kUserAccountOrgIdDictKey];
+    SFUserAccountIdentity *accountIdentity = [[SFUserAccountIdentity  alloc] initWithUserId:userId orgId:orgId];
+    SFUserAccount *account = [[SFUserAccountManager sharedInstance] userAccountForUserIdentity:accountIdentity];
     if (account == nil || account == [SFUserAccountManager sharedInstance].currentUser) {
         [self log:SFLogLevelDebug msg:@"logout: Logging out current user.  App state will reset."];
         [[SFAuthenticationManager sharedManager] logout];
