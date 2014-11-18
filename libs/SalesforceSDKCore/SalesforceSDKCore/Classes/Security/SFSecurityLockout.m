@@ -437,7 +437,11 @@ static NSString *const kSecurityLockoutSessionId = @"securityLockoutSession";
         }
     }
     
-    [SFSecurityLockout presentPasscodeController:SFPasscodeControllerModeVerify passcodeConfig:SFPasscodeConfigurationDataNull];
+    SFPasscodeConfigurationData configData;
+    configData.passcodeLength = [self passcodeLength];
+    configData.lockoutTime = [self lockoutTime];
+    
+    [SFSecurityLockout presentPasscodeController:SFPasscodeControllerModeVerify passcodeConfig:configData];
     [self log:SFLogLevelInfo msg:@"Device locked."];
     sForcePasscodeDisplay = NO;
 }

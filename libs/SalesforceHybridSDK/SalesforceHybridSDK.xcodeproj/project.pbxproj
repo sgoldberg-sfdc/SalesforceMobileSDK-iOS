@@ -1262,11 +1262,13 @@
 		82EFF2DF16E7C57100A63CDF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				DSTROOT = /tmp/SalesforceHybridSDK.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceHybridSDK/SalesforceHybridSDK-Prefix.pch";
 				INSTALL_PATH = /;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "Headers/${PRODUCT_NAME}";
 				SKIP_INSTALL = YES;
@@ -1276,11 +1278,13 @@
 		82EFF2E016E7C57100A63CDF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD)";
 				DSTROOT = /tmp/SalesforceHybridSDK.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceHybridSDK/SalesforceHybridSDK-Prefix.pch";
 				INSTALL_PATH = /;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "Headers/${PRODUCT_NAME}";
 				SKIP_INSTALL = YES;

@@ -185,7 +185,7 @@ static BOOL kIsTestRun;
 
 - (void) setupNetworkCoordinator {
     if (_authMgr.coordinator != nil) {
-        _networkEngine.coordinator = [self createNetworkCoordinator:_authMgr.coordinator];
+        _networkEngine.currentUser = [SFUserAccountManager sharedInstance].currentUser;
     }
     self.networkCoordinatorNeedsRefresh = NO;
 }

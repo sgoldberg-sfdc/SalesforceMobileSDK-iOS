@@ -27,6 +27,7 @@
 #import <SalesforceSDKCore/SFUserAccount.h>
 #import <SalesforceNetworkSDK/SFNetworkEngine.h>
 #import <SalesforceNetworkSDK/SFNetworkUtils.h>
+#import <SalesforceNetworkSDK/SFNetworkOperation.h>
 
 @interface SFSmartSyncNetworkManager () <SFAuthenticationManagerDelegate>
 

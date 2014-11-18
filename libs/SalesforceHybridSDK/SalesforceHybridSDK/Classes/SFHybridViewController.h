@@ -136,4 +136,6 @@ typedef void (^SFOAuthPluginAuthSuccessBlock)(SFOAuthInfo *, NSDictionary *);
  */
 + (BOOL)isFatalWebViewError:(NSError *)error;
 
++ (NSString *)userAgentString;
+
 @end

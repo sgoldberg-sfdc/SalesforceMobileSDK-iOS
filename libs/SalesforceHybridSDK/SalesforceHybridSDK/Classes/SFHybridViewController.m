@@ -167,7 +167,7 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
 
 - (void)viewDidLoad
 {
-    NSString *hybridViewUserAgentString = [SFRestAPI userAgentString];
+    NSString *hybridViewUserAgentString = [[self class] userAgentString];
     [SFSDKWebUtils configureUserAgent:hybridViewUserAgentString];
     [[self class] overrideCdvOriginalUserAgent:hybridViewUserAgentString];
 
@@ -245,7 +245,7 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
 {
     // Re-configure user agent.  Basically this ensures that Cordova whitelisting won't apply to the
     // UIWebView that hosts the login screen (important for SSO outside of Salesforce domains).
-    [SFSDKWebUtils configureUserAgent:[SFRestAPI userAgentString]];
+    [SFSDKWebUtils configureUserAgent:[[self class] userAgentString]];
     [[SFAuthenticationManager sharedManager] loginWithCompletion:^(SFOAuthInfo *authInfo) {
         [self authenticationCompletion:nil authInfo:authInfo];
         if (authInfo.authType == SFOAuthTypeRefresh) {
@@ -304,7 +304,7 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
     if (nil != creds) {
         NSString *instanceUrl = creds.instanceUrl.absoluteString;
         NSString *loginUrl = [NSString stringWithFormat:@"%@://%@", creds.protocol, creds.domain];
-        NSString *uaString = [SFRestAPI userAgentString];
+        NSString *uaString = [[self class] userAgentString];
         credentialsDict = @{kAccessTokenCredentialsDictKey: creds.accessToken,
                            kRefreshTokenCredentialsDictKey: creds.refreshToken,
                            kClientIdCredentialsDictKey: creds.clientId,
@@ -315,6 +315,10 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
                            kUserAgentCredentialsDictKey: uaString};
     }
     return credentialsDict;
+}
+
++ (NSString *)userAgentString {
+    return [SFRestAPI userAgentString:@""];
 }
 
 #pragma mark - Private methods
@@ -461,7 +465,7 @@ static NSString * const kVFPingPageUrl = @"/apexpages/utils/ping.apexp";
             [self log:SFLogLevelWarning msg:@"Caught login redirect from session timeout.  Re-authenticating."];
             // Re-configure user agent.  Basically this ensures that Cordova whitelisting won't apply to the
             // UIWebView that hosts the login screen (important for SSO outside of Salesforce domains).
-            [SFSDKWebUtils configureUserAgent:[SFRestAPI userAgentString]];
+            [SFSDKWebUtils configureUserAgent:[[self class] userAgentString]];
             [[SFAuthenticationManager sharedManager]
              loginWithCompletion:^(SFOAuthInfo *authInfo) {
                  // Reset the user agent back to Cordova.

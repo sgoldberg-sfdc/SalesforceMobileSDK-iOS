@@ -622,6 +622,7 @@
 		CEAAAE69195911E600CBBFE9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DSTROOT = /tmp/SmartSync.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SmartSync/SmartSync-Prefix.pch";
@@ -636,6 +637,7 @@
 					"\"$(SRCROOT)/../../external/ThirdPartyDependencies/sqlcipher\"",
 					"\"$(SRCROOT)/../../external/ThirdPartyDependencies/openssl\"",
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "Headers/${PRODUCT_NAME}";
@@ -646,6 +648,7 @@
 		CEAAAE6A195911E600CBBFE9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				DSTROOT = /tmp/SmartSync.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SmartSync/SmartSync-Prefix.pch";
@@ -660,6 +663,7 @@
 					"\"$(SRCROOT)/../../external/ThirdPartyDependencies/sqlcipher\"",
 					"\"$(SRCROOT)/../../external/ThirdPartyDependencies/openssl\"",
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "Headers/${PRODUCT_NAME}";

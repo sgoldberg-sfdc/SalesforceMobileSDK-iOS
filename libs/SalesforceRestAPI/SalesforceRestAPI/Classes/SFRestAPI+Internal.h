@@ -25,6 +25,7 @@
 #import "SFRestAPI.h"
 #import <SalesforceSDKCore/SFUserAccountManager.h>
 #import <SalesforceSDKCore/SFAuthenticationManager.h>
+#import <SalesforceNetworkSDK/SFNetworkCoordinator.h>
 
 @class SFSessionRefresher;
 @class SFNetworkEngine;

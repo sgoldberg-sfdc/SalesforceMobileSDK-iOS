@@ -276,7 +276,6 @@
 				8201678916E17D65002F4066 /* Resources */,
 				82C0C73416E076DE0006B3C0 /* Supporting Files */,
 			);
-			name = SalesforceRestAPI;
 			path = SalesforceRestAPI;
 			sourceTree = "<group>";
 		};
@@ -297,7 +296,6 @@
 				4FDA6D5619DB7BF2005AF96F /* SFNativeRestRequestListener.m */,
 				82C0C74916E076DF0006B3C0 /* Supporting Files */,
 			);
-			name = SalesforceRestAPITests;
 			path = SalesforceRestAPITests;
 			sourceTree = "<group>";
 		};
@@ -322,7 +320,6 @@
 				4FDA6D5E19DB7C22005AF96F /* ViewController.m */,
 				82C0C76316E07DEB0006B3C0 /* Supporting Files */,
 			);
-			name = SalesforceRestAPIUnitTestApp;
 			path = SalesforceRestAPIUnitTestApp;
 			sourceTree = "<group>";
 		};
@@ -414,7 +411,7 @@
 			name = SalesforceRestAPITests;
 			productName = SalesforceRestAPITests;
 			productReference = 82C0C73F16E076DE0006B3C0 /* SalesforceRestAPITests.octest */;
-			productType = "com.apple.product-type.bundle";
+			productType = "com.apple.product-type.bundle.ocunit-test";
 		};
 		82C0C75C16E07DEB0006B3C0 /* SalesforceRestAPIUnitTestApp */ = {
 			isa = PBXNativeTarget;
@@ -622,6 +619,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -653,7 +651,7 @@
 					"\"$(SRCROOT)/../../external/ThirdPartyDependencies/sqlcipher\"",
 					"\"$(SRCROOT)/../../external/ThirdPartyDependencies/openssl\"",
 				);
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = NO;
 			};
@@ -663,6 +661,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -687,6 +686,7 @@
 					"\"$(SRCROOT)/../../external/ThirdPartyDependencies/sqlcipher\"",
 					"\"$(SRCROOT)/../../external/ThirdPartyDependencies/openssl\"",
 				);
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
