@@ -620,10 +620,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					arm64,
-					armv7,
-				);
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DSTROOT = /tmp/SalesforceOAuth.dst;
@@ -783,10 +779,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					arm64,
-					armv7,
-				);
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DSTROOT = /tmp/SalesforceOAuth.dst;
@@ -802,10 +794,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = (
-					arm64,
-					armv7,
-				);
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DSTROOT = /tmp/SalesforceOAuth.dst;

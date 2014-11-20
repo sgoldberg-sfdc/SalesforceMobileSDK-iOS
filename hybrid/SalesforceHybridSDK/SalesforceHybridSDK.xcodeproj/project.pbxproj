@@ -1020,10 +1020,6 @@
 		82EFF2DF16E7C57100A63CDF /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					arm64,
-					armv7,
-				);
 				DSTROOT = /tmp/SalesforceHybridSDK.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceHybridSDK/SalesforceHybridSDK-Prefix.pch";
@@ -1038,10 +1034,6 @@
 		82EFF2E016E7C57100A63CDF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					arm64,
-					armv7,
-				);
 				DSTROOT = /tmp/SalesforceHybridSDK.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceHybridSDK/SalesforceHybridSDK-Prefix.pch";

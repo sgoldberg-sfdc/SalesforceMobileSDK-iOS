@@ -1095,10 +1095,6 @@
 		8220B75B16D804CA00EC3921 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					arm64,
-					armv7,
-				);
 				DSTROOT = /tmp/SalesforceSDKCore.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceSDKCore/SalesforceSDKCore-Prefix.pch";
@@ -1114,10 +1110,6 @@
 		8220B75C16D804CA00EC3921 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					arm64,
-					armv7,
-				);
 				DSTROOT = /tmp/SalesforceSDKCore.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceSDKCore/SalesforceSDKCore-Prefix.pch";
@@ -1254,10 +1246,6 @@
 		A5D3964018F854E90048114F /* Internal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					arm64,
-					armv7,
-				);
 				DSTROOT = /tmp/SalesforceSDKCore.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceSDKCore/SalesforceSDKCore-Prefix.pch";
