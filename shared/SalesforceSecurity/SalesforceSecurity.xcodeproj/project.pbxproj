@@ -513,7 +513,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					armv7s,
+					arm64,
 					armv7,
 				);
 				DSTROOT = /tmp/SalesforceSecurity.dst;
@@ -530,7 +530,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					armv7s,
+					arm64,
 					armv7,
 				);
 				DSTROOT = /tmp/SalesforceSecurity.dst;
@@ -650,7 +650,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					armv7s,
+					arm64,
 					armv7,
 				);
 				DSTROOT = /tmp/SalesforceSecurity.dst;

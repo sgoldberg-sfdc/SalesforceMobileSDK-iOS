@@ -1096,7 +1096,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					armv7s,
+					arm64,
 					armv7,
 				);
 				DSTROOT = /tmp/SalesforceSDKCore.dst;
@@ -1115,7 +1115,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					armv7s,
+					arm64,
 					armv7,
 				);
 				DSTROOT = /tmp/SalesforceSDKCore.dst;
@@ -1255,7 +1255,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = (
-					armv7s,
+					arm64,
 					armv7,
 				);
 				DSTROOT = /tmp/SalesforceSDKCore.dst;
