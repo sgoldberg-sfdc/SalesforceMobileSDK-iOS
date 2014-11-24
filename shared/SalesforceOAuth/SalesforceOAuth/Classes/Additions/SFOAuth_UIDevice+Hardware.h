@@ -35,7 +35,7 @@
 #define IPHONE_SIMULATOR_IPHONE_NAMESTRING  @"iPhone Simulator"
 #define IPHONE_SIMULATOR_IPAD_NAMESTRING    @"iPad Simulator"
 
-typedef enum {
+typedef NS_ENUM(NSInteger, UIDevicePlatform) {
     UIDeviceUnknown,
     
     UIDeviceiPhoneSimulator,
@@ -63,9 +63,8 @@ typedef enum {
     UIDeviceUnknowniPhone,
     UIDeviceUnknowniPod,
     UIDeviceUnknowniPad,
-    UIDeviceIFPGA,
-    
-} UIDevicePlatform;
+    UIDeviceIFPGA
+};
 
 @interface UIDevice (Hardware)
 - (NSString *) platform;

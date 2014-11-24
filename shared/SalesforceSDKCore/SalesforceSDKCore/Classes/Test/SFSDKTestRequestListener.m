@@ -121,7 +121,7 @@ NSString* const kTestRequestStatusDidTimeout = @"didTimeout";
     } else if (_serviceType == SFAccountManagerServiceTypeOAuth) {
         _authMgr.coordinator.delegate = self;
     } else {
-        NSAssert1(NO, @"Service type '%d' is not supported as a service object.", _serviceType);
+        NSAssert1(NO, @"Service type '%ld' is not supported as a service object.", (long)_serviceType);
     }
 }
 
