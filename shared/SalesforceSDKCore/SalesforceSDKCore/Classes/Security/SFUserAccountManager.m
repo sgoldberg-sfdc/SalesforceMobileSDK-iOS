@@ -153,12 +153,43 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         _temporaryUserIdentity = [[SFUserAccountIdentity alloc] initWithUserId:SFUserAccountManagerTemporaryUserAccountUserId orgId:SFUserAccountManagerTemporaryUserAccountOrgId];
         
         [self loadAccounts:nil];
+        [self copyAccounts];
 	}
 	return self;
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)copyAccounts {
+    NSError *error = nil;
+    NSString *rootDirectory = [[SFDirectoryManager sharedManager] directoryForUser:nil type:NSLibraryDirectory components:nil];
+    NSFileManager *fm = [NSFileManager defaultManager];
+    if ([fm fileExistsAtPath:rootDirectory]) {
+        NSURL *sharedURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.com.salesforce.salesforce1"];
+        NSString *sharedPath = [sharedURL path];
+        
+        NSArray *rootContents = [fm contentsOfDirectoryAtPath:rootDirectory error:&error];
+        if (nil == rootContents) {
+            if (error) {
+                [self log:SFLogLevelDebug format:@"Unable to enumerate the content at %@: %@", rootDirectory, error];
+            }
+        } else {
+            for (NSString *s in rootContents) {
+                NSString *newFilePath = [sharedPath stringByAppendingPathComponent:s];
+                NSString *oldFilePath = [rootDirectory stringByAppendingPathComponent:s];
+                if (![fm fileExistsAtPath:newFilePath]) {
+                    //File does not exist, copy it
+                    [fm copyItemAtPath:oldFilePath toPath:newFilePath error:&error];
+                } else {
+                    [fm removeItemAtPath:newFilePath error:&error];
+                    [fm copyItemAtPath:oldFilePath toPath:newFilePath error:&error];
+                    NSLog(@"File exists: %@", newFilePath);
+                }
+            }
+        }
+    }
 }
 
 #pragma mark - Login Host
@@ -492,7 +523,14 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
     if (![fm fileExistsAtPath:rootDirectory]) {
         // There is no root directory, that's fine, probably a fresh app install,
         // new user will be created later on.
-        return YES;
+        
+        NSURL *sharedURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.com.salesforce.salesforce1"];
+        NSString *sharedPath = [sharedURL path];
+         if (![fm fileExistsAtPath:sharedPath]) {
+             return YES;
+         } else {
+             rootDirectory = [NSString stringWithString:sharedPath];
+         }
     }
     
     // Now iterate over the org and then user directories to load
@@ -602,16 +640,16 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
             return nil;
         }
         
-        SFEncryptionKey *encKey = [[SFKeyStoreManager sharedInstance] retrieveKeyWithLabel:kUserAccountEncryptionKeyLabel keyType:SFKeyStoreKeyTypeGenerated autoCreate:YES];
-        NSData *decryptedArchiveData = [SFSDKCryptoUtils aes256DecryptData:encryptedUserAccountData withKey:encKey.key iv:encKey.initializationVector];
-        if (!decryptedArchiveData) {
-            [self log:SFLogLevelDebug msg:@"User account data could not be decrypted.  Can't load account."];
-            [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
-            return nil;
-        }
+//        SFEncryptionKey *encKey = [[SFKeyStoreManager sharedInstance] retrieveKeyWithLabel:kUserAccountEncryptionKeyLabel keyType:SFKeyStoreKeyTypeGenerated autoCreate:YES];
+//        NSData *decryptedArchiveData = [SFSDKCryptoUtils aes256DecryptData:encryptedUserAccountData withKey:encKey.key iv:encKey.initializationVector];
+//        if (!decryptedArchiveData) {
+//            [self log:SFLogLevelDebug msg:@"User account data could not be decrypted.  Can't load account."];
+//            [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+//            return nil;
+//        }
         
         @try {
-            SFUserAccount *decryptedAccount = [NSKeyedUnarchiver unarchiveObjectWithData:decryptedArchiveData];
+            SFUserAccount *decryptedAccount = [NSKeyedUnarchiver unarchiveObjectWithData:encryptedUserAccountData];
             return decryptedAccount;
         }
         @catch (NSException *exception) {
@@ -691,7 +729,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
     }
     
     // Save it.
-    BOOL saveFileSuccess = [[NSFileManager defaultManager] createFileAtPath:filePath contents:encryptedArchiveData attributes:@{ NSFileProtectionKey : NSFileProtectionComplete }];
+    BOOL saveFileSuccess = [[NSFileManager defaultManager] createFileAtPath:filePath contents:archiveData attributes:@{ NSFileProtectionKey : NSFileProtectionComplete }];
     if (!saveFileSuccess) {
         [self log:SFLogLevelDebug format:@"Could not create user account data file at path '%@'", filePath];
         return NO;
@@ -775,7 +813,8 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 }
 
 - (SFUserAccountIdentity *)activeUserIdentity {
-    NSData *resultData = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaultsLastUserIdentityKey];
+    NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.salesforce.salesforce1"];
+    NSData *resultData = [mySharedDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
     if (resultData == nil)
         return nil;
     
@@ -795,16 +834,20 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 
 - (void)setActiveUserIdentity:(SFUserAccountIdentity *)activeUserIdentity {
     if (activeUserIdentity == nil) {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserDefaultsLastUserIdentityKey];
+        NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.salesforce.salesforce1"];
+        [mySharedDefaults removeObjectForKey:kUserDefaultsLastUserIdentityKey];
     } else {
         NSMutableData *auiData = [NSMutableData data];
         NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:auiData];
         [archiver encodeObject:activeUserIdentity forKey:kUserDefaultsLastUserIdentityKey];
         [archiver finishEncoding];
         
-        [[NSUserDefaults standardUserDefaults] setObject:auiData forKey:kUserDefaultsLastUserIdentityKey];
+         NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.salesforce.salesforce1"];
+        
+        [mySharedDefaults setObject:auiData forKey:kUserDefaultsLastUserIdentityKey];
     }
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    NSUserDefaults *mySharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.salesforce.salesforce1"];
+    [mySharedDefaults synchronize];
 }
 
 - (NSString *)activeCommunityId {
