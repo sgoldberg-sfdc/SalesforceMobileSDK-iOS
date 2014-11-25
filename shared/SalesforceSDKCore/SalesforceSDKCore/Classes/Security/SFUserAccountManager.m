@@ -32,6 +32,7 @@
 #import <SalesforceSecurity/SFKeyStoreKey.h>
 #import <SalesforceSecurity/SFSDKCryptoUtils.h>
 #import <SalesforceCommonUtils/NSString+SFAdditions.h>
+#import <SalesforceCommonUtils/SFKeychainItemWrapper.h>
 
 // Notifications
 NSString * const SFUserAccountManagerDidChangeCurrentUserNotification   = @"SFUserAccountManagerDidChangeCurrentUserNotification";
@@ -492,14 +493,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
     if (![fm fileExistsAtPath:rootDirectory]) {
         // There is no root directory, that's fine, probably a fresh app install,
         // new user will be created later on.
-        
-        NSURL *sharedURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.com.salesforce.salesforce1"];
-        NSString *sharedPath = [sharedURL path];
-         if (![fm fileExistsAtPath:sharedPath]) {
-             return YES;
-         } else {
-             rootDirectory = [NSString stringWithString:sharedPath];
-         }
+        return YES;
     }
     
     // Now iterate over the org and then user directories to load
@@ -782,7 +776,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 }
 
 - (SFUserAccountIdentity *)activeUserIdentity {
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.salesforce.salesforce1"];
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
     NSData *resultData = [sharedDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
     if (resultData == nil)
         return nil;
@@ -802,7 +796,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 }
 
 - (void)setActiveUserIdentity:(SFUserAccountIdentity *)activeUserIdentity {
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.salesforce.salesforce1"];
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
     if (activeUserIdentity == nil) {
         [sharedDefaults removeObjectForKey:kUserDefaultsLastUserIdentityKey];
     } else {

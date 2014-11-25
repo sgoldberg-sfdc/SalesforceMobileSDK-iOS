@@ -26,6 +26,8 @@
 #import "SFUserAccountManager.h"
 #import "SFUserAccount.h"
 
+#import <SalesforceCommonUtils/SFKeychainItemWrapper.h>
+
 static NSString * const kDefaultOrgName = @"org";
 static NSString * const kDefaultCommunityName = @"internal";
 
@@ -58,10 +60,10 @@ static NSString * const kDefaultCommunityName = @"internal";
 }
 
 - (NSString*)directoryForOrg:(NSString*)orgId user:(NSString*)userId community:(NSString*)communityId type:(NSSearchPathDirectory)type components:(NSArray*)components {
-    NSURL *sharedURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:@"group.com.salesforce.salesforce1"];
+    NSURL *sharedURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kKeyChainIdentifierAccessGroup];
     NSString *sharedPath = [sharedURL path];
     if (sharedPath) {
-        NSString *directory = [sharedPath stringByAppendingPathComponent:@"group.com.salesforce.salesforce1"];
+        NSString *directory = [sharedPath stringByAppendingPathComponent:kKeyChainIdentifierAccessGroup];
         if (orgId) {
             directory = [directory stringByAppendingPathComponent:[[self class] safeStringForDiskRepresentation:orgId]];
             if (userId) {

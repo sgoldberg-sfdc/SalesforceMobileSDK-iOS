@@ -318,7 +318,7 @@ static NSString * const kClientId   = @"SfdcMobileChatteriOS";
     credentials.accessToken = accessToken;
     credentials.refreshToken = refreshToken;
     
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.salesforce.salesforce1"];
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
     
     NSString *accessTokenVerify = [credentials accessTokenWithSFEncryptionKey:[credentials keyStoreKeyForService:kSFOAuthServiceAccess]];
     STAssertEqualObjects(accessToken, accessTokenVerify, @"Access token should decrypt to the same value.");
@@ -337,7 +337,7 @@ static NSString * const kClientId   = @"SfdcMobileChatteriOS";
 {
     NSString *accessToken = @"AccessGranted!";
     NSString *refreshToken = @"HowRefreshing";
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.salesforce.salesforce1"];
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
     
     // Set MAC-key tokens, resetting update state to pre-update.
     SFOAuthCredentials *credentials = [[SFOAuthCredentials alloc] initWithIdentifier:kIdentifier clientId:kClientId encrypted:YES];

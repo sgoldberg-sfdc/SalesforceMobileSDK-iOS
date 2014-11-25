@@ -25,6 +25,7 @@
 #import <Security/Security.h>
 #import "SFOAuthCredentials+Internal.h"
 #import "SFOAuthCrypto.h"
+#import <SalesforceCommonUtils/SFKeychainItemWrapper.h>
 #import "SFOAuth_UIDevice+Hardware.h"
 #import "SFOAuth_NSString+Additions.h"
 #import <SalesforceCommonUtils/SFCrypto.h>
@@ -149,7 +150,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 
 - (void)setAccessToken:(NSString *)token {
     [self setAccessToken:token withSFEncryptionKey:[self keyStoreKeyForService:kSFOAuthServiceAccess]];
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.salesforce.salesforce1"];
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
     [sharedDefaults setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
     [sharedDefaults synchronize];
 }
@@ -217,7 +218,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 
 - (void)setRefreshToken:(NSString *)token {
     [self setRefreshToken:token withSFEncryptionKey:[self keyStoreKeyForService:kSFOAuthServiceRefresh]];
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.salesforce.salesforce1"];
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
     [sharedDefaults setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
     [sharedDefaults synchronize];
 }
@@ -510,7 +511,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
     tokenQuery[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitOne;
     tokenQuery[(__bridge id)kSecReturnAttributes] = (id)kCFBooleanTrue;
     tokenQuery[(__bridge id)kSecAttrAccount] = self.identifier;
-    tokenQuery[(__bridge id)kSecAttrAccessGroup] = @"group.com.salesforce.salesforce1";
+    tokenQuery[(__bridge id)kSecAttrAccessGroup] = kKeyChainIdentifierAccessGroup;
     return tokenQuery;
 }
 
@@ -577,7 +578,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
         updateDict[(__bridge id)kSecClass] = theTokenQuery[(__bridge id)kSecClass];
         updateDict[(__bridge id)kSecAttrAccount] = self.identifier;
         updateDict[(__bridge id)kSecAttrService] = dictionary[(__bridge id)kSecAttrService];
-        updateDict[(__bridge id)kSecAttrAccessGroup] = @"group.com.salesforce.salesforce1";
+        updateDict[(__bridge id)kSecAttrAccessGroup] = kKeyChainIdentifierAccessGroup;
         result = SecItemAdd((__bridge CFDictionaryRef)updateDict, NULL);
         if (noErr != result) {
             [self log:SFLogLevelDebug format:@"%@:writeToKeychain: (%d) error adding item: %@", [self class], (int)result, updateDict];
@@ -625,7 +626,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
     // MAC address-based keys if the user is on iOS 7 or above, and we'll reset the tokens to nil;
     
     if (!self.isEncrypted) return;
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"group.com.salesforce.salesforce1"];
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
     SFOAuthCredsEncryptionType encType = (SFOAuthCredsEncryptionType)[sharedDefaults integerForKey:kSFOAuthEncryptionTypeKey];
     if (encType == kSFOAuthCredsEncryptionTypeKeyStore) return;
     
