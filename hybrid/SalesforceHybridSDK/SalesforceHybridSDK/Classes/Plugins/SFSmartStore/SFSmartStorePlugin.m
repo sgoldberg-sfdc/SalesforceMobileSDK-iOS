@@ -355,7 +355,7 @@ NSString * const kReIndexDataArg      = @"reIndexData";
     CDVPluginResult* result = block(argsDict);
     [self log:SFLogLevelDebug format:@"%@ returning after %f secs.", command.methodName, -[startTime timeIntervalSinceNow]];
 
-    if ([[result status] intValue] == CDVCommandStatus_OK) {
+    if ([[result status] unsignedIntegerValue] == CDVCommandStatus_OK) {
         [self writeSuccessResultToJsRealm:result callbackId:callbackId];
     }
     else {
