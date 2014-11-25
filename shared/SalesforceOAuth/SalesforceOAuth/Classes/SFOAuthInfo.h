@@ -27,7 +27,7 @@
 /**
  The type of authentication being attempted, in a given OAuth coordinator cycle.
  */
-typedef NS_ENUM(NSInteger, SFOAuthType) {
+typedef NS_ENUM(NSUInteger, SFOAuthType) {
     SFOAuthTypeUnknown = 0,
     SFOAuthTypeUserAgent,
     SFOAuthTypeRefresh

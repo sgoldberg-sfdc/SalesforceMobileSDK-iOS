@@ -25,7 +25,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, SFOAuthCryptoOperation) {
+typedef NS_ENUM(NSUInteger, SFOAuthCryptoOperation) {
     SFOAEncrypt = 0,
     SFOADecrypt
 };

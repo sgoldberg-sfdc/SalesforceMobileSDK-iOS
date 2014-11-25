@@ -188,7 +188,7 @@ static NSUInteger const kNumThreadsInSafetyTest = 100;
 {
     static NSUInteger keyId = 1;
     
-    NSString *keyName = [NSString stringWithFormat:@"%@%ld", @"threadSafeKeyName", (unsigned long)keyId++];
+    NSString *keyName = [NSString stringWithFormat:@"%@%lu", @"threadSafeKeyName", (unsigned long)keyId++];
     SFEncryptionKey *origKey = [[SFKeyStoreManager sharedInstance] keyWithRandomValue];
     [[SFKeyStoreManager sharedInstance] storeKey:origKey withLabel:keyName];
     XCTAssertTrue([[SFKeyStoreManager sharedInstance] keyWithLabelExists:keyName], @"Key '%@' should exist in the key store.", keyName);

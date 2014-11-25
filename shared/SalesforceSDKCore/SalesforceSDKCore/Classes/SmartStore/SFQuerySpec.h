@@ -47,14 +47,14 @@ extern NSString * const kQuerySpecParamEndKey;
 extern NSString * const kQuerySpecParamLikeKey;
 
 
-typedef NS_OPTIONS(NSInteger, SFSoupQueryType) {
+typedef NS_OPTIONS(NSUInteger, SFSoupQueryType) {
     kSFSoupQueryTypeExact = 2,
     kSFSoupQueryTypeRange = 4,
     kSFSoupQueryTypeLike = 8,
     kSFSoupQueryTypeSmart = 16
 };
 
-typedef NS_ENUM(NSInteger, SFSoupQuerySortOrder) {
+typedef NS_ENUM(NSUInteger, SFSoupQuerySortOrder) {
     kSFSoupQuerySortOrderAscending,
     kSFSoupQuerySortOrderDescending
 };

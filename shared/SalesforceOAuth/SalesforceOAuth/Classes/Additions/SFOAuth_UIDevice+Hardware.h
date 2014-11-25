@@ -35,7 +35,7 @@
 #define IPHONE_SIMULATOR_IPHONE_NAMESTRING  @"iPhone Simulator"
 #define IPHONE_SIMULATOR_IPAD_NAMESTRING    @"iPad Simulator"
 
-typedef NS_ENUM(NSInteger, UIDevicePlatform) {
+typedef NS_ENUM(NSUInteger, UIDevicePlatform) {
     UIDeviceUnknown,
     
     UIDeviceiPhoneSimulator,

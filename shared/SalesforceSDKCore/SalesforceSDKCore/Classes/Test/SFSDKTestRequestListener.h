@@ -34,7 +34,7 @@ extern NSString* const kTestRequestStatusDidFail;
 extern NSString* const kTestRequestStatusDidCancel;
 extern NSString* const kTestRequestStatusDidTimeout;
 
-typedef NS_ENUM(NSInteger, SFAccountManagerServiceType) {
+typedef NS_ENUM(NSUInteger, SFAccountManagerServiceType) {
     SFAccountManagerServiceTypeNone = 0,
     SFAccountManagerServiceTypeOAuth,
     SFAccountManagerServiceTypeIdentity
