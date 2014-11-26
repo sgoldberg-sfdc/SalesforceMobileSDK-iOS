@@ -776,6 +776,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 }
 
 - (SFUserAccountIdentity *)activeUserIdentity {
+    //TODO migration
     NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
     NSData *resultData = [sharedDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
     if (resultData == nil)
@@ -796,6 +797,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 }
 
 - (void)setActiveUserIdentity:(SFUserAccountIdentity *)activeUserIdentity {
+    //TODO migration
     NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
     if (activeUserIdentity == nil) {
         [sharedDefaults removeObjectForKey:kUserDefaultsLastUserIdentityKey];

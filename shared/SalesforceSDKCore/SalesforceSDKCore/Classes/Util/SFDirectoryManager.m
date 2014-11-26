@@ -60,6 +60,7 @@ static NSString * const kDefaultCommunityName = @"internal";
 }
 
 - (NSString*)directoryForOrg:(NSString*)orgId user:(NSString*)userId community:(NSString*)communityId type:(NSSearchPathDirectory)type components:(NSArray*)components {
+    //TODO migration
     NSURL *sharedURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kKeyChainIdentifierAccessGroup];
     NSString *sharedPath = [sharedURL path];
     if (sharedPath) {

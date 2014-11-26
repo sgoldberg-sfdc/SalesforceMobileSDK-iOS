@@ -148,6 +148,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 
 - (void)setAccessToken:(NSString *)token {
     [self setAccessToken:token withSFEncryptionKey:[self keyStoreKeyForService:kSFOAuthServiceAccess]];
+    //TODO migration
     NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
     [sharedDefaults setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
     [sharedDefaults synchronize];
@@ -216,6 +217,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 
 - (void)setRefreshToken:(NSString *)token {
     [self setRefreshToken:token withSFEncryptionKey:[self keyStoreKeyForService:kSFOAuthServiceRefresh]];
+    //TODO migration
     NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
     [sharedDefaults setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
     [sharedDefaults synchronize];
@@ -499,6 +501,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
     // MAC address-based keys if the user is on iOS 7 or above, and we'll reset the tokens to nil;
     
     if (!self.isEncrypted) return;
+    //TODO migration
     NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
     SFOAuthCredsEncryptionType encType = (SFOAuthCredsEncryptionType)[sharedDefaults integerForKey:kSFOAuthEncryptionTypeKey];
     if (encType == kSFOAuthCredsEncryptionTypeKeyStore) return;
