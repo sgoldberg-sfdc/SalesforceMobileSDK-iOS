@@ -24,6 +24,8 @@
 
 #import "SFOAuthCredentials+Internal.h"
 #import "SFOAuthCrypto.h"
+
+#import <SalesforceCommonUtils/SFDatasharingHelper.h>
 #import <SalesforceCommonUtils/SFCrypto.h>
 #import <SalesforceCommonUtils/NSString+SFAdditions.h>
 #import <SalesforceCommonUtils/SFKeychainItemWrapper.h>
@@ -149,9 +151,15 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 - (void)setAccessToken:(NSString *)token {
     [self setAccessToken:token withSFEncryptionKey:[self keyStoreKeyForService:kSFOAuthServiceAccess]];
     //TODO migration
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
-    [sharedDefaults setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
-    [sharedDefaults synchronize];
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+        [sharedDefaults setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
+        [sharedDefaults synchronize];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
+
 }
 
 - (NSString *)clientId {
@@ -218,9 +226,14 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 - (void)setRefreshToken:(NSString *)token {
     [self setRefreshToken:token withSFEncryptionKey:[self keyStoreKeyForService:kSFOAuthServiceRefresh]];
     //TODO migration
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
-    [sharedDefaults setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
-    [sharedDefaults synchronize];
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+        [sharedDefaults setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
+        [sharedDefaults synchronize];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
 }
 
 - (NSString *)activationCode {
@@ -502,8 +515,14 @@ static NSException * kSFOAuthExceptionNilIdentifier;
     
     if (!self.isEncrypted) return;
     //TODO migration
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
-    SFOAuthCredsEncryptionType encType = (SFOAuthCredsEncryptionType)[sharedDefaults integerForKey:kSFOAuthEncryptionTypeKey];
+    SFOAuthCredsEncryptionType encType;
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+        encType = (SFOAuthCredsEncryptionType)[sharedDefaults integerForKey:kSFOAuthEncryptionTypeKey];
+    } else {
+        encType = (SFOAuthCredsEncryptionType)[[NSUserDefaults standardUserDefaults] integerForKey:kSFOAuthEncryptionTypeKey];
+    }
+    
     if (encType == kSFOAuthCredsEncryptionTypeKeyStore) return;
     
     // Try to convert the old tokens to the new format.

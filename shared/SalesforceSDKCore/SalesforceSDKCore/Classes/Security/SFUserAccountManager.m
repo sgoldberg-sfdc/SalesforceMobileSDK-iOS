@@ -33,6 +33,7 @@
 #import <SalesforceSecurity/SFSDKCryptoUtils.h>
 #import <SalesforceCommonUtils/NSString+SFAdditions.h>
 #import <SalesforceCommonUtils/SFKeychainItemWrapper.h>
+#import <SalesforceCommonUtils/SFDatasharingHelper.h>
 
 // Notifications
 NSString * const SFUserAccountManagerDidChangeCurrentUserNotification   = @"SFUserAccountManagerDidChangeCurrentUserNotification";
@@ -777,8 +778,14 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 
 - (SFUserAccountIdentity *)activeUserIdentity {
     //TODO migration
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
-    NSData *resultData = [sharedDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
+    NSData *resultData = nil;
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+        resultData = [sharedDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
+    } else {
+        resultData = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaultsLastUserIdentityKey];
+    }
+    
     if (resultData == nil)
         return nil;
     
@@ -798,17 +805,23 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 
 - (void)setActiveUserIdentity:(SFUserAccountIdentity *)activeUserIdentity {
     //TODO migration
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAccessGroup];
+    NSUserDefaults *standardDefaults;
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+         standardDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+    } else {
+        standardDefaults = [NSUserDefaults standardUserDefaults];
+    }
+    
     if (activeUserIdentity == nil) {
-        [sharedDefaults removeObjectForKey:kUserDefaultsLastUserIdentityKey];
+        [standardDefaults removeObjectForKey:kUserDefaultsLastUserIdentityKey];
     } else {
         NSMutableData *auiData = [NSMutableData data];
         NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:auiData];
         [archiver encodeObject:activeUserIdentity forKey:kUserDefaultsLastUserIdentityKey];
         [archiver finishEncoding];
-        [sharedDefaults setObject:auiData forKey:kUserDefaultsLastUserIdentityKey];
+        [standardDefaults setObject:auiData forKey:kUserDefaultsLastUserIdentityKey];
     }
-    [sharedDefaults synchronize];
+    [standardDefaults synchronize];
 }
 
 - (NSString *)activeCommunityId {

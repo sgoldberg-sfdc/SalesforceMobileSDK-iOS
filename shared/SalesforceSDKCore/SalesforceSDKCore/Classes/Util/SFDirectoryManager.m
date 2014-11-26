@@ -27,6 +27,7 @@
 #import "SFUserAccount.h"
 
 #import <SalesforceCommonUtils/SFKeychainItemWrapper.h>
+#import <SalesforceCommonUtils/SFDatasharingHelper.h>
 
 static NSString * const kDefaultOrgName = @"org";
 static NSString * const kDefaultCommunityName = @"internal";
@@ -61,10 +62,19 @@ static NSString * const kDefaultCommunityName = @"internal";
 
 - (NSString*)directoryForOrg:(NSString*)orgId user:(NSString*)userId community:(NSString*)communityId type:(NSSearchPathDirectory)type components:(NSArray*)components {
     //TODO migration
-    NSURL *sharedURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kKeyChainIdentifierAccessGroup];
-    NSString *sharedPath = [sharedURL path];
-    if (sharedPath) {
-        NSString *directory = [sharedPath stringByAppendingPathComponent:kKeyChainIdentifierAccessGroup];
+    NSString *directory;
+    
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        NSURL *sharedURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kKeyChainIdentifierAppGroupName];
+        directory = [sharedURL path];
+    } else {
+        NSArray *directories = NSSearchPathForDirectoriesInDomains(type, NSUserDomainMask, YES);
+        if (directories.count > 0) {
+            directory = [directories[0] stringByAppendingPathComponent:[NSBundle mainBundle].bundleIdentifier];
+        }
+    }
+    
+    if (directory) {
         if (orgId) {
             directory = [directory stringByAppendingPathComponent:[[self class] safeStringForDiskRepresentation:orgId]];
             if (userId) {
