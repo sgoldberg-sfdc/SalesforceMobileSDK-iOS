@@ -61,7 +61,6 @@ static NSString * const kDefaultCommunityName = @"internal";
 }
 
 - (NSString*)directoryForOrg:(NSString*)orgId user:(NSString*)userId community:(NSString*)communityId type:(NSSearchPathDirectory)type components:(NSArray*)components {
-    //TODO migration
     NSString *directory;
     
     if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
