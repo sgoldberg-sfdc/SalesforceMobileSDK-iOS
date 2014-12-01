@@ -26,6 +26,8 @@
 #import "SFUserAccountManager+Internal.h"
 #import "SFUserAccountIdentity.h"
 #import <SalesforceOAuth/SFOAuthCredentials.h>
+#import <SalesforceCommonUtils/SFDatasharingHelper.h>
+#import <SalesforceCommonUtils/SFCrypto.h>
 
 static NSString * const kOAuthCredentialsDataKeyPrefix  = @"oauth_credentials_data";
 static NSString * const kLegacyDefaultAccountIdentifier = @"Default";
@@ -74,6 +76,36 @@ static NSString * const kLegacyUserDefaultsLastUserIdKey = @"LastUserId";
     
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kLegacyUserDefaultsLastUserIdKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
++ (void)upgradeAppForGroupAccess {
+    //Migrate NSUserDefaultsData
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+    
+    //Migrate base app identifier configured key
+    BOOL baseAppIdentifierConfigured = [standardDefaults boolForKey:kKeychainIdentifierBaseAppId];
+    [sharedDefaults setBool:baseAppIdentifierConfigured forKey:kKeychainIdentifierBaseAppId];
+    
+    //Migrate encryption type key
+    NSInteger encyptionType = [standardDefaults integerForKey:kSFOAuthEncryptionTypeKey];
+    [sharedDefaults setInteger:encyptionType forKey:kSFOAuthEncryptionTypeKey];
+    
+    
+    //Migrate last user identity key
+    NSData *userData = [standardDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
+    if (userData) {
+        [sharedDefaults setObject:userData forKey:kUserDefaultsLastUserIdentityKey];
+    }
+    //Save shared user defaults
+    [sharedDefaults synchronize];
+    
+    
+    //Migrate Files
+}
+
++ (void)upgradeAppForSharedKeychain {
+    
 }
 
 #pragma mark - Private methods

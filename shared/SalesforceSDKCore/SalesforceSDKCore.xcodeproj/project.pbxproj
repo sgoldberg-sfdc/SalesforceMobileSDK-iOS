@@ -43,7 +43,7 @@
 		822208751937E2D90000C635 /* SFSmartStoreDatabaseManager+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 822208741937E2D90000C635 /* SFSmartStoreDatabaseManager+Internal.h */; };
 		8222087E19381D020000C635 /* SFSmartStoreUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 8222087C19381D020000C635 /* SFSmartStoreUtils.h */; };
 		8222087F19381D020000C635 /* SFSmartStoreUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 8222087D19381D020000C635 /* SFSmartStoreUtils.m */; };
-		8222088819390D660000C635 /* SFUserAccountManagerUpgrade.h in Headers */ = {isa = PBXBuildFile; fileRef = 8222088619390D660000C635 /* SFUserAccountManagerUpgrade.h */; };
+		8222088819390D660000C635 /* SFUserAccountManagerUpgrade.h in Headers */ = {isa = PBXBuildFile; fileRef = 8222088619390D660000C635 /* SFUserAccountManagerUpgrade.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8222088919390D660000C635 /* SFUserAccountManagerUpgrade.m in Sources */ = {isa = PBXBuildFile; fileRef = 8222088719390D660000C635 /* SFUserAccountManagerUpgrade.m */; };
 		8222088B19391EC00000C635 /* SFUserAccountManager+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 8222088A19391EC00000C635 /* SFUserAccountManager+Internal.h */; };
 		8251CA4A16ED27FA00BD1EA2 /* NSURL+SFStringUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8251CA4916ED27FA00BD1EA2 /* NSURL+SFStringUtilsTests.m */; };

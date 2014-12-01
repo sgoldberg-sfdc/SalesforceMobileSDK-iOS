@@ -33,7 +33,6 @@ typedef enum {
     kSFOAuthCredsEncryptionTypeKeyStore
 } SFOAuthCredsEncryptionType;
 
-extern NSString * const kSFOAuthEncryptionTypeKey;
 extern NSString * const kSFOAuthServiceAccess;
 extern NSString * const kSFOAuthServiceRefresh;
 extern NSString * const kSFOAuthServiceActivation;

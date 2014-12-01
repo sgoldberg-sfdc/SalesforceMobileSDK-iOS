@@ -27,6 +27,11 @@
 #import "SFUserAccountIdentity.h"
 #import "SFUserAccountConstants.h"
 
+/**
+ The key for the last active user.
+ */
+extern NSString * const kUserDefaultsLastUserIdentityKey;
+
 /** Notification sent when something has changed with the current user
  */
 extern NSString * const SFUserAccountManagerDidChangeCurrentUserNotification;

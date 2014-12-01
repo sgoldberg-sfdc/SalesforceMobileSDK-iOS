@@ -59,7 +59,7 @@ NSString * const kOAuthRedirectUriKey = @"oauth_redirect_uri";
 
 // Persistence Keys
 static NSString * const kUserAccountsMapCodingKey  = @"accountsMap";
-static NSString * const kUserDefaultsLastUserIdentityKey = @"LastUserIdentity";
+NSString * const kUserDefaultsLastUserIdentityKey = @"LastUserIdentity";
 static NSString * const kUserDefaultsLastUserCommunityIdKey = @"LastUserCommunityId";
 
 // Oauth
@@ -777,7 +777,6 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 }
 
 - (SFUserAccountIdentity *)activeUserIdentity {
-    //TODO migration
     NSData *resultData = nil;
     if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
         NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
@@ -804,10 +803,9 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 }
 
 - (void)setActiveUserIdentity:(SFUserAccountIdentity *)activeUserIdentity {
-    //TODO migration
     NSUserDefaults *standardDefaults;
     if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
-         standardDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+        standardDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
     } else {
         standardDefaults = [NSUserDefaults standardUserDefaults];
     }

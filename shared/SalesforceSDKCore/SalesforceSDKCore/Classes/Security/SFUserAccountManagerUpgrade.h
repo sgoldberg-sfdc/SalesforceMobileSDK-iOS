@@ -43,4 +43,17 @@
  */
 + (void)updateToActiveUserIdentity:(SFUserAccountManager *)accountManager;
 
+
+/**
+ Upgrade the application for group access.
+ This is used for enabling extensions and other applications to share data
+ */
++ (void)upgradeAppForGroupAccess;
+
+
+/**
+ Upgrade the application for shared keychain access.
+ This is used for enabling application to share keychain data with other apps and extensions
+ */
++ (void)upgradeAppForSharedKeychain;
 @end
