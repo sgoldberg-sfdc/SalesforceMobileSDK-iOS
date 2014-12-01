@@ -281,7 +281,7 @@ NSString * const kReIndexDataArg      = @"reIndexData";
 {
     [self runCommand:^(NSDictionary* argsDict) {
         long databaseSize = [self.store getDatabaseSize];
-        return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsInt:databaseSize]; // XXX cast to int will cause issues if database is more than 2GB
+        return [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDouble:databaseSize]; // double should suffice to hold the database size.
     } command:command];
 }
 
@@ -355,7 +355,7 @@ NSString * const kReIndexDataArg      = @"reIndexData";
     CDVPluginResult* result = block(argsDict);
     [self log:SFLogLevelDebug format:@"%@ returning after %f secs.", command.methodName, -[startTime timeIntervalSinceNow]];
 
-    if ([[result status] intValue] == CDVCommandStatus_OK) {
+    if ([[result status] unsignedIntegerValue] == CDVCommandStatus_OK) {
         [self writeSuccessResultToJsRealm:result callbackId:callbackId];
     }
     else {
