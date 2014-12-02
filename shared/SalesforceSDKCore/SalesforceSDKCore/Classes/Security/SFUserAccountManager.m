@@ -60,7 +60,7 @@ NSString * const kOAuthRedirectUriKey = @"oauth_redirect_uri";
 // Persistence Keys
 static NSString * const kUserAccountsMapCodingKey  = @"accountsMap";
 NSString * const kUserDefaultsLastUserIdentityKey = @"LastUserIdentity";
-static NSString * const kUserDefaultsLastUserCommunityIdKey = @"LastUserCommunityId";
+NSString * const kUserDefaultsLastUserCommunityIdKey = @"LastUserCommunityId";
 
 // Oauth
 static NSString * const kSFUserAccountOAuthLoginHostDefault = @"login.salesforce.com"; // last resort default OAuth host
@@ -823,16 +823,29 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 }
 
 - (NSString *)activeCommunityId {
-    return [[NSUserDefaults standardUserDefaults] stringForKey:kUserDefaultsLastUserCommunityIdKey];
+    NSUserDefaults *userDefaults;
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        userDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+    } else {
+        userDefaults =  [NSUserDefaults standardUserDefaults];
+    }
+    return [userDefaults stringForKey:kUserDefaultsLastUserCommunityIdKey];
 }
 
 - (void)setActiveCommunityId:(NSString *)activeCommunityId {
-    if (activeCommunityId == nil) {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserDefaultsLastUserCommunityIdKey];
+    NSUserDefaults *userDefaults;
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        userDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
     } else {
-        [[NSUserDefaults standardUserDefaults] setObject:activeCommunityId forKey:kUserDefaultsLastUserCommunityIdKey];
+        userDefaults =  [NSUserDefaults standardUserDefaults];
     }
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    if (activeCommunityId == nil) {
+        [userDefaults removeObjectForKey:kUserDefaultsLastUserCommunityIdKey];
+    } else {
+        [userDefaults setObject:activeCommunityId forKey:kUserDefaultsLastUserCommunityIdKey];
+    }
+    [userDefaults synchronize];
 }
 
 - (void)setActiveUser:(SFUserAccount *)user {

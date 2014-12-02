@@ -32,6 +32,8 @@
  */
 extern NSString * const kUserDefaultsLastUserIdentityKey;
 
+extern NSString * const kUserDefaultsLastUserCommunityIdKey;
+
 /** Notification sent when something has changed with the current user
  */
 extern NSString * const SFUserAccountManagerDidChangeCurrentUserNotification;

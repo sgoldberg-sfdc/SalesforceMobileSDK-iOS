@@ -101,8 +101,13 @@ static NSString * const kAppUpgradedForGroupAccess = @"kAppUpgradedForGroupAcces
         if (userData) {
             [sharedDefaults setObject:userData forKey:kUserDefaultsLastUserIdentityKey];
         }
-       
-
+        
+        //Migrate last active community Id
+        NSString *activeCommunityId = [standardDefaults stringForKey:kUserDefaultsLastUserCommunityIdKey];
+        if (activeCommunityId) {
+            [sharedDefaults setObject:activeCommunityId forKey:kUserDefaultsLastUserCommunityIdKey];
+        }
+        
         //Migrate Files
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSString *libraryDirectory = [[SFDirectoryManager sharedManager] directoryForOrg:nil user:nil community:nil type:NSLibraryDirectory components:nil];
