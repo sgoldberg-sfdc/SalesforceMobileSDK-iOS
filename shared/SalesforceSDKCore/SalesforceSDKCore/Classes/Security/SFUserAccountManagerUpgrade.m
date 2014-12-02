@@ -95,7 +95,6 @@ static NSString * const kAppUpgradedForGroupAccess = @"kAppUpgradedForGroupAcces
         NSInteger encyptionType = [standardDefaults integerForKey:kSFOAuthEncryptionTypeKey];
         [sharedDefaults setInteger:encyptionType forKey:kSFOAuthEncryptionTypeKey];
         
-        
         //Migrate last user identity key
         NSData *userData = [standardDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
         if (userData) {
