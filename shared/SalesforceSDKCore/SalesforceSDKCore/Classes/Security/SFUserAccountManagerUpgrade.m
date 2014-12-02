@@ -82,7 +82,7 @@ static NSString * const kAppUpgradedForGroupAccess = @"kAppUpgradedForGroupAcces
 
 + (void)upgradeAppForGroupAccess {
     //Migrate NSUserDefaultsData
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
     NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
     BOOL isGroupAccessEnabled = [standardDefaults boolForKey:kAppUpgradedForGroupAccess];
     
@@ -111,9 +111,9 @@ static NSString * const kAppUpgradedForGroupAccess = @"kAppUpgradedForGroupAcces
         //Migrate Files
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSString *libraryDirectory = [[SFDirectoryManager sharedManager] directoryForOrg:nil user:nil community:nil type:NSLibraryDirectory components:nil];
-        NSURL *sharedURL = [fileManager containerURLForSecurityApplicationGroupIdentifier:kKeyChainIdentifierAppGroupName];
+        NSURL *sharedURL = [fileManager containerURLForSecurityApplicationGroupIdentifier:[SFDatasharingHelper sharedInstance].appGroupName];
         NSString *sharedDirectory = [sharedURL path];
-        sharedDirectory = [sharedDirectory stringByAppendingPathComponent:kKeyChainIdentifierAppGroupName];
+        sharedDirectory = [sharedDirectory stringByAppendingPathComponent:[SFDatasharingHelper sharedInstance].appGroupName];
         
         [self moveContentsOfDirectory:libraryDirectory toDirectory:sharedDirectory];
         
@@ -123,11 +123,6 @@ static NSString * const kAppUpgradedForGroupAccess = @"kAppUpgradedForGroupAcces
         [sharedDefaults synchronize];
         [standardDefaults synchronize];
     }
-}
-
-
-+ (void)upgradeAppForSharedKeychain {
-    
 }
 
 #pragma mark - Private methods

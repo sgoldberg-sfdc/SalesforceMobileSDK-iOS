@@ -64,9 +64,9 @@ static NSString * const kDefaultCommunityName = @"internal";
     NSString *directory;
     
     if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
-        NSURL *sharedURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:kKeyChainIdentifierAppGroupName];
+        NSURL *sharedURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[SFDatasharingHelper sharedInstance].appGroupName];
         directory = [sharedURL path];
-        directory = [directory stringByAppendingPathComponent:kKeyChainIdentifierAppGroupName];
+        directory = [directory stringByAppendingPathComponent:[SFDatasharingHelper sharedInstance].appGroupName];
     } else {
         NSArray *directories = NSSearchPathForDirectoriesInDomains(type, NSUserDomainMask, YES);
         if (directories.count > 0) {

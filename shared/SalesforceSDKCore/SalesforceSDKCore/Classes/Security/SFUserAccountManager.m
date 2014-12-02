@@ -779,7 +779,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 - (SFUserAccountIdentity *)activeUserIdentity {
     NSData *resultData = nil;
     if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
-        NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+        NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
         resultData = [sharedDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
     } else {
         resultData = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaultsLastUserIdentityKey];
@@ -805,7 +805,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 - (void)setActiveUserIdentity:(SFUserAccountIdentity *)activeUserIdentity {
     NSUserDefaults *standardDefaults;
     if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
-        standardDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+        standardDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
     } else {
         standardDefaults = [NSUserDefaults standardUserDefaults];
     }
@@ -825,7 +825,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 - (NSString *)activeCommunityId {
     NSUserDefaults *userDefaults;
     if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
-        userDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+        userDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
     } else {
         userDefaults =  [NSUserDefaults standardUserDefaults];
     }
@@ -835,7 +835,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 - (void)setActiveCommunityId:(NSString *)activeCommunityId {
     NSUserDefaults *userDefaults;
     if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
-        userDefaults = [[NSUserDefaults alloc] initWithSuiteName:kKeyChainIdentifierAppGroupName];
+        userDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
     } else {
         userDefaults =  [NSUserDefaults standardUserDefaults];
     }
