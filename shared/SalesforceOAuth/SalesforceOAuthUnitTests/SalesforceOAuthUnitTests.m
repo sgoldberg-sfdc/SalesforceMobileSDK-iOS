@@ -399,25 +399,23 @@ static NSString * const kClientId   = @"SfdcMobileChatteriOS";
 
 - (void)verifySuccessfulTokenUpdate:(NSString *)accessToken refreshToken:(NSString *)refreshToken
 {
-    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
     SFOAuthCredentials *credentials = [[SFOAuthCredentials alloc] initWithIdentifier:kIdentifier clientId:kClientId encrypted:YES];
     NSString *accessTokenVerify = [credentials accessTokenWithSFEncryptionKey:[credentials keyStoreKeyForService:kSFOAuthServiceAccess]];
     STAssertEqualObjects(accessToken, accessTokenVerify, @"Access token should have been updated to key store encryption.");
     NSString *refreshTokenVerify = [credentials refreshTokenWithSFEncryptionKey:[credentials keyStoreKeyForService:kSFOAuthServiceRefresh]];
     STAssertEqualObjects(refreshToken, refreshTokenVerify, @"Refresh token should have been updated to key store encryption.");
-    SFOAuthCredsEncryptionType encType = [standardDefaults integerForKey:kSFOAuthEncryptionTypeKey];
+    SFOAuthCredsEncryptionType encType = [[NSUserDefaults standardUserDefaults] integerForKey:kSFOAuthEncryptionTypeKey];
     STAssertEquals(encType, kSFOAuthCredsEncryptionTypeKeyStore, @"Encryption type should have been updated to key store.");
 }
 
 - (void)verifyUnsuccessfulTokenUpdate
 {
-    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
     SFOAuthCredentials *credentials = [[SFOAuthCredentials alloc] initWithIdentifier:kIdentifier clientId:kClientId encrypted:YES];
     NSString *accessTokenVerify = credentials.accessToken;
     STAssertNil(accessTokenVerify, @"Access token should be nil, since it cannot be converted with bad inputs.");
     NSString *refreshTokenVerify = credentials.refreshToken;
     STAssertNil(refreshTokenVerify, @"Refresh token should be nil, since it cannot be converted with bad inputs.");
-    SFOAuthCredsEncryptionType encType = [standardDefaults integerForKey:kSFOAuthEncryptionTypeKey];
+    SFOAuthCredsEncryptionType encType = [[NSUserDefaults standardUserDefaults] integerForKey:kSFOAuthEncryptionTypeKey];
     STAssertEquals(encType, kSFOAuthCredsEncryptionTypeKeyStore, @"Encryption type still should have been updated to key store.");
 }
 
