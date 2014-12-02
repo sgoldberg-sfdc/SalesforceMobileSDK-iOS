@@ -48,11 +48,11 @@
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <netinet/in.h>
 
-typedef enum {
+typedef NS_ENUM(NSUInteger, NetworkStatus) {
     NotReachable = 0,
     ReachableViaWWAN, // this value has been swapped with ReachableViaWiFi for Cordova backwards compat. reasons
     ReachableViaWiFi  // this value has been swapped with ReachableViaWWAN for Cordova backwards compat. reasons
-} NetworkStatus;
+};
 #define kReachabilityChangedNotification @"kNetworkReachabilityChangedNotification"
 
 @interface SFReachability : NSObject
