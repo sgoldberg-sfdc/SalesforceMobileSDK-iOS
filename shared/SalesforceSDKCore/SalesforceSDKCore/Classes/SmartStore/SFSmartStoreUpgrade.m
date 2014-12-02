@@ -272,7 +272,9 @@ static NSString * const kKeyStoreEncryptedStoresKey = @"com.salesforce.smartstor
     
     NSNumber *usesDefaultNum = [NSNumber numberWithBool:usesKeyStoreEncryption];
     [newUserDict setObject:usesDefaultNum forKey:storeName];
-    [newDict setObject:newUserDict forKey:userKey];
+    if (userKey) {
+        [newDict setObject:newUserDict forKey:userKey];
+    }
     [userDefaults setObject:newDict forKey:kKeyStoreEncryptedStoresKey];
     [userDefaults synchronize];
 }
