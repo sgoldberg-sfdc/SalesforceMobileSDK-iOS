@@ -50,10 +50,4 @@
  */
 + (void)upgradeAppForGroupAccess;
 
-
-/**
- Upgrade the application for shared keychain access.
- This is used for enabling application to share keychain data with other apps and extensions
- */
-+ (void)upgradeAppForSharedKeychain;
 @end
