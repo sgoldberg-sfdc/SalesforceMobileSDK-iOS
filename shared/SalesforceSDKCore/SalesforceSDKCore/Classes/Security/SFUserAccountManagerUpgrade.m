@@ -26,8 +26,6 @@
 #import "SFUserAccountManager+Internal.h"
 #import "SFUserAccountIdentity.h"
 #import <SalesforceOAuth/SFOAuthCredentials.h>
-#import <SalesforceCommonUtils/SFDatasharingHelper.h>
-#import <SalesforceCommonUtils/SFCrypto.h>
 
 static NSString * const kOAuthCredentialsDataKeyPrefix  = @"oauth_credentials_data";
 static NSString * const kLegacyDefaultAccountIdentifier = @"Default";
