@@ -43,6 +43,14 @@ static NSString * const kDefaultCommunityName = @"internal";
     return manager;
 }
 
+- (id)init {
+    self = [super init];
+    if (self) {
+        [self migrateFiles];
+    }
+    return self;
+}
+
 + (BOOL)ensureDirectoryExists:(NSString*)directory error:(NSError**)error {
     NSFileManager *manager = [NSFileManager defaultManager];
     if (![manager fileExistsAtPath:directory]) {
@@ -143,5 +151,64 @@ static NSString * const kDefaultCommunityName = @"internal";
 - (NSString*)globalDirectoryOfType:(NSSearchPathDirectory)type components:(NSArray*)components {
     return [self directoryForOrg:nil user:nil community:nil type:type components:components];
 }
+
+- (void)moveContentsOfDirectory:(NSString *)sourceDirectory toDirectory:(NSString *)destinationDirectory {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    if (sourceDirectory && [fileManager fileExistsAtPath:sourceDirectory]) {
+        [SFDirectoryManager ensureDirectoryExists:destinationDirectory error:nil];
+        
+        NSArray *rootContents = [fileManager contentsOfDirectoryAtPath:sourceDirectory error:&error];
+        if (nil == rootContents) {
+            if (error) {
+                [self log:SFLogLevelDebug format:@"Unable to enumerate the content at %@: %@", sourceDirectory, error];
+            }
+        } else {
+            for (NSString *s in rootContents) {
+                NSString *newFilePath = [destinationDirectory stringByAppendingPathComponent:s];
+                NSString *oldFilePath = [sourceDirectory stringByAppendingPathComponent:s];
+                if (![fileManager fileExistsAtPath:newFilePath]) {
+                    //File does not exist, copy it
+                    if (![fileManager copyItemAtPath:oldFilePath toPath:newFilePath error:&error]) {
+                        [self log:SFLogLevelError format:@"Could not move library directory contents to a shared location for app group access: %@", error];
+                    }
+                } else {
+                    [fileManager removeItemAtPath:newFilePath error:&error];
+                    [fileManager copyItemAtPath:oldFilePath toPath:newFilePath error:&error];
+                }
+            }
+        }
+    }
+}
+
+- (void)migrateFiles {
+    //Migrate Files
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+    BOOL isGroupAccessEnabled = [SFDatasharingHelper sharedInstance].appGroupEnabled;
+    BOOL filesShared = [sharedDefaults boolForKey:@"filesShared"];
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSString *libraryDirectory;
+    NSArray *directories = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+    if (directories.count > 0) {
+        libraryDirectory = [directories[0] stringByAppendingPathComponent:[NSBundle mainBundle].bundleIdentifier];
+    }
+    
+    NSURL *sharedURL = [fileManager containerURLForSecurityApplicationGroupIdentifier:[SFDatasharingHelper sharedInstance].appGroupName];
+    NSString *sharedDirectory = [sharedURL path];
+    sharedDirectory = [sharedDirectory stringByAppendingPathComponent:[SFDatasharingHelper sharedInstance].appGroupName];
+    
+    if (isGroupAccessEnabled && !filesShared) {
+        [self moveContentsOfDirectory:libraryDirectory toDirectory:sharedDirectory];
+        [sharedDefaults setBool:YES forKey:@"filesShared"];
+    }
+    
+    if (!isGroupAccessEnabled && filesShared) {
+        [self moveContentsOfDirectory:sharedDirectory toDirectory:libraryDirectory];
+        [sharedDefaults setBool:NO forKey:@"filesShared"];
+    }
+    [sharedDefaults synchronize];
+}
+
 
 @end

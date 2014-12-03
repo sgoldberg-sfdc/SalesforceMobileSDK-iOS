@@ -483,8 +483,60 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
     return [directory stringByAppendingPathComponent:kUserAccountPlistFileName];
 }
 
+- (void)migrateUserDefaults {
+    //Migrate the defaults to the correct location
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+    
+    BOOL isGroupAccessEnabled = [SFDatasharingHelper sharedInstance].appGroupEnabled;
+    BOOL userIdentityShared = [sharedDefaults boolForKey:@"userIdentityShared"];
+    BOOL communityIdShared = [sharedDefaults boolForKey:@"communityIdShared"];
+    
+    if (isGroupAccessEnabled && !userIdentityShared) {
+        //Migrate user identity to shared location
+        NSData *userData = [standardDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
+        if (userData) {
+            [sharedDefaults setObject:userData forKey:kUserDefaultsLastUserIdentityKey];
+        }
+        [sharedDefaults setBool:YES forKey:@"userIdentityShared"];
+    }
+    if (!isGroupAccessEnabled && userIdentityShared) {
+        //Migrate base app identifier key to non-shared location
+        NSData *userData = [sharedDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
+        if (userData) {
+            [standardDefaults setObject:userData forKey:kUserDefaultsLastUserIdentityKey];
+        }
+        
+        [sharedDefaults setBool:NO forKey:@"userIdentityShared"];
+    }
+    
+    
+    if (isGroupAccessEnabled && !communityIdShared) {
+        //Migrate communityId to shared location
+        NSString *activeCommunityId = [standardDefaults stringForKey:kUserDefaultsLastUserCommunityIdKey];
+        if (activeCommunityId) {
+            [sharedDefaults setObject:activeCommunityId forKey:kUserDefaultsLastUserCommunityIdKey];
+        }
+        [sharedDefaults setBool:YES forKey:@"communityIdShared"];
+    }
+    if (!isGroupAccessEnabled && communityIdShared) {
+        //Migrate base app identifier key to non-shared location
+        NSString *activeCommunityId = [sharedDefaults stringForKey:kUserDefaultsLastUserCommunityIdKey];
+        if (activeCommunityId) {
+            [standardDefaults setObject:activeCommunityId forKey:kUserDefaultsLastUserCommunityIdKey];
+        }
+        [sharedDefaults setBool:NO forKey:@"communityIdShared"];
+    }
+    
+    [standardDefaults synchronize];
+    [sharedDefaults synchronize];
+    
+}
+
 // called by init
 - (BOOL)loadAccounts:(NSError**)error {
+    [self migrateUserDefaults];
+    
     // Make sure we start from a blank state
     [self clearAllAccountState];
     

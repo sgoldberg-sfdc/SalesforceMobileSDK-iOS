@@ -43,11 +43,4 @@
  */
 + (void)updateToActiveUserIdentity:(SFUserAccountManager *)accountManager;
 
-
-/**
- Upgrade the application for group access.
- This is used for enabling extensions and other applications to share data
- */
-+ (void)upgradeAppForGroupAccess;
-
 @end

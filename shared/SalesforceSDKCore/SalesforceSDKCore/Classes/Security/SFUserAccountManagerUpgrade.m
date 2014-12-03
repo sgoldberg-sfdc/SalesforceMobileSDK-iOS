@@ -28,12 +28,10 @@
 #import <SalesforceOAuth/SFOAuthCredentials.h>
 #import <SalesforceCommonUtils/SFDatasharingHelper.h>
 #import <SalesforceCommonUtils/SFCrypto.h>
-#import "SFDirectoryManager.h"
 
 static NSString * const kOAuthCredentialsDataKeyPrefix  = @"oauth_credentials_data";
 static NSString * const kLegacyDefaultAccountIdentifier = @"Default";
 static NSString * const kLegacyUserDefaultsLastUserIdKey = @"LastUserId";
-static NSString * const kAppUpgradedForGroupAccess = @"kAppUpgradedForGroupAccess";
 
 @implementation SFUserAccountManagerUpgrade
 
@@ -80,84 +78,11 @@ static NSString * const kAppUpgradedForGroupAccess = @"kAppUpgradedForGroupAcces
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-+ (void)upgradeAppForGroupAccess {
-    //Migrate NSUserDefaultsData
-    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
-    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
-    BOOL isGroupAccessEnabled = [standardDefaults boolForKey:kAppUpgradedForGroupAccess];
-    
-    if (!isGroupAccessEnabled) {
-        //Migrate base app identifier configured key
-        BOOL baseAppIdentifierConfigured = [standardDefaults boolForKey:kKeychainIdentifierBaseAppId];
-        [sharedDefaults setBool:baseAppIdentifierConfigured forKey:kKeychainIdentifierBaseAppId];
-        
-        //Migrate encryption type key
-        NSInteger encyptionType = [standardDefaults integerForKey:kSFOAuthEncryptionTypeKey];
-        [sharedDefaults setInteger:encyptionType forKey:kSFOAuthEncryptionTypeKey];
-        
-        //Migrate last user identity key
-        NSData *userData = [standardDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
-        if (userData) {
-            [sharedDefaults setObject:userData forKey:kUserDefaultsLastUserIdentityKey];
-        }
-        
-        //Migrate last active community Id
-        NSString *activeCommunityId = [standardDefaults stringForKey:kUserDefaultsLastUserCommunityIdKey];
-        if (activeCommunityId) {
-            [sharedDefaults setObject:activeCommunityId forKey:kUserDefaultsLastUserCommunityIdKey];
-        }
-        
-        //Migrate Files
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSString *libraryDirectory = [[SFDirectoryManager sharedManager] directoryForOrg:nil user:nil community:nil type:NSLibraryDirectory components:nil];
-        NSURL *sharedURL = [fileManager containerURLForSecurityApplicationGroupIdentifier:[SFDatasharingHelper sharedInstance].appGroupName];
-        NSString *sharedDirectory = [sharedURL path];
-        sharedDirectory = [sharedDirectory stringByAppendingPathComponent:[SFDatasharingHelper sharedInstance].appGroupName];
-        
-        [self moveContentsOfDirectory:libraryDirectory toDirectory:sharedDirectory];
-        
-        //mark that app is upgraded for group access
-        [standardDefaults setBool:YES forKey:kAppUpgradedForGroupAccess];
-        //Save shared user defaults
-        [sharedDefaults synchronize];
-        [standardDefaults synchronize];
-    }
-}
-
 #pragma mark - Private methods
 
 + (NSString *)legacyCredentialsDataKey
 {
     return [NSString stringWithFormat:@"%@-%@-%@", kOAuthCredentialsDataKeyPrefix, [SFUserAccountManager sharedInstance].loginHost, kLegacyDefaultAccountIdentifier];
-}
-
-+ (void)moveContentsOfDirectory:(NSString *)sourceDirectory toDirectory:(NSString *)destinationDirectory {
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error;
-    if (sourceDirectory && [fileManager fileExistsAtPath:sourceDirectory]) {
-        [SFDirectoryManager ensureDirectoryExists:destinationDirectory error:nil];
-        
-        NSArray *rootContents = [fileManager contentsOfDirectoryAtPath:sourceDirectory error:&error];
-        if (nil == rootContents) {
-            if (error) {
-                [self log:SFLogLevelDebug format:@"Unable to enumerate the content at %@: %@", sourceDirectory, error];
-            }
-        } else {
-            for (NSString *s in rootContents) {
-                NSString *newFilePath = [destinationDirectory stringByAppendingPathComponent:s];
-                NSString *oldFilePath = [sourceDirectory stringByAppendingPathComponent:s];
-                if (![fileManager fileExistsAtPath:newFilePath]) {
-                    //File does not exist, copy it
-                    if (![fileManager copyItemAtPath:oldFilePath toPath:newFilePath error:&error]) {
-                        [self log:SFLogLevelError format:@"Could not move library directory contents to a shared location for app group access: %@", error];
-                    }
-                } else {
-                    [fileManager removeItemAtPath:newFilePath error:&error];
-                    [fileManager copyItemAtPath:oldFilePath toPath:newFilePath error:&error];
-                }
-            }
-        }
-    }
 }
 
 @end

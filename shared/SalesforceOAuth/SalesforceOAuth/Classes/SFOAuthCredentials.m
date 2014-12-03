@@ -158,7 +158,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
         [[NSUserDefaults standardUserDefaults] setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
-
+    [self migrateUserDefaults];
 }
 
 - (NSString *)clientId {
@@ -232,6 +232,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
         [[NSUserDefaults standardUserDefaults] setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
+    [self migrateUserDefaults];
 }
 
 - (NSString *)activationCode {
@@ -540,12 +541,41 @@ static NSException * kSFOAuthExceptionNilIdentifier;
     return [strSecret sha256];
 }
 
+- (void)migrateUserDefaults {
+    //Migrate the defaults to the correct location
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+    
+    BOOL isGroupAccessEnabled = [SFDatasharingHelper sharedInstance].appGroupEnabled;
+    BOOL encKeyShared = [sharedDefaults boolForKey:@"OAuthEncryptionTypeKeyShared"];
+    
+    if (isGroupAccessEnabled && !encKeyShared) {
+        //Migrate encryption key type to shared location
+        NSInteger encyptionType = [standardDefaults integerForKey:kSFOAuthEncryptionTypeKey];
+        if (encyptionType != kSFOAuthCredsEncryptionTypeNotSet) {
+            [sharedDefaults setInteger:encyptionType forKey:kSFOAuthEncryptionTypeKey];
+            [sharedDefaults setBool:YES forKey:@"OAuthEncryptionTypeKeyShared"];
+        }
+    }
+    if (!isGroupAccessEnabled && encKeyShared) {
+        //Migrate encryption key type to non-shared location
+        NSInteger encyptionType = [sharedDefaults integerForKey:kSFOAuthEncryptionTypeKey];
+        if (encyptionType != kSFOAuthCredsEncryptionTypeNotSet) {
+            [standardDefaults setInteger:encyptionType forKey:kSFOAuthEncryptionTypeKey];
+            [sharedDefaults setBool:NO forKey:@"OAuthEncryptionTypeKeyShared"];
+        }
+    }
+    
+    [standardDefaults synchronize];
+    [sharedDefaults synchronize];
+}
+
 - (void)updateTokenEncryption
 {
     // Convert encryption keys to latest format--currently kSFOAuthCredsEncryptionTypeKeyStore--if
     // it's in an older format, and if it's possible.  It won't be possible, for instance, to convert
     // MAC address-based keys if the user is on iOS 7 or above, and we'll reset the tokens to nil;
-    
+    [self migrateUserDefaults];
     if (!self.isEncrypted) return;
     SFOAuthCredsEncryptionType encType;
     if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
