@@ -149,6 +149,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 }
 
 - (void)setAccessToken:(NSString *)token {
+    [self migrateUserDefaults];
     [self setAccessToken:token withSFEncryptionKey:[self keyStoreKeyForService:kSFOAuthServiceAccess]];
     if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
         NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
@@ -158,7 +159,6 @@ static NSException * kSFOAuthExceptionNilIdentifier;
         [[NSUserDefaults standardUserDefaults] setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
-    [self migrateUserDefaults];
 }
 
 - (NSString *)clientId {
@@ -223,6 +223,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 }
 
 - (void)setRefreshToken:(NSString *)token {
+    [self migrateUserDefaults];
     [self setRefreshToken:token withSFEncryptionKey:[self keyStoreKeyForService:kSFOAuthServiceRefresh]];
     if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
         NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
@@ -232,7 +233,6 @@ static NSException * kSFOAuthExceptionNilIdentifier;
         [[NSUserDefaults standardUserDefaults] setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
         [[NSUserDefaults standardUserDefaults] synchronize];
     }
-    [self migrateUserDefaults];
 }
 
 - (NSString *)activationCode {
