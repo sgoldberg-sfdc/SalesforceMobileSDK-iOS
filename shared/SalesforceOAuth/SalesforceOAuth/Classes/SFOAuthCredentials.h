@@ -34,8 +34,6 @@ typedef enum {
     kSFOAuthLogLevelError
 } SFOAuthLogLevel;
 
-extern NSString * const kSFOAuthEncryptionTypeKey;
-
 /** Object representing an individual user account's logon credentials.
  
  This object represents information about a user account necessary to authenticate and

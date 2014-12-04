@@ -44,7 +44,7 @@ NSString * const kSFOAuthServiceActivation      = @"com.salesforce.oauth.activat
 
 static NSString * const kSFOAuthDefaultDomain          = @"login.salesforce.com";
 
-NSString * const kSFOAuthEncryptionTypeKey = @"com.salesforce.oauth.creds.encryption.type";
+static NSString * const kSFOAuthEncryptionTypeKey = @"com.salesforce.oauth.creds.encryption.type";
 
 @interface SFOAuthCredentials ()
 

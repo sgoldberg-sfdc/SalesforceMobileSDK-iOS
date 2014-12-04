@@ -32,7 +32,6 @@
 #import <SalesforceSecurity/SFKeyStoreKey.h>
 #import <SalesforceSecurity/SFSDKCryptoUtils.h>
 #import <SalesforceCommonUtils/NSString+SFAdditions.h>
-#import <SalesforceCommonUtils/SFKeychainItemWrapper.h>
 #import <SalesforceCommonUtils/SFDatasharingHelper.h>
 
 // Notifications
@@ -59,8 +58,8 @@ NSString * const kOAuthRedirectUriKey = @"oauth_redirect_uri";
 
 // Persistence Keys
 static NSString * const kUserAccountsMapCodingKey  = @"accountsMap";
-NSString * const kUserDefaultsLastUserIdentityKey = @"LastUserIdentity";
-NSString * const kUserDefaultsLastUserCommunityIdKey = @"LastUserCommunityId";
+static NSString * const kUserDefaultsLastUserIdentityKey = @"LastUserIdentity";
+static NSString * const kUserDefaultsLastUserCommunityIdKey = @"LastUserCommunityId";
 
 // Oauth
 static NSString * const kSFUserAccountOAuthLoginHostDefault = @"login.salesforce.com"; // last resort default OAuth host
@@ -508,18 +507,14 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         }
         
         [sharedDefaults setBool:NO forKey:@"userIdentityShared"];
-    }
-    
-    
-    if (isGroupAccessEnabled && !communityIdShared) {
+    } else if (isGroupAccessEnabled && !communityIdShared) {
         //Migrate communityId to shared location
         NSString *activeCommunityId = [standardDefaults stringForKey:kUserDefaultsLastUserCommunityIdKey];
         if (activeCommunityId) {
             [sharedDefaults setObject:activeCommunityId forKey:kUserDefaultsLastUserCommunityIdKey];
         }
         [sharedDefaults setBool:YES forKey:@"communityIdShared"];
-    }
-    if (!isGroupAccessEnabled && communityIdShared) {
+    } else if (!isGroupAccessEnabled && communityIdShared) {
         //Migrate base app identifier key to non-shared location
         NSString *activeCommunityId = [sharedDefaults stringForKey:kUserDefaultsLastUserCommunityIdKey];
         if (activeCommunityId) {

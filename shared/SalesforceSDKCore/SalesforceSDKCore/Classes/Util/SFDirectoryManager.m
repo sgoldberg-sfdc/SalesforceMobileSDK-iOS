@@ -26,7 +26,6 @@
 #import "SFUserAccountManager.h"
 #import "SFUserAccount.h"
 
-#import <SalesforceCommonUtils/SFKeychainItemWrapper.h>
 #import <SalesforceCommonUtils/SFDatasharingHelper.h>
 
 static NSString * const kDefaultOrgName = @"org";
@@ -154,7 +153,7 @@ static NSString * const kDefaultCommunityName = @"internal";
 
 - (void)moveContentsOfDirectory:(NSString *)sourceDirectory toDirectory:(NSString *)destinationDirectory {
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSError *error;
+    NSError *error = nil;
     if (sourceDirectory && [fileManager fileExistsAtPath:sourceDirectory]) {
         [SFDirectoryManager ensureDirectoryExists:destinationDirectory error:nil];
         
@@ -201,9 +200,7 @@ static NSString * const kDefaultCommunityName = @"internal";
     if (isGroupAccessEnabled && !filesShared) {
         [self moveContentsOfDirectory:libraryDirectory toDirectory:sharedDirectory];
         [sharedDefaults setBool:YES forKey:@"filesShared"];
-    }
-    
-    if (!isGroupAccessEnabled && filesShared) {
+    } else if (!isGroupAccessEnabled && filesShared) {
         [self moveContentsOfDirectory:sharedDirectory toDirectory:libraryDirectory];
         [sharedDefaults setBool:NO forKey:@"filesShared"];
     }
