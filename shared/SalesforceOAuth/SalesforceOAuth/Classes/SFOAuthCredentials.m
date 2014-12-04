@@ -556,8 +556,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
             [sharedDefaults setInteger:encyptionType forKey:kSFOAuthEncryptionTypeKey];
             [sharedDefaults setBool:YES forKey:@"OAuthEncryptionTypeKeyShared"];
         }
-    }
-    if (!isGroupAccessEnabled && encKeyShared) {
+    } else if (!isGroupAccessEnabled && encKeyShared) {
         //Migrate encryption key type to non-shared location
         NSInteger encyptionType = [sharedDefaults integerForKey:kSFOAuthEncryptionTypeKey];
         if (encyptionType != kSFOAuthCredsEncryptionTypeNotSet) {
