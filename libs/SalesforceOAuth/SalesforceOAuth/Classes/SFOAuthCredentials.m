@@ -307,9 +307,34 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 
 #pragma mark - Private Keychain Methods
 
+- (void)migrateTokenDataForService:(NSString *)service {
+    // migrate the access and refresh toekn to the correct location
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+    NSString *tokenSharedKey = [NSString stringWithFormat:@"%@tokenShared",service];
+    BOOL tokenShared = [sharedDefaults boolForKey:tokenSharedKey];
+    BOOL keyChainSharingEnabled = [SFDatasharingHelper sharedInstance].keychainSharingEnabled;
+    if (keyChainSharingEnabled && !tokenShared) {
+        SFKeychainItemWrapper *keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier];
+        NSData *tokenData = [keychainItem valueData];
+        if (tokenData) {
+            self.accessToken = [[NSString alloc] initWithData:tokenData encoding:NSUTF8StringEncoding];
+        }
+        [sharedDefaults setBool:YES forKey:tokenSharedKey];
+    } else if (!keyChainSharingEnabled && tokenShared) {
+        SFKeychainItemWrapper *keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier accessGroup:[SFDatasharingHelper sharedInstance].keychainGroupName];
+        NSData *tokenData = [keychainItem valueData];
+        if (tokenData) {
+            self.accessToken = [[NSString alloc] initWithData:tokenData encoding:NSUTF8StringEncoding];
+        }
+        [sharedDefaults setBool:NO forKey:tokenSharedKey];
+    }
+}
+
 - (NSData *)tokenForService:(NSString *)service
 {
     if (!([self.identifier length] > 0)) @throw kSFOAuthExceptionNilIdentifier;
+    [self migrateTokenDataForService:service];
+    
     SFKeychainItemWrapper *keychainItem;
     if ([SFDatasharingHelper sharedInstance].keychainSharingEnabled) {
         keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier accessGroup:[SFDatasharingHelper sharedInstance].keychainGroupName];
