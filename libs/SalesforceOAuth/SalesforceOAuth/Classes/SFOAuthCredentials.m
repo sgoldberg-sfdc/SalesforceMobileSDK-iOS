@@ -307,9 +307,108 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 
 #pragma mark - Private Keychain Methods
 
+- (void)migrateOldTokenDataForService:(NSString *)service key:(NSData *)key {
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+    NSString *tokenSharedKey = [NSString stringWithFormat:@"%@tokenShared",service];
+    BOOL tokenShared = [sharedDefaults boolForKey:tokenSharedKey];
+    BOOL keyChainSharingEnabled = [SFDatasharingHelper sharedInstance].keychainSharingEnabled;
+    if (keyChainSharingEnabled && !tokenShared) {
+        SFKeychainItemWrapper *keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier];
+        NSData *tokenData = [keychainItem valueData];
+        NSString *strToken;
+        if (tokenData) {
+            if (self.isEncrypted) {
+                SFOAuthCrypto *cipher = [[SFOAuthCrypto alloc] initWithOperation:SFOADecrypt key:key];
+                NSData *decryptedData = [cipher decryptData:tokenData];
+                strToken = [[NSString alloc] initWithData:decryptedData encoding:NSUTF8StringEncoding];
+            } else {
+                strToken = [[NSString alloc] initWithData:tokenData encoding:NSUTF8StringEncoding];
+            }
+            
+            if (service == kSFOAuthServiceAccess) {
+                self.accessToken = strToken;
+            } else if (service == kSFOAuthServiceRefresh) {
+                self.refreshToken = strToken;
+            }
+        }
+        [sharedDefaults setBool:YES forKey:tokenSharedKey];
+    } else if (!keyChainSharingEnabled && tokenShared) {
+        SFKeychainItemWrapper *keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier accessGroup:[SFDatasharingHelper sharedInstance].keychainGroupName];
+        NSData *tokenData = [keychainItem valueData];
+        NSString *strToken;
+        if (tokenData) {
+            if (self.isEncrypted) {
+                SFOAuthCrypto *cipher = [[SFOAuthCrypto alloc] initWithOperation:SFOADecrypt key:key];
+                NSData *decryptedData = [cipher decryptData:tokenData];
+                strToken = [[NSString alloc] initWithData:decryptedData encoding:NSUTF8StringEncoding];
+            } else {
+                strToken = [[NSString alloc] initWithData:tokenData encoding:NSUTF8StringEncoding];
+            }
+            
+            if (service == kSFOAuthServiceAccess) {
+                self.accessToken = strToken;
+            } else if (service == kSFOAuthServiceRefresh) {
+                self.refreshToken = strToken;
+            }
+        }
+        [sharedDefaults setBool:NO forKey:tokenSharedKey];
+    }
+}
+
+- (void)migrateTokenDataForService:(NSString *)service key:(SFEncryptionKey *)encryptionKey {
+    // migrate the access and refresh toekn to the correct location
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+    NSString *tokenSharedKey = [NSString stringWithFormat:@"%@tokenShared",service];
+    BOOL tokenShared = [sharedDefaults boolForKey:tokenSharedKey];
+    BOOL keyChainSharingEnabled = [SFDatasharingHelper sharedInstance].keychainSharingEnabled;
+    if (keyChainSharingEnabled && !tokenShared) {
+        SFKeychainItemWrapper *keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier];
+        NSData *tokenData = [keychainItem valueData];
+        NSString *strToken;
+        if (tokenData) {
+            if (self.isEncrypted) {
+                NSData *decryptedData = [SFSDKCryptoUtils aes256DecryptData:tokenData
+                                                                    withKey:encryptionKey.key
+                                                                         iv:encryptionKey.initializationVector];
+                strToken = [[NSString alloc] initWithData:decryptedData encoding:NSUTF8StringEncoding];
+            } else {
+                strToken =  [[NSString alloc] initWithData:tokenData encoding:NSUTF8StringEncoding];
+            }
+            
+            if (service == kSFOAuthServiceAccess) {
+                self.accessToken = strToken;
+            } else if (service == kSFOAuthServiceRefresh) {
+                self.refreshToken = strToken;
+            }
+        }
+        [sharedDefaults setBool:YES forKey:tokenSharedKey];
+    } else if (!keyChainSharingEnabled && tokenShared) {
+        SFKeychainItemWrapper *keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier accessGroup:[SFDatasharingHelper sharedInstance].keychainGroupName];
+        NSData *tokenData = [keychainItem valueData];
+        NSString *strToken;
+        if (tokenData) {
+            if (self.isEncrypted) {
+                NSData *decryptedData = [SFSDKCryptoUtils aes256DecryptData:tokenData
+                                                                    withKey:encryptionKey.key
+                                                                         iv:encryptionKey.initializationVector];
+                strToken = [[NSString alloc] initWithData:decryptedData encoding:NSUTF8StringEncoding];
+            } else {
+                strToken =  [[NSString alloc] initWithData:tokenData encoding:NSUTF8StringEncoding];
+            }
+            if (service == kSFOAuthServiceAccess) {
+                self.accessToken = strToken;
+            } else if (service == kSFOAuthServiceRefresh) {
+                self.refreshToken = strToken;
+            }
+        }
+        [sharedDefaults setBool:NO forKey:tokenSharedKey];
+    }
+}
+
 - (NSData *)tokenForService:(NSString *)service
 {
     if (!([self.identifier length] > 0)) @throw kSFOAuthExceptionNilIdentifier;
+    
     SFKeychainItemWrapper *keychainItem;
     if ([SFDatasharingHelper sharedInstance].keychainSharingEnabled) {
         keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier accessGroup:[SFDatasharingHelper sharedInstance].keychainGroupName];
@@ -321,6 +420,8 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 }
 
 - (NSString *)accessTokenWithKey:(NSData *)key {
+    [self migrateOldTokenDataForService:kSFOAuthServiceAccess key:key];
+    
     NSData *accessTokenData = [self tokenForService:kSFOAuthServiceAccess];
     if (!accessTokenData) {
         return nil;
@@ -335,6 +436,8 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 }
 
 - (NSString *)accessTokenWithSFEncryptionKey:(SFEncryptionKey *)encryptionKey {
+    [self migrateTokenDataForService:kSFOAuthServiceAccess key:encryptionKey];
+    
     NSData *accessTokenData = [self tokenForService:kSFOAuthServiceAccess];
     if (!accessTokenData) {
         return nil;
@@ -398,6 +501,8 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 }
 
 - (NSString *)refreshTokenWithKey:(NSData *)key {
+    [self migrateOldTokenDataForService:kSFOAuthServiceRefresh key:key];
+    
     NSData *refreshTokenData = [self tokenForService:kSFOAuthServiceRefresh];
     if (!refreshTokenData) {
         return nil;
@@ -412,6 +517,8 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 }
 
 - (NSString *)refreshTokenWithSFEncryptionKey:(SFEncryptionKey *)encryptionKey {
+    [self migrateTokenDataForService:kSFOAuthServiceRefresh key:encryptionKey];
+    
     NSData *refreshTokenData = [self tokenForService:kSFOAuthServiceRefresh];
     if (!refreshTokenData) {
         return nil;
