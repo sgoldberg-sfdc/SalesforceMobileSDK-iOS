@@ -169,12 +169,12 @@ static NSString * const kDefaultCommunityName = @"internal";
                 NSString *oldFilePath = [sourceDirectory stringByAppendingPathComponent:s];
                 if (![fileManager fileExistsAtPath:newFilePath]) {
                     //File does not exist, copy it
-                    if (![fileManager copyItemAtPath:oldFilePath toPath:newFilePath error:&error]) {
+                    if (![fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error]) {
                         [self log:SFLogLevelError format:@"Could not move library directory contents to a shared location for app group access: %@", error];
                     }
                 } else {
                     [fileManager removeItemAtPath:newFilePath error:&error];
-                    [fileManager copyItemAtPath:oldFilePath toPath:newFilePath error:&error];
+                    [fileManager moveItemAtPath:oldFilePath toPath:newFilePath error:&error];
                 }
             }
         }
