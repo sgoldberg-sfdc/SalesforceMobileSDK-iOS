@@ -317,14 +317,24 @@ static NSException * kSFOAuthExceptionNilIdentifier;
         SFKeychainItemWrapper *keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier];
         NSData *tokenData = [keychainItem valueData];
         if (tokenData) {
-            self.accessToken = [[NSString alloc] initWithData:tokenData encoding:NSUTF8StringEncoding];
+            NSString *strToken = [[NSString alloc] initWithData:tokenData encoding:NSUTF8StringEncoding];
+            if (service == kSFOAuthServiceAccess) {
+                self.accessToken = strToken;
+            } else if (service == kSFOAuthServiceRefresh) {
+                self.refreshToken = strToken;
+            }
         }
         [sharedDefaults setBool:YES forKey:tokenSharedKey];
     } else if (!keyChainSharingEnabled && tokenShared) {
         SFKeychainItemWrapper *keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier accessGroup:[SFDatasharingHelper sharedInstance].keychainGroupName];
         NSData *tokenData = [keychainItem valueData];
         if (tokenData) {
-            self.accessToken = [[NSString alloc] initWithData:tokenData encoding:NSUTF8StringEncoding];
+            NSString *strToken = [[NSString alloc] initWithData:tokenData encoding:NSUTF8StringEncoding];
+            if (service == kSFOAuthServiceAccess) {
+                self.accessToken = strToken;
+            } else if (service == kSFOAuthServiceRefresh) {
+                self.refreshToken = strToken;
+            }
         }
         [sharedDefaults setBool:NO forKey:tokenSharedKey];
     }
