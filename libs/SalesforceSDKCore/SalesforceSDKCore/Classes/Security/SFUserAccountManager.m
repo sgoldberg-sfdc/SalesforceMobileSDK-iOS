@@ -32,6 +32,7 @@
 #import <SalesforceSecurity/SFKeyStoreKey.h>
 #import <SalesforceSecurity/SFSDKCryptoUtils.h>
 #import <SalesforceCommonUtils/NSString+SFAdditions.h>
+#import <SalesforceCommonUtils/SFDatasharingHelper.h>
 
 // Notifications
 NSString * const SFUserAccountManagerDidChangeCurrentUserNotification   = @"SFUserAccountManagerDidChangeCurrentUserNotification";
@@ -479,8 +480,56 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
     return [directory stringByAppendingPathComponent:kUserAccountPlistFileName];
 }
 
+- (void)migrateUserDefaults {
+    //Migrate the defaults to the correct location
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+    
+    BOOL isGroupAccessEnabled = [SFDatasharingHelper sharedInstance].appGroupEnabled;
+    BOOL userIdentityShared = [sharedDefaults boolForKey:@"userIdentityShared"];
+    BOOL communityIdShared = [sharedDefaults boolForKey:@"communityIdShared"];
+    
+    if (isGroupAccessEnabled && !userIdentityShared) {
+        //Migrate user identity to shared location
+        NSData *userData = [standardDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
+        if (userData) {
+            [sharedDefaults setObject:userData forKey:kUserDefaultsLastUserIdentityKey];
+        }
+        [sharedDefaults setBool:YES forKey:@"userIdentityShared"];
+    }
+    if (!isGroupAccessEnabled && userIdentityShared) {
+        //Migrate base app identifier key to non-shared location
+        NSData *userData = [sharedDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
+        if (userData) {
+            [standardDefaults setObject:userData forKey:kUserDefaultsLastUserIdentityKey];
+        }
+        
+        [sharedDefaults setBool:NO forKey:@"userIdentityShared"];
+    } else if (isGroupAccessEnabled && !communityIdShared) {
+        //Migrate communityId to shared location
+        NSString *activeCommunityId = [standardDefaults stringForKey:kUserDefaultsLastUserCommunityIdKey];
+        if (activeCommunityId) {
+            [sharedDefaults setObject:activeCommunityId forKey:kUserDefaultsLastUserCommunityIdKey];
+        }
+        [sharedDefaults setBool:YES forKey:@"communityIdShared"];
+    } else if (!isGroupAccessEnabled && communityIdShared) {
+        //Migrate base app identifier key to non-shared location
+        NSString *activeCommunityId = [sharedDefaults stringForKey:kUserDefaultsLastUserCommunityIdKey];
+        if (activeCommunityId) {
+            [standardDefaults setObject:activeCommunityId forKey:kUserDefaultsLastUserCommunityIdKey];
+        }
+        [sharedDefaults setBool:NO forKey:@"communityIdShared"];
+    }
+    
+    [standardDefaults synchronize];
+    [sharedDefaults synchronize];
+    
+}
+
 // called by init
 - (BOOL)loadAccounts:(NSError**)error {
+    [self migrateUserDefaults];
+    
     // Make sure we start from a blank state
     [self clearAllAccountState];
     
@@ -771,7 +820,14 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 }
 
 - (SFUserAccountIdentity *)activeUserIdentity {
-    NSData *resultData = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaultsLastUserIdentityKey];
+    NSData *resultData = nil;
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+        resultData = [sharedDefaults objectForKey:kUserDefaultsLastUserIdentityKey];
+    } else {
+        resultData = [[NSUserDefaults standardUserDefaults] objectForKey:kUserDefaultsLastUserIdentityKey];
+    }
+    
     if (resultData == nil)
         return nil;
     
@@ -790,30 +846,49 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 }
 
 - (void)setActiveUserIdentity:(SFUserAccountIdentity *)activeUserIdentity {
+    NSUserDefaults *standardDefaults;
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        standardDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+    } else {
+        standardDefaults = [NSUserDefaults standardUserDefaults];
+    }
+    
     if (activeUserIdentity == nil) {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserDefaultsLastUserIdentityKey];
+        [standardDefaults removeObjectForKey:kUserDefaultsLastUserIdentityKey];
     } else {
         NSMutableData *auiData = [NSMutableData data];
         NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:auiData];
         [archiver encodeObject:activeUserIdentity forKey:kUserDefaultsLastUserIdentityKey];
         [archiver finishEncoding];
-        
-        [[NSUserDefaults standardUserDefaults] setObject:auiData forKey:kUserDefaultsLastUserIdentityKey];
+        [standardDefaults setObject:auiData forKey:kUserDefaultsLastUserIdentityKey];
     }
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [standardDefaults synchronize];
 }
 
 - (NSString *)activeCommunityId {
-    return [[NSUserDefaults standardUserDefaults] stringForKey:kUserDefaultsLastUserCommunityIdKey];
+    NSUserDefaults *userDefaults;
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        userDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+    } else {
+        userDefaults =  [NSUserDefaults standardUserDefaults];
+    }
+    return [userDefaults stringForKey:kUserDefaultsLastUserCommunityIdKey];
 }
 
 - (void)setActiveCommunityId:(NSString *)activeCommunityId {
-    if (activeCommunityId == nil) {
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kUserDefaultsLastUserCommunityIdKey];
+    NSUserDefaults *userDefaults;
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        userDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
     } else {
-        [[NSUserDefaults standardUserDefaults] setObject:activeCommunityId forKey:kUserDefaultsLastUserCommunityIdKey];
+        userDefaults =  [NSUserDefaults standardUserDefaults];
     }
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    if (activeCommunityId == nil) {
+        [userDefaults removeObjectForKey:kUserDefaultsLastUserCommunityIdKey];
+    } else {
+        [userDefaults setObject:activeCommunityId forKey:kUserDefaultsLastUserCommunityIdKey];
+    }
+    [userDefaults synchronize];
 }
 
 - (void)setActiveUser:(SFUserAccount *)user {

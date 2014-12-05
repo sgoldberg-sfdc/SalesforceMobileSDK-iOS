@@ -24,6 +24,8 @@
 
 #import "SFOAuthCredentials+Internal.h"
 #import "SFOAuthCrypto.h"
+
+#import <SalesforceCommonUtils/SFDatasharingHelper.h>
 #import <SalesforceCommonUtils/SFCrypto.h>
 #import <SalesforceCommonUtils/NSString+SFAdditions.h>
 #import <SalesforceCommonUtils/SFKeychainItemWrapper.h>
@@ -147,9 +149,16 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 }
 
 - (void)setAccessToken:(NSString *)token {
+    [self migrateUserDefaults];
     [self setAccessToken:token withSFEncryptionKey:[self keyStoreKeyForService:kSFOAuthServiceAccess]];
-    [[NSUserDefaults standardUserDefaults] setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+        [sharedDefaults setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
+        [sharedDefaults synchronize];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
 }
 
 - (NSString *)clientId {
@@ -214,9 +223,16 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 }
 
 - (void)setRefreshToken:(NSString *)token {
+    [self migrateUserDefaults];
     [self setRefreshToken:token withSFEncryptionKey:[self keyStoreKeyForService:kSFOAuthServiceRefresh]];
-    [[NSUserDefaults standardUserDefaults] setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+        [sharedDefaults setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
+        [sharedDefaults synchronize];
+    } else {
+        [[NSUserDefaults standardUserDefaults] setInteger:kSFOAuthCredsEncryptionTypeKeyStore forKey:kSFOAuthEncryptionTypeKey];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+    }
 }
 
 - (NSString *)activationCode {
@@ -294,7 +310,12 @@ static NSException * kSFOAuthExceptionNilIdentifier;
 - (NSData *)tokenForService:(NSString *)service
 {
     if (!([self.identifier length] > 0)) @throw kSFOAuthExceptionNilIdentifier;
-    SFKeychainItemWrapper *keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier];
+    SFKeychainItemWrapper *keychainItem;
+    if ([SFDatasharingHelper sharedInstance].keychainSharingEnabled) {
+        keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier accessGroup:[SFDatasharingHelper sharedInstance].keychainGroupName];
+    } else {
+        keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier];
+    }
     NSData *tokenData = [keychainItem valueData];
     return tokenData;
 }
@@ -339,7 +360,13 @@ static NSException * kSFOAuthExceptionNilIdentifier;
         }
     }
     
-    BOOL updateSucceeded = [self updateKeychainWithTokenData:tokenData forService:kSFOAuthServiceAccess];
+    BOOL updateSucceeded;
+    if ([SFDatasharingHelper sharedInstance].keychainSharingEnabled) {
+        updateSucceeded = [self updateKeychainWithTokenData:tokenData forService:kSFOAuthServiceAccess forAccessGroup:[SFDatasharingHelper sharedInstance].keychainGroupName];
+        
+    } else {
+        updateSucceeded = [self updateKeychainWithTokenData:tokenData forService:kSFOAuthServiceAccess];
+    }
     if (!updateSucceeded) {
         [self log:SFLogLevelWarning format:@"%@:%@ - Failed to update access token.", [self class], NSStringFromSelector(_cmd)];
     }
@@ -358,7 +385,13 @@ static NSException * kSFOAuthExceptionNilIdentifier;
         }
     }
     
-    BOOL updateSucceeded = [self updateKeychainWithTokenData:tokenData forService:kSFOAuthServiceAccess];
+    BOOL updateSucceeded;
+    if ([SFDatasharingHelper sharedInstance].keychainSharingEnabled) {
+        updateSucceeded = [self updateKeychainWithTokenData:tokenData forService:kSFOAuthServiceAccess forAccessGroup:[SFDatasharingHelper sharedInstance].keychainGroupName];
+        
+    } else {
+        updateSucceeded = [self updateKeychainWithTokenData:tokenData forService:kSFOAuthServiceAccess];
+    }
     if (!updateSucceeded) {
         [self log:SFLogLevelWarning format:@"%@:%@ - Failed to update legacy access token.", [self class], NSStringFromSelector(_cmd)];
     }
@@ -410,7 +443,14 @@ static NSException * kSFOAuthExceptionNilIdentifier;
         self.identityUrl = nil;
     }
     
-    BOOL updateSucceeded = [self updateKeychainWithTokenData:tokenData forService:kSFOAuthServiceRefresh];
+    BOOL updateSucceeded;
+    if ([SFDatasharingHelper sharedInstance].keychainSharingEnabled) {
+        updateSucceeded = [self updateKeychainWithTokenData:tokenData forService:kSFOAuthServiceRefresh forAccessGroup:[SFDatasharingHelper sharedInstance].keychainGroupName];
+        
+    } else {
+        updateSucceeded = [self updateKeychainWithTokenData:tokenData forService:kSFOAuthServiceRefresh];
+    }
+    
     if (!updateSucceeded) {
         [self log:SFLogLevelWarning format:@"%@:%@ - Failed to update refresh token.", [self class], NSStringFromSelector(_cmd)];
     }
@@ -433,17 +473,23 @@ static NSException * kSFOAuthExceptionNilIdentifier;
         self.identityUrl = nil;
     }
     
-    BOOL updateSucceeded = [self updateKeychainWithTokenData:tokenData forService:kSFOAuthServiceRefresh];
+    BOOL updateSucceeded;
+    if ([SFDatasharingHelper sharedInstance].keychainSharingEnabled) {
+        updateSucceeded = [self updateKeychainWithTokenData:tokenData forService:kSFOAuthServiceRefresh forAccessGroup:[SFDatasharingHelper sharedInstance].keychainGroupName];
+        
+    } else {
+        updateSucceeded = [self updateKeychainWithTokenData:tokenData forService:kSFOAuthServiceRefresh];
+    }
+
     if (!updateSucceeded) {
         [self log:SFLogLevelWarning format:@"%@:%@ - Failed to update legacy refresh token.", [self class], NSStringFromSelector(_cmd)];
     }
 }
 
-- (BOOL)updateKeychainWithTokenData:(NSData *)tokenData forService:(NSString *)service
-{
+- (BOOL)updateKeychainWithTokenData:(NSData *)tokenData forService:(NSString *)service forAccessGroup:(NSString *)accessGroup {
     if (!([self.identifier length] > 0)) @throw kSFOAuthExceptionNilIdentifier;
     
-    SFKeychainItemWrapper *keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier];
+    SFKeychainItemWrapper *keychainItem = [SFKeychainItemWrapper itemWithIdentifier:service account:self.identifier accessGroup:accessGroup];
     BOOL keychainOperationSuccessful;
     if (tokenData != nil) {
         OSStatus result = [keychainItem setValueData:tokenData];
@@ -457,8 +503,12 @@ static NSException * kSFOAuthExceptionNilIdentifier;
             [self log:SFLogLevelWarning format:@"%@:%@ - Error resetting keychain data.", [self class], NSStringFromSelector(_cmd)];
         }
     }
-    
     return keychainOperationSuccessful;
+}
+
+- (BOOL)updateKeychainWithTokenData:(NSData *)tokenData forService:(NSString *)service
+{
+    return [self updateKeychainWithTokenData:tokenData forService:service forAccessGroup:nil];
 }
 
 - (NSData *)keyMacForService:(NSString *)service
@@ -491,14 +541,49 @@ static NSException * kSFOAuthExceptionNilIdentifier;
     return [strSecret sha256];
 }
 
+- (void)migrateUserDefaults {
+    //Migrate the defaults to the correct location
+    NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+    NSUserDefaults *standardDefaults = [NSUserDefaults standardUserDefaults];
+    
+    BOOL isGroupAccessEnabled = [SFDatasharingHelper sharedInstance].appGroupEnabled;
+    BOOL encKeyShared = [sharedDefaults boolForKey:@"OAuthEncryptionTypeKeyShared"];
+    
+    if (isGroupAccessEnabled && !encKeyShared) {
+        //Migrate encryption key type to shared location
+        NSInteger encyptionType = [standardDefaults integerForKey:kSFOAuthEncryptionTypeKey];
+        if (encyptionType != kSFOAuthCredsEncryptionTypeNotSet) {
+            [sharedDefaults setInteger:encyptionType forKey:kSFOAuthEncryptionTypeKey];
+            [sharedDefaults setBool:YES forKey:@"OAuthEncryptionTypeKeyShared"];
+        }
+    } else if (!isGroupAccessEnabled && encKeyShared) {
+        //Migrate encryption key type to non-shared location
+        NSInteger encyptionType = [sharedDefaults integerForKey:kSFOAuthEncryptionTypeKey];
+        if (encyptionType != kSFOAuthCredsEncryptionTypeNotSet) {
+            [standardDefaults setInteger:encyptionType forKey:kSFOAuthEncryptionTypeKey];
+            [sharedDefaults setBool:NO forKey:@"OAuthEncryptionTypeKeyShared"];
+        }
+    }
+    
+    [standardDefaults synchronize];
+    [sharedDefaults synchronize];
+}
+
 - (void)updateTokenEncryption
 {
     // Convert encryption keys to latest format--currently kSFOAuthCredsEncryptionTypeKeyStore--if
     // it's in an older format, and if it's possible.  It won't be possible, for instance, to convert
     // MAC address-based keys if the user is on iOS 7 or above, and we'll reset the tokens to nil;
-    
+    [self migrateUserDefaults];
     if (!self.isEncrypted) return;
-    SFOAuthCredsEncryptionType encType = (SFOAuthCredsEncryptionType)[[NSUserDefaults standardUserDefaults] integerForKey:kSFOAuthEncryptionTypeKey];
+    SFOAuthCredsEncryptionType encType;
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+        NSUserDefaults *sharedDefaults = [[NSUserDefaults alloc] initWithSuiteName:[SFDatasharingHelper sharedInstance].appGroupName];
+        encType = (SFOAuthCredsEncryptionType)[sharedDefaults integerForKey:kSFOAuthEncryptionTypeKey];
+    } else {
+        encType = (SFOAuthCredsEncryptionType)[[NSUserDefaults standardUserDefaults] integerForKey:kSFOAuthEncryptionTypeKey];
+    }
+    
     if (encType == kSFOAuthCredsEncryptionTypeKeyStore) return;
     
     // Try to convert the old tokens to the new format.
