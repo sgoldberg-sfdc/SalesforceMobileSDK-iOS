@@ -70,7 +70,8 @@ static NSString * const kDefaultCommunityName = @"internal";
 - (NSString*)directoryForOrg:(NSString*)orgId user:(NSString*)userId community:(NSString*)communityId type:(NSSearchPathDirectory)type components:(NSArray*)components {
     NSString *directory;
     
-    if ([SFDatasharingHelper sharedInstance].appGroupEnabled) {
+    //we are only sharing library directory with the app extension other directory contents dont need to be shared.
+    if ([SFDatasharingHelper sharedInstance].appGroupEnabled && type == NSLibraryDirectory) {
         NSURL *sharedURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:[SFDatasharingHelper sharedInstance].appGroupName];
         directory = [sharedURL path];
         directory = [directory stringByAppendingPathComponent:[SFDatasharingHelper sharedInstance].appGroupName];
