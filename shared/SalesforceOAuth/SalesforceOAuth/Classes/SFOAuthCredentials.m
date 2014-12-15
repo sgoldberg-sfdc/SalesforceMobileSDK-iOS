@@ -36,7 +36,6 @@ static NSString * const kSFOAuthArchiveVersion         = @"1.0.3"; // internal v
 
 static NSString * const kSFOAuthAccessGroup            = @"com.salesforce.oauth";
 static NSString * const kSFOAuthProtocolHttps          = @"https";
-static NSString * const kSFOAuthProtocolHttp          = @"http";
 
 NSString * const kSFOAuthServiceAccess          = @"com.salesforce.oauth.access";
 NSString * const kSFOAuthServiceRefresh         = @"com.salesforce.oauth.refresh";
@@ -98,17 +97,9 @@ static NSException * kSFOAuthExceptionNilIdentifier;
         NSString *protocolVal = [coder decodeObjectForKey:@"SFOAuthProtocol"];
         if (nil != protocolVal)
             self.protocol = protocolVal;
-        else {
-            BOOL useSSL = YES;
-#ifdef DEBUG
-            useSSL = ![[NSUserDefaults standardUserDefaults] boolForKey:@"UsePlainHttp"];
-#endif
-            if (useSSL) {
-                self.protocol = kSFOAuthProtocolHttps;
-            } else {
-                self.protocol = kSFOAuthProtocolHttp;
-            }
-        }
+        else
+            self.protocol = kSFOAuthProtocolHttps;
+
         _encrypted          = [[coder decodeObjectForKey:@"SFOAuthEncrypted"] boolValue];
         _legacyIdentityInformation = [coder decodeObjectForKey:@"SFOAuthIdentityInformation"];
         [self updateTokenEncryption];
@@ -143,16 +134,7 @@ static NSException * kSFOAuthExceptionNilIdentifier;
         self.clientId             = theClientId;
         self.domain               = kSFOAuthDefaultDomain;
         self.logLevel             = kSFOAuthLogLevelInfo;
-        BOOL useSSL =  YES;
-#ifdef DEBUG
-        useSSL = ![[NSUserDefaults standardUserDefaults] boolForKey:@"UsePlainHttp"];
-#endif
-        
-        if (useSSL) {
-            self.protocol             = kSFOAuthProtocolHttps;
-        } else {
-            self.protocol             = kSFOAuthProtocolHttp;
-        }
+        self.protocol             = kSFOAuthProtocolHttps;
         _encrypted                = encrypted;
         [self updateTokenEncryption];
     }
