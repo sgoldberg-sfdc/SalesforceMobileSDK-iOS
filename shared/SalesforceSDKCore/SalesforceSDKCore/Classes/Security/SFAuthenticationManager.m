@@ -319,8 +319,8 @@ static NSString * const kAlertVersionMismatchErrorKey = @"authAlertVersionMismat
 
 static Class InstanceClass = nil;
 
-+ (void)setInstanceClass:(Class)class {
-    InstanceClass = class;
++ (void)setInstanceClass:(Class)className {
+    InstanceClass = className;
 }
 
 + (instancetype)sharedManager
