@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0510"
    version = "1.3">
-   <BuildAction
-      parallelizeBuildables = "NO"
-      buildImplicitDependencies = "NO">
+   <BuildAction>
       <BuildActionEntries>
          <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
+            buildForRunning = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "820AB72318E230EC00E25E1D"
@@ -20,68 +13,19 @@
                ReferencedContainer = "container:../SalesforceSecurity/SalesforceSecurity.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "CFA9ADD313AA86D80024260E"
-               BuildableName = "libSalesforceOAuth.a"
-               BlueprintName = "SalesforceOAuth"
-               ReferencedContainer = "container:../SalesforceOAuth/SalesforceOAuth.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8220B74B16D804CA00EC3921"
-               BuildableName = "libSalesforceSDKCore.a"
-               BlueprintName = "SalesforceSDKCore"
-               ReferencedContainer = "container:SalesforceSDKCore.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
-   <TestAction
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      buildConfiguration = "Debug">
-      <Testables>
-      </Testables>
-   </TestAction>
    <LaunchAction
-      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
-      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      launchStyle = "0"
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Debug"
-      ignoresPersistentStateOnLaunch = "NO"
-      debugDocumentVersioning = "YES"
-      allowLocationSimulation = "YES">
-      <AdditionalOptions>
-      </AdditionalOptions>
-   </LaunchAction>
-   <ProfileAction
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      savedToolIdentifier = ""
-      useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Release"
-      debugDocumentVersioning = "YES">
-   </ProfileAction>
-   <AnalyzeAction
       buildConfiguration = "Debug">
-   </AnalyzeAction>
-   <ArchiveAction
-      buildConfiguration = "Release"
-      revealArchiveInOrganizer = "YES">
-   </ArchiveAction>
+      <BuildableProductRunnable>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "10876B2218AB10FA0020DB5C"
+            BuildableName = "Analytics.app"
+            BlueprintName = "Insights"
+            ReferencedContainer = "container:../../../Insights/src/Insights.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
+   </LaunchAction>
 </Scheme>
