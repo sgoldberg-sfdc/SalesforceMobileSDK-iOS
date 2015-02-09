@@ -40,8 +40,6 @@ static NSString * const kSendWelcomeEmailKey = @"sendWelcomeEmail";
 
 @implementation SFCommunityData
 
-@synthesize description;
-
 - (void)encodeWithCoder:(NSCoder*)encoder {
     [encoder encodeObject:self.entityId forKey:kIdentifierKey];
     [encoder encodeObject:self.name forKey:kNameKey];
