@@ -33,6 +33,7 @@
 #import <SalesforceSecurity/SFSDKCryptoUtils.h>
 #import <SalesforceCommonUtils/NSString+SFAdditions.h>
 #import <SalesforceCommonUtils/SFDatasharingHelper.h>
+#import <SalesforceCommonUtils/SFFileProtectionHelper.h>
 
 // Notifications
 NSString * const SFUserAccountManagerDidChangeCurrentUserNotification   = @"SFUserAccountManagerDidChangeCurrentUserNotification";
@@ -740,7 +741,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
     }
     
     // Save it.
-    BOOL saveFileSuccess = [[NSFileManager defaultManager] createFileAtPath:filePath contents:encryptedArchiveData attributes:@{ NSFileProtectionKey : NSFileProtectionComplete }];
+    BOOL saveFileSuccess = [[NSFileManager defaultManager] createFileAtPath:filePath contents:encryptedArchiveData attributes:@{ NSFileProtectionKey : [SFFileProtectionHelper fileProtectionForPath:filePath] }];
     if (!saveFileSuccess) {
         [self log:SFLogLevelDebug format:@"Could not create user account data file at path '%@'", filePath];
         return NO;
