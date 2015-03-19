@@ -27,6 +27,7 @@
 #import "SFUserAccount.h"
 
 #import <SalesforceCommonUtils/SFDatasharingHelper.h>
+#import <SalesforceCommonUtils/SFFileProtectionHelper.h>
 
 static NSString * const kDefaultOrgName = @"org";
 static NSString * const kDefaultCommunityName = @"internal";
@@ -55,7 +56,7 @@ static NSString * const kDefaultCommunityName = @"internal";
     if (![manager fileExistsAtPath:directory]) {
         return [manager createDirectoryAtPath:directory
                   withIntermediateDirectories:YES
-                                   attributes:@{NSFileProtectionKey: NSFileProtectionComplete}
+                                   attributes:@{NSFileProtectionKey: [SFFileProtectionHelper fileProtectionForPath:directory]}
                                         error:error];
     } else {
         return YES;
