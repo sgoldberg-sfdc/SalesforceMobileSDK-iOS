@@ -615,7 +615,7 @@
 			};
 			name = Release;
 		};
-		9EF2B3E61AB9E88C004C2D3E /* Enterprise */ = {
+		9ED8E45C1ABC9D3F0002C976 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -631,9 +631,15 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
-				ENABLE_NS_ASSERTIONS = NO;
+				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -648,11 +654,10 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../../external/ThirdPartyDependencies/SalesforceCommonUtils\"";
 				SDKROOT = iphoneos;
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Enterprise;
 		};
-		9EF2B3E71AB9E88C004C2D3E /* Enterprise */ = {
+		9ED8E45D1ABC9D3F0002C976 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/SalesforceSecurity.dst;
@@ -664,11 +669,11 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "Headers/${PRODUCT_NAME}";
-				SKIP_INSTALL = YES;
+				SKIP_INSTALL = NO;
 			};
 			name = Enterprise;
 		};
-		9EF2B3E81AB9E88C004C2D3E /* Enterprise */ = {
+		9ED8E45E1ABC9D3F0002C976 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
@@ -678,6 +683,10 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceSecurity/SalesforceSecurity-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				INFOPLIST_FILE = "SalesforceSecurityTests/SalesforceSecurityTests-Info.plist";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -690,7 +699,7 @@
 			};
 			name = Enterprise;
 		};
-		9EF2B3E91AB9E88C004C2D3E /* Enterprise */ = {
+		9ED8E45F1ABC9D3F0002C976 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -789,9 +798,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				820AB74518E230EC00E25E1D /* Debug */,
+				9ED8E45C1ABC9D3F0002C976 /* Enterprise */,
 				A5D3964418F854EF0048114F /* Internal */,
 				820AB74618E230EC00E25E1D /* Release */,
-				9EF2B3E61AB9E88C004C2D3E /* Enterprise */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -800,9 +809,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				820AB74818E230EC00E25E1D /* Debug */,
+				9ED8E45D1ABC9D3F0002C976 /* Enterprise */,
 				A5D3964518F854EF0048114F /* Internal */,
 				820AB74918E230EC00E25E1D /* Release */,
-				9EF2B3E71AB9E88C004C2D3E /* Enterprise */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -811,9 +820,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				820AB74B18E230EC00E25E1D /* Debug */,
+				9ED8E45E1ABC9D3F0002C976 /* Enterprise */,
 				A5D3964618F854EF0048114F /* Internal */,
 				820AB74C18E230EC00E25E1D /* Release */,
-				9EF2B3E81AB9E88C004C2D3E /* Enterprise */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -822,8 +831,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				821DA3F4193EAF1A0041FE0E /* Debug */,
+				9ED8E45F1ABC9D3F0002C976 /* Enterprise */,
 				821DA3F5193EAF1A0041FE0E /* Release */,
-				9EF2B3E91AB9E88C004C2D3E /* Enterprise */,
 				6FA80BB419B1135800615986 /* Internal */,
 			);
 			defaultConfigurationIsVisible = 0;

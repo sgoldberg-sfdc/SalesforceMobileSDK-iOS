@@ -566,11 +566,14 @@
 			};
 			name = Release;
 		};
-		9EF2B3EA1AB9E897004C2D3E /* Enterprise */ = {
+		9ED8E4601ABC9D510002C976 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvmgcc42;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -590,7 +593,7 @@
 			};
 			name = Enterprise;
 		};
-		9EF2B3EB1AB9E897004C2D3E /* Enterprise */ = {
+		9ED8E4611ABC9D510002C976 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -603,55 +606,58 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
+				SKIP_INSTALL = NO;
 			};
 			name = Enterprise;
 		};
-		9EF2B3EC1AB9E897004C2D3E /* Enterprise */ = {
+		9ED8E4621ABC9D510002C976 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				COPY_PHASE_STRIP = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceOAuthTest/SalesforceOAuthTest-Prefix.pch";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "SalesforceOAuthTest/SalesforceOAuthTest-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Enterprise;
 		};
-		9EF2B3ED1AB9E897004C2D3E /* Enterprise */ = {
+		9ED8E4631ABC9D510002C976 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/SalesforceOAuthTest.app/SalesforceOAuthTest";
 				CLANG_ENABLE_OBJC_ARC = YES;
-				COPY_PHASE_STRIP = YES;
+				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
 				);
+				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceOAuthUnitTests/SalesforceOAuthUnitTests-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				INFOPLIST_FILE = "SalesforceOAuthUnitTests/SalesforceOAuthUnitTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUNDLE_LOADER)";
-				VALIDATE_PRODUCT = YES;
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Enterprise;
 		};
-		9EF2B3EE1AB9E897004C2D3E /* Enterprise */ = {
+		9ED8E4641ABC9D510002C976 /* Enterprise */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
@@ -939,9 +945,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2DE48CD018BFAF08008345C7 /* Debug */,
+				9ED8E4641ABC9D510002C976 /* Enterprise */,
 				A5D3963618F854C90048114F /* Internal */,
 				2DE48CD118BFAF08008345C7 /* Release */,
-				9EF2B3EE1AB9E897004C2D3E /* Enterprise */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -950,9 +956,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CF7F347D13B52B4E001AB761 /* Debug */,
+				9ED8E4621ABC9D510002C976 /* Enterprise */,
 				A5D3963418F854C90048114F /* Internal */,
 				CF7F347E13B52B4E001AB761 /* Release */,
-				9EF2B3EC1AB9E897004C2D3E /* Enterprise */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -961,9 +967,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CFA9ADDC13AA86DA0024260E /* Debug */,
+				9ED8E4601ABC9D510002C976 /* Enterprise */,
 				A5D3963218F854C90048114F /* Internal */,
 				CFA9ADDD13AA86DA0024260E /* Release */,
-				9EF2B3EA1AB9E897004C2D3E /* Enterprise */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -972,9 +978,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CFA9ADDF13AA86DA0024260E /* Debug */,
+				9ED8E4611ABC9D510002C976 /* Enterprise */,
 				A5D3963318F854C90048114F /* Internal */,
 				CFA9ADE013AA86DA0024260E /* Release */,
-				9EF2B3EB1AB9E897004C2D3E /* Enterprise */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -983,9 +989,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CFD31A4313D5956700A9074A /* Debug */,
+				9ED8E4631ABC9D510002C976 /* Enterprise */,
 				A5D3963518F854C90048114F /* Internal */,
 				CFD31A4413D5956700A9074A /* Release */,
-				9EF2B3ED1AB9E897004C2D3E /* Enterprise */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
