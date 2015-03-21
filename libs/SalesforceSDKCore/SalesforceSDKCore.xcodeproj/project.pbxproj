@@ -1063,6 +1063,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = "Enterprise-Release";
@@ -1244,6 +1245,7 @@
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -1431,7 +1433,7 @@
 			};
 			name = Release;
 		};
-		9EF2B3E11AB9E880004C2D3E /* Enterprise */ = {
+		9EF2B3E11AB9E880004C2D3E /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -1442,6 +1444,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -1466,9 +1469,9 @@
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = NO;
 			};
-			name = Enterprise;
+			name = "Enterprise-Debug";
 		};
-		9EF2B3E21AB9E880004C2D3E /* Enterprise */ = {
+		9EF2B3E21AB9E880004C2D3E /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/SalesforceSDKCore.dst;
@@ -1482,9 +1485,9 @@
 				PUBLIC_HEADERS_FOLDER_PATH = "Headers/${PRODUCT_NAME}";
 				SKIP_INSTALL = NO;
 			};
-			name = Enterprise;
+			name = "Enterprise-Debug";
 		};
-		9EF2B3E31AB9E880004C2D3E /* Enterprise */ = {
+		9EF2B3E31AB9E880004C2D3E /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -1515,9 +1518,9 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
-			name = Enterprise;
+			name = "Enterprise-Debug";
 		};
-		9EF2B3E41AB9E880004C2D3E /* Enterprise */ = {
+		9EF2B3E41AB9E880004C2D3E /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/SalesforceSDKCoreUnitTestApp.app/SalesforceSDKCoreUnitTestApp";
@@ -1555,14 +1558,14 @@
 				TEST_HOST = "$(BUNDLE_LOADER)";
 				WRAPPER_EXTENSION = xctest;
 			};
-			name = Enterprise;
+			name = "Enterprise-Debug";
 		};
-		9EF2B3E51AB9E880004C2D3E /* Enterprise */ = {
+		9EF2B3E51AB9E880004C2D3E /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
-			name = Enterprise;
+			name = "Enterprise-Debug";
 		};
 		CBBDD4EF1A2521A7008FC23C /* Internal */ = {
 			isa = XCBuildConfiguration;
@@ -1714,7 +1717,7 @@
 				CBBDD4F31A2521A7008FC23C /* Internal */,
 				2DE48CC718BFAD45008345C7 /* Release */,
 				1056D4051ABCD3530066A01B /* Enterprise-Release */,
-				9EF2B3E51AB9E880004C2D3E /* Enterprise */,
+				9EF2B3E51AB9E880004C2D3E /* Enterprise-Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1726,7 +1729,7 @@
 				CBBDD4EF1A2521A7008FC23C /* Internal */,
 				8220B75916D804CA00EC3921 /* Release */,
 				1056D4011ABCD3530066A01B /* Enterprise-Release */,
-				9EF2B3E11AB9E880004C2D3E /* Enterprise */,
+				9EF2B3E11AB9E880004C2D3E /* Enterprise-Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1738,7 +1741,7 @@
 				CBBDD4F01A2521A7008FC23C /* Internal */,
 				8220B75C16D804CA00EC3921 /* Release */,
 				1056D4021ABCD3530066A01B /* Enterprise-Release */,
-				9EF2B3E21AB9E880004C2D3E /* Enterprise */,
+				9EF2B3E21AB9E880004C2D3E /* Enterprise-Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1750,7 +1753,7 @@
 				CBBDD4F11A2521A7008FC23C /* Internal */,
 				82D4645319C7C8180006BDFE /* Release */,
 				1056D4031ABCD3530066A01B /* Enterprise-Release */,
-				9EF2B3E31AB9E880004C2D3E /* Enterprise */,
+				9EF2B3E31AB9E880004C2D3E /* Enterprise-Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1762,7 +1765,7 @@
 				CBBDD4F21A2521A7008FC23C /* Internal */,
 				82D4645519C7C8180006BDFE /* Release */,
 				1056D4041ABCD3530066A01B /* Enterprise-Release */,
-				9EF2B3E41AB9E880004C2D3E /* Enterprise */,
+				9EF2B3E41AB9E880004C2D3E /* Enterprise-Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
