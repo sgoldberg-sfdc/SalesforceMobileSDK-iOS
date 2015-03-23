@@ -435,6 +435,87 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		1056D4061ABCD4040066A01B /* Enterprise-Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)/../../external/ThirdPartyDependencies/SalesforceCommonUtils/Headers",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../../external/ThirdPartyDependencies/SalesforceCommonUtils\"";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Enterprise-Release";
+		};
+		1056D4071ABCD4040066A01B /* Enterprise-Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/SalesforceSecurity.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SalesforceSecurity/SalesforceSecurity-Prefix.pch";
+				INSTALL_PATH = /;
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "Headers/${PRODUCT_NAME}";
+			};
+			name = "Enterprise-Release";
+		};
+		1056D4081ABCD4040066A01B /* Enterprise-Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SalesforceSecurity/SalesforceSecurity-Prefix.pch";
+				INFOPLIST_FILE = "SalesforceSecurityTests/SalesforceSecurityTests-Info.plist";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-framework",
+					XCTest,
+					"-ObjC",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = "Enterprise-Release";
+		};
+		1056D4091ABCD4040066A01B /* Enterprise-Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Enterprise-Release";
+		};
 		6FA80BB419B1135800615986 /* Internal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -517,6 +598,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../../external/ThirdPartyDependencies/SalesforceCommonUtils\"";
 				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -528,12 +610,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceSecurity/SalesforceSecurity-Prefix.pch";
 				INSTALL_PATH = /;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "Headers/${PRODUCT_NAME}";
-				SKIP_INSTALL = NO;
 			};
 			name = Debug;
 		};
@@ -544,12 +624,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceSecurity/SalesforceSecurity-Prefix.pch";
 				INSTALL_PATH = /;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "Headers/${PRODUCT_NAME}";
-				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
@@ -563,10 +641,6 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceSecurity/SalesforceSecurity-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				INFOPLIST_FILE = "SalesforceSecurityTests/SalesforceSecurityTests-Info.plist";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -615,7 +689,7 @@
 			};
 			name = Release;
 		};
-		9ED8E45C1ABC9D3F0002C976 /* Enterprise */ = {
+		9EF2B3E61AB9E88C004C2D3E /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -632,14 +706,13 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_NS_ASSERTIONS = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -654,26 +727,25 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../../external/ThirdPartyDependencies/SalesforceCommonUtils\"";
 				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = NO;
 			};
-			name = Enterprise;
+			name = "Enterprise-Debug";
 		};
-		9ED8E45D1ABC9D3F0002C976 /* Enterprise */ = {
+		9EF2B3E71AB9E88C004C2D3E /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/SalesforceSecurity.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceSecurity/SalesforceSecurity-Prefix.pch";
 				INSTALL_PATH = /;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "Headers/${PRODUCT_NAME}";
-				SKIP_INSTALL = NO;
 			};
-			name = Enterprise;
+			name = "Enterprise-Debug";
 		};
-		9ED8E45E1ABC9D3F0002C976 /* Enterprise */ = {
+		9EF2B3E81AB9E88C004C2D3E /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
@@ -683,10 +755,6 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceSecurity/SalesforceSecurity-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				INFOPLIST_FILE = "SalesforceSecurityTests/SalesforceSecurityTests-Info.plist";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -697,14 +765,14 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xctest;
 			};
-			name = Enterprise;
+			name = "Enterprise-Debug";
 		};
-		9ED8E45F1ABC9D3F0002C976 /* Enterprise */ = {
+		9EF2B3E91AB9E88C004C2D3E /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
-			name = Enterprise;
+			name = "Enterprise-Debug";
 		};
 		A5D3964418F854EF0048114F /* Internal */ = {
 			isa = XCBuildConfiguration;
@@ -743,6 +811,7 @@
 					"$(PROJECT_DIR)/../../external/ThirdPartyDependencies/SalesforceCommonUtils/Headers",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/../../external/ThirdPartyDependencies/SalesforceCommonUtils\"";
 				SDKROOT = iphoneos;
 			};
 			name = Internal;
@@ -757,7 +826,6 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PUBLIC_HEADERS_FOLDER_PATH = "Headers/${PRODUCT_NAME}";
-				SKIP_INSTALL = NO;
 			};
 			name = Internal;
 		};
@@ -771,10 +839,6 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SalesforceSecurity/SalesforceSecurity-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				INFOPLIST_FILE = "SalesforceSecurityTests/SalesforceSecurityTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -798,9 +862,10 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				820AB74518E230EC00E25E1D /* Debug */,
-				9ED8E45C1ABC9D3F0002C976 /* Enterprise */,
 				A5D3964418F854EF0048114F /* Internal */,
 				820AB74618E230EC00E25E1D /* Release */,
+				1056D4061ABCD4040066A01B /* Enterprise-Release */,
+				9EF2B3E61AB9E88C004C2D3E /* Enterprise-Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -809,9 +874,10 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				820AB74818E230EC00E25E1D /* Debug */,
-				9ED8E45D1ABC9D3F0002C976 /* Enterprise */,
 				A5D3964518F854EF0048114F /* Internal */,
 				820AB74918E230EC00E25E1D /* Release */,
+				1056D4071ABCD4040066A01B /* Enterprise-Release */,
+				9EF2B3E71AB9E88C004C2D3E /* Enterprise-Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -820,9 +886,10 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				820AB74B18E230EC00E25E1D /* Debug */,
-				9ED8E45E1ABC9D3F0002C976 /* Enterprise */,
 				A5D3964618F854EF0048114F /* Internal */,
 				820AB74C18E230EC00E25E1D /* Release */,
+				1056D4081ABCD4040066A01B /* Enterprise-Release */,
+				9EF2B3E81AB9E88C004C2D3E /* Enterprise-Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -831,8 +898,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				821DA3F4193EAF1A0041FE0E /* Debug */,
-				9ED8E45F1ABC9D3F0002C976 /* Enterprise */,
 				821DA3F5193EAF1A0041FE0E /* Release */,
+				1056D4091ABCD4040066A01B /* Enterprise-Release */,
+				9EF2B3E91AB9E88C004C2D3E /* Enterprise-Debug */,
 				6FA80BB419B1135800615986 /* Internal */,
 			);
 			defaultConfigurationIsVisible = 0;
