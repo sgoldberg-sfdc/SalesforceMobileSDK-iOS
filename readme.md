@@ -33,23 +33,28 @@ If you have problems building any of the projects, take a look at the online [FA
 Introduction
 ==
 
-### What's New in 2.2
+### What's New in 3.0
 
-**Multi User Support**
-- The Salesforce Mobile SDK now supports the ability to log into multiple user accounts simultaneously.
-	- The different accounts could be different users on the same org, or different users on different orgs (such as production and sandbox, for instance).
-	- After sign-in the user's credentials are saved, so that the user can switch between accounts seamlessly without having to re-authenticate against the server.
-- Access to SmartStore is also now scoped by user account.
-- Push notifications are now supported across multiple users.
-- The ability to add multiple custom login endpoints has been added as well.
-- 64-bit support is available for native apps.  Hybrid apps are still required to be built as 32-bit apps.
+**SmartSync Library**
+- Salesforce Mobile SDK now has a new library called `SmartSync`, that adds the ability to:
+	- Fetch Salesforce records or metadata and cache them offline, by picking one of the available pre-defined cache policies.
+	- Edit records offline and save them offline in SmartStore.
+	- Synchronize a bunch of records by pushing locally modified records to the Salesforce cloud.
+- A new Cordova plugin, `SmartSyncPlugin`, has been added, to enable consumption of the `SmartSync` library in a hybrid app.
+- A new native sample app, `SmartSyncExplorer`, demonstrates the power of the `SmartSync` library on iOS.
+
+**CocoaPods**
+- Added the ability to consume the Salesforce Mobile SDK through CocoaPods.
 
 **Library Upgrades**
-- Upgraded the `openssl` library to `v1.0.1g`.
+- iOS 7 is now the minimum OS version of iOS supported.
+- Upgraded the `Cordova` library to `v3.6.3`.
 
 **Other Technical Improvements**
-- Thread safety has been improved for SmartStore.
+- Created a new master component, `SalesforceSDKManager`, to handle all of the details of conditional authentication at startup, passcode validation, etc.
 - Various bug fixes.
+
+Check http://developer.force.com/mobilesdk for additional articles and tutorials
 
 ### Native Applications
 The Salesforce Mobile SDK provides the essential libraries for quickly building native mobile apps that interact with the Salesforce cloud platform. The OAuth2 library abstracts away the complexity of securely storing the refresh token or fetching a new session ID when it expires. The SDK also provides Objective-C wrappers for the Salesforce REST API, making it easy to retrieve and manipulate data.
@@ -70,11 +75,8 @@ Documentation
 ==
 
 * [Salesforce Mobile SDK Development Guide](https://github.com/forcedotcom/SalesforceMobileSDK-Shared/blob/master/doc/mobile_sdk.pdf?raw=true)
-* [Salesforce Hybrid SDK](http://forcedotcom.github.io/SalesforceMobileSDK-iOS/Documentation/SalesforceHybridSDK/html/index.html)
-* [Salesforce Native SDK](http://forcedotcom.github.io/SalesforceMobileSDK-iOS/Documentation/SalesforceNativeSDK/html/index.html)
-* [Salesforce Network SDK](http://forcedotcom.github.io/SalesforceMobileSDK-iOS/Documentation/SalesforceNetworkSDK/html/index.html)
-* [Salesforce OAuth](http://forcedotcom.github.io/SalesforceMobileSDK-iOS/Documentation/SalesforceOAuth/html/index.html)
-* [Salesforce SDK Core](http://forcedotcom.github.io/SalesforceMobileSDK-iOS/Documentation/SalesforceSDKCore/html/index.html)
+* [Salesforce Mobile SDK for iOS Reference](http://forcedotcom.github.io/SalesforceMobileSDK-iOS/Documentation/masterTOC.html)
+
 
 
 Discussion
