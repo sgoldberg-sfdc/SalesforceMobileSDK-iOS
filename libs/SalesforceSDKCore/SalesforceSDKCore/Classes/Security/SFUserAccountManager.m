@@ -140,10 +140,6 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         case SFLogLevelError:
             credentials.logLevel = kSFOAuthLogLevelError;
             break;
-            
-        case SFLogLevelVerbose:
-            credentials.logLevel = kSFOAuthLogLevelVerbose;
-            break;
     }
 }
 
