@@ -25,13 +25,12 @@
 #import "SFSyncOptions.h"
 
 NSString * const kSFSyncOptionsFieldlist = @"fieldlist";
+NSString * const kSFSyncOptionsMergeMode = @"mergeMode";
 
 @interface SFSyncOptions ()
 
 @property (nonatomic, strong, readwrite) NSArray*  fieldlist;
-
-// true when initiazed from empty dictionary
-@property (nonatomic) BOOL isUndefined;
+@property (nonatomic, readwrite)         SFSyncStateMergeMode mergeMode;
 
 @end
 
@@ -40,31 +39,39 @@ NSString * const kSFSyncOptionsFieldlist = @"fieldlist";
 #pragma mark - Factory methods
 
 + (SFSyncOptions*) newSyncOptionsForSyncUp:(NSArray*)fieldlist {
+    return [SFSyncOptions newSyncOptionsForSyncUp:fieldlist mergeMode:SFSyncStateMergeModeOverwrite];
+}
+
++ (SFSyncOptions*) newSyncOptionsForSyncUp:(NSArray*)fieldlist mergeMode:(SFSyncStateMergeMode)mergeMode {
     SFSyncOptions* syncOptions = [[SFSyncOptions alloc] init];
     syncOptions.fieldlist = fieldlist;
-    syncOptions.isUndefined = NO;
+    syncOptions.mergeMode = mergeMode;
     return syncOptions;
 }
+
++ (SFSyncOptions*) newSyncOptionsForSyncDown:(SFSyncStateMergeMode)mergeMode {
+    SFSyncOptions* syncOptions = [[SFSyncOptions alloc] init];
+    syncOptions.mergeMode = mergeMode;
+    return syncOptions;
+}
+
 
 #pragma mark - From/to dictionary
 
 + (SFSyncOptions*) newFromDict:(NSDictionary*)dict {
-    SFSyncOptions* syncOptions = [[SFSyncOptions alloc] init];
-    
-    if (syncOptions) {
-        if (dict == nil || [dict count] == 0) {
-            syncOptions.isUndefined = YES;
-        }
-        else {
-            syncOptions.isUndefined = NO;
-            syncOptions.fieldlist = dict[kSFSyncOptionsFieldlist];
-        }
+    SFSyncOptions* syncOptions = nil;
+    if (dict != nil && [dict count] != 0) {
+        syncOptions = [[SFSyncOptions alloc] init];
+        syncOptions.mergeMode = [SFSyncState mergeModeFromString:dict[kSFSyncOptionsMergeMode]];
+        syncOptions.fieldlist = dict[kSFSyncOptionsFieldlist];
     }
     return syncOptions;
 }
 
 - (NSDictionary*) asDict {
-    NSDictionary* dict = self.isUndefined ? @{} : @{ kSFSyncOptionsFieldlist: self.fieldlist };
+    NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+    if (self.fieldlist) dict[kSFSyncOptionsFieldlist] = self.fieldlist;
+    dict[kSFSyncOptionsMergeMode] = [SFSyncState mergeModeToString:self.mergeMode];
     return dict;
 }
 

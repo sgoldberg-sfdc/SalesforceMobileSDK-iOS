@@ -33,25 +33,24 @@ If you have problems building any of the projects, take a look at the online [FA
 Introduction
 ==
 
-### What's New in 3.0
+### What's New in 3.2
 
-**SmartSync Library**
-- Salesforce Mobile SDK now has a new library called `SmartSync`, that adds the ability to:
-	- Fetch Salesforce records or metadata and cache them offline, by picking one of the available pre-defined cache policies.
-	- Edit records offline and save them offline in SmartStore.
-	- Synchronize a bunch of records by pushing locally modified records to the Salesforce cloud.
-- A new Cordova plugin, `SmartSyncPlugin`, has been added, to enable consumption of the `SmartSync` library in a hybrid app.
-- A new native sample app, `SmartSyncExplorer`, demonstrates the power of the `SmartSync` library on iOS.
+**SmartSync Library Enhancements**
+- SmartSync now supports incremental sync, which allows the developer to download only data that has been updated on the server, rather than the entire data set.
+- The sync up operation now offers merge modes that let the developer decide whether to overwrite data that has been modified on the server or discard local changes.
+- SmartSync now supports custom targets, which can manage the data interchange in sync operations. Custom targets let you tailor network interactions to the specific demands of the sync operation.
 
-**CocoaPods**
-- Added the ability to consume the Salesforce Mobile SDK through CocoaPods.
+**SmartStore Library Enhancements**
+- SmartStore now provides the ability to obtain a global (app-level) SmartStore instance. A global SmartStore instance can be populated with user-agnostic data that will not be deleted when users log out.
 
-**Library Upgrades**
-- iOS 7 is now the minimum OS version of iOS supported.
-- Upgraded the `Cordova` library to `v3.6.3`.
+**Network Library Enhancements**
+- The underlying network library used by the Mobile SDK is now SalesforceNetwork, which replaces SalesforceNetworkSDK and MKNetworkKit.
+
+**Sample App Updates**
+- A new sample app, `NoteSync`, has been added to demonstrate the syncing of content notes using custom targets.
 
 **Other Technical Improvements**
-- Created a new master component, `SalesforceSDKManager`, to handle all of the details of conditional authentication at startup, passcode validation, etc.
+- It is now possible to obtain an unauthenticated RestClient instance for use with APIs that do not require authentication.
 - Various bug fixes.
 
 Check http://developer.force.com/mobilesdk for additional articles and tutorials

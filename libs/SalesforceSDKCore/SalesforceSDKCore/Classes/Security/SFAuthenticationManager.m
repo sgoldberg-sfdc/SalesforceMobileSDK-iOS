@@ -25,6 +25,7 @@
 
 #import "SFApplication.h"
 #import "SFAuthenticationManager+Internal.h"
+#import "SalesforceSDKManager.h"
 #import "SFUserAccount.h"
 #import "SFUserAccountManager.h"
 #import "SFUserAccountIdentity.h"
@@ -41,7 +42,7 @@
 #import <SalesforceSecurity/SFPasscodeManager.h>
 #import <SalesforceSecurity/SFPasscodeProviderManager.h>
 #import "SFPushNotificationManager.h"
-
+#import "SFSecurityLockout+Internal.h"
 #import <SalesforceOAuth/SFOAuthCredentials.h>
 #import <SalesforceOAuth/SFOAuthInfo.h>
 #import <SalesforceCommonUtils/NSURL+SFAdditions.h>
@@ -145,9 +146,10 @@ static NSString * const kAlertVersionMismatchErrorKey = @"authAlertVersionMismat
 
 #pragma mark - SFAuthenticationManager
 
-@interface SFAuthenticationManager ()
+@interface SFAuthenticationManager ()<SFSecurityLockoutDelegate>
 {
     NSMutableOrderedSet *_delegates;
+    BOOL _useSecLockoutDelegateToFinishRetrievedIdentityDataProcess;
 }
 
 /**
@@ -274,6 +276,7 @@ static NSString * const kAlertVersionMismatchErrorKey = @"authAlertVersionMismat
 @synthesize connectedAppVersionAuthErrorHandler = _connectedAppVersionAuthErrorHandler;
 @synthesize networkFailureAuthErrorHandler = _networkFailureAuthErrorHandler;
 @synthesize genericAuthErrorHandler = _genericAuthErrorHandler;
+@synthesize advancedAuthConfiguration = _advancedAuthConfiguration;
 
 #pragma mark - Singleton initialization / management
 
@@ -327,6 +330,8 @@ static Class InstanceClass = nil;
         if (user) {
             [self setupWithUser:user];
         }
+        
+        [SFSecurityLockout addDelegate:self];
     }
     
     return self;
@@ -334,6 +339,7 @@ static Class InstanceClass = nil;
 
 - (void)dealloc
 {
+    [SFSecurityLockout removeDelegate:self];
     [self cleanupStatusAlert];
     SFRelease(_statusAlert);
     SFRelease(_authViewController);
@@ -427,7 +433,7 @@ static Class InstanceClass = nil;
         return;
     }
     
-    [self log:SFLogLevelInfo format:@"Logging out user '%@'.", user];
+    [self log:SFLogLevelInfo format:@"Logging out user '%@'.", user.userName];
     
     NSDictionary *userInfo = @{ @"account": user };
     [[NSNotificationCenter defaultCenter] postNotificationName:kSFUserWillLogoutNotification
@@ -442,13 +448,11 @@ static Class InstanceClass = nil;
     
     SFUserAccountManager *userAccountManager = [SFUserAccountManager sharedInstance];
     
-    [self revokeRefreshToken:user];
-    
     // If it's not the current user, this is really just about clearing the account data and
     // user-specific state for the given account.
     if (![user isEqual:userAccountManager.currentUser]) {
         [userAccountManager deleteAccountForUser:user error:nil];
-        [user.credentials revoke];
+        [self revokeRefreshToken:user];
         [[SFPushNotificationManager sharedInstance] unregisterSalesforceNotifications:user];
         return;
     }
@@ -467,7 +471,7 @@ static Class InstanceClass = nil;
     [self willChangeValueForKey:@"haveValidSession"];
     [userAccountManager deleteAccountForUser:user error:nil];
     [userAccountManager saveAccounts:nil];
-    [user.credentials revoke];
+    [self revokeRefreshToken:user];
     userAccountManager.currentUser = nil;
     [self didChangeValueForKey:@"haveValidSession"];
     
@@ -505,11 +509,18 @@ static Class InstanceClass = nil;
     
     // Check that the current user itself has a valid session
     SFUserAccount *userAcct = [[SFUserAccountManager sharedInstance] currentUser];
-    if ([userAcct isSessionValid]) {
-        return YES;
-    } else {
-        return NO;
-    }
+    return [userAcct isSessionValid];
+}
+
+- (void)setAdvancedAuthConfiguration:(SFOAuthAdvancedAuthConfiguration)advancedAuthConfiguration
+{
+    _advancedAuthConfiguration = advancedAuthConfiguration;
+    self.coordinator.advancedAuthConfiguration = advancedAuthConfiguration;
+}
+
+- (BOOL)handleAdvancedAuthenticationResponse:(NSURL *)appUrlResponse
+{
+    return [self.coordinator handleAdvancedAuthenticationResponse:appUrlResponse];
 }
 
 + (void)resetSessionCookie
@@ -724,7 +735,7 @@ static Class InstanceClass = nil;
 - (void)revokeRefreshToken:(SFUserAccount *)user
 {
     if (user.credentials.refreshToken != nil) {
-        [self log:SFLogLevelInfo format:@"Revoking credentials on the server for '%@'.", user];
+        [self log:SFLogLevelInfo format:@"Revoking credentials on the server for '%@'.", user.userName];
         NSMutableString *host = [NSMutableString stringWithFormat:@"%@://", user.credentials.protocol];
         [host appendString:user.credentials.domain];
         [host appendString:@"/services/oauth2/revoke?token="];
@@ -736,6 +747,7 @@ static Class InstanceClass = nil;
         NSURLConnection *urlConnection = [[NSURLConnection alloc] initWithRequest:request delegate:nil];
         [urlConnection start];
     }
+    [user.credentials revoke];
 }
 
 - (void)login
@@ -761,6 +773,9 @@ static Class InstanceClass = nil;
     if (self.coordinator.isAuthenticating) {
         [self.coordinator stopAuthentication];        
     }
+    if ([SalesforceSDKManager sharedManager].userAgentString != NULL) {
+        self.coordinator.userAgentForAuth = [SalesforceSDKManager sharedManager].userAgentString(@"");
+    }
     [self.coordinator authenticate];
 }
 
@@ -780,6 +795,7 @@ static Class InstanceClass = nil;
     self.coordinator.delegate = nil;
     self.coordinator = [[SFOAuthCoordinator alloc] initWithCredentials:account.credentials];
     self.coordinator.scopes = account.accessScopes;
+    self.coordinator.advancedAuthConfiguration = self.advancedAuthConfiguration;
     self.coordinator.delegate = self;
     
     // re-create the identity coordinator for the current user
@@ -852,6 +868,11 @@ static Class InstanceClass = nil;
     // already exists.
     NSAssert(self.idCoordinator.idData != nil, @"Identity data should not be nil/empty at this point.");
     
+    /// If the passcode screen is present, setting the success/failure callback blocks won't work.
+    if ([SFSecurityLockout passcodeScreenIsPresent]) {
+        _useSecLockoutDelegateToFinishRetrievedIdentityDataProcess = YES;
+    }
+    
     [SFSecurityLockout setLockScreenSuccessCallbackBlock:^(SFSecurityLockoutAction action) {
         [self finalizeAuthCompletion];
     }];
@@ -907,7 +928,7 @@ static Class InstanceClass = nil;
                                            initWithName:kSFInvalidCredentialsAuthErrorHandler
                                            evalBlock:^BOOL(NSError *error, SFOAuthInfo *authInfo) {
                                                if ([[weakSelf class] errorIsInvalidAuthCredentials:error]) {
-                                                   [weakSelf log:SFLogLevelWarning format:@"OAuth refresh failed due to invalid grant.  Error code: %d", error.code];
+                                                   [weakSelf log:SFLogLevelWarning format:@"OAuth refresh failed due to invalid grant.  Error code: %ld", (long)error.code];
                                                    [weakSelf execFailureBlocks];
                                                    return YES;
                                                }
@@ -921,7 +942,7 @@ static Class InstanceClass = nil;
                                             initWithName:kSFConnectedAppVersionAuthErrorHandler
                                             evalBlock:^BOOL(NSError *error, SFOAuthInfo *authInfo) {
                                                 if (error.code == kSFOAuthErrorWrongVersion) {
-                                                    [weakSelf log:SFLogLevelWarning format:@"OAuth refresh failed due to Connected App version mismatch.  Error code: %d", error.code];
+                                                    [weakSelf log:SFLogLevelWarning format:@"OAuth refresh failed due to Connected App version mismatch.  Error code: %ld", (long)error.code];
                                                     [weakSelf showAlertForConnectedAppVersionMismatchError];
                                                     return YES;
                                                 }
@@ -937,9 +958,12 @@ static Class InstanceClass = nil;
                                                      if ([[weakSelf class] errorIsNetworkFailure:error]) {
                                                          [weakSelf log:SFLogLevelWarning format:@"Auth token refresh couldn't connect to server: %@", [error localizedDescription]];
                                                          
-                                                         if (authInfo.authType == SFOAuthTypeUserAgent) {
-                                                             [weakSelf log:SFLogLevelError msg:@"Network failure for OAuth User Agent flow is a fatal error."];
+                                                         if (authInfo.authType != SFOAuthTypeRefresh) {
+                                                             [weakSelf log:SFLogLevelError format:@"Network failure for non-Refresh OAuth flow (%@) is a fatal error.", authInfo.authTypeDescription];
                                                              return NO;  // Default error handler will show the error.
+                                                         } else if ([SFUserAccountManager sharedInstance].currentUser.credentials.accessToken == nil) {
+                                                             [weakSelf log:SFLogLevelWarning msg:@"Network unreachable for access token refresh, and no access token is configured.  Cannot continue."];
+                                                             return NO;
                                                          } else {
                                                              [weakSelf log:SFLogLevelInfo msg:@"Network failure for OAuth Refresh flow (existing credentials)  Try to continue."];
                                                              [weakSelf loggedIn:YES];
@@ -1134,7 +1158,30 @@ static Class InstanceClass = nil;
 
 - (void)identityCoordinator:(SFIdentityCoordinator *)coordinator didFailWithError:(NSError *)error
 {
-    [self showRetryAlertForAuthError:error alertTag:kIdentityAlertViewTag];
+    if (error.code == kSFIdentityErrorMissingParameters) {
+        // No retry, as missing parameters are fatal
+        [self log:SFLogLevelError format:@"Missing parameters attempting to retrieve identity data.  Error domain: %@, code: %ld, description: %@", [error domain], [error code], [error localizedDescription]];
+        [self revokeRefreshToken:[SFUserAccountManager sharedInstance].currentUser];
+        self.authError = error;
+        [self execFailureBlocks];
+    } else {
+        [self showRetryAlertForAuthError:error alertTag:kIdentityAlertViewTag];
+    }
+}
+
+#pragma mark - SFSecurityLockoutDelegate
+
+- (void)passcodeFlowDidComplete:(BOOL)success
+{
+    if (_useSecLockoutDelegateToFinishRetrievedIdentityDataProcess) {
+        _useSecLockoutDelegateToFinishRetrievedIdentityDataProcess = NO;
+        if (success) {
+            [self finalizeAuthCompletion];
+        }
+        else {
+            [self execFailureBlocks];
+        }
+    }
 }
 
 #pragma mark - UIAlertViewDelegate
@@ -1143,7 +1190,7 @@ static Class InstanceClass = nil;
 {
     if (alertView == _statusAlert) {
         _statusAlert = nil;
-        [self log:SFLogLevelDebug format:@"clickedButtonAtIndex: %d", buttonIndex];
+        [self log:SFLogLevelDebug format:@"clickedButtonAtIndex: %ld", (long)buttonIndex];
         if (alertView.tag == kOAuthGenericAlertViewTag) {
             [self dismissAuthViewControllerIfPresent];
             [self login];

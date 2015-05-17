@@ -41,6 +41,7 @@
 #import "SFUserAccountManager.h"
 
 static NSMutableDictionary *_allSharedStores;
+static NSMutableDictionary *_allGlobalSharedStores;
 static SFSmartStoreEncryptionKeyBlock _encryptionKeyBlock = NULL;
 static BOOL _storeUpgradeHasRun = NO;
 
@@ -97,6 +98,7 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
 @synthesize storeQueue = _storeQueue;
 @synthesize storeName = _storeName;
 @synthesize user = _user;
+@synthesize isGlobal = _isGlobal;
 @synthesize dbMgr = _dbMgr;
 
 + (void)initialize
@@ -109,14 +111,25 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
     }
 }
 
-- (id) initWithName:(NSString*)name user:(SFUserAccount *)user {
+- (id)initWithName:(NSString *)name user:(SFUserAccount *)user {
+    return [self initWithName:name user:user isGlobal:NO];
+}
+
+- (id) initWithName:(NSString*)name user:(SFUserAccount *)user isGlobal:(BOOL)isGlobal {
     self = [super init];
-    
-    if (nil != self)  {
-        [self log:SFLogLevelDebug format:@"SFSmartStore initWithName: %@, user: %@", name, [SFSmartStoreUtils userKeyForUser:user]];
+    if (self)  {
+        if ((user == nil || [user.accountIdentity isEqual:[SFUserAccountManager sharedInstance].temporaryUserIdentity]) && !isGlobal) {
+            [self log:SFLogLevelWarning format:@"%@ Cannot create SmartStore with name '%@': user is not configured, and isGlobal is not configured.  Did you mean to call [%@ sharedGlobalStoreWithName:]?",
+             NSStringFromSelector(_cmd),
+             name,
+             NSStringFromClass([self class])];
+            return nil;
+        }
+        
+        [self log:SFLogLevelDebug format:@"%@ %@, user: %@, isGlobal: %d", NSStringFromSelector(_cmd), name, [SFSmartStoreUtils userKeyForUser:user], isGlobal];
         
         @synchronized ([SFSmartStore class]) {
-            if (!_storeUpgradeHasRun) {
+            if ([SFUserAccountManager sharedInstance].currentUser != nil && !_storeUpgradeHasRun) {
                 _storeUpgradeHasRun = YES;
                 [SFSmartStoreUpgrade updateStoreLocations];
                 [SFSmartStoreUpgrade updateEncryption];
@@ -124,13 +137,14 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
         }
         
         _storeName = name;
-        if ([user isEqual:[SFUserAccountManager sharedInstance].temporaryUser]) {
-            _user = nil;
-        } else {
-            _user = user;
-        }
+        _isGlobal = isGlobal;
+        _user = user;
         
-        _dbMgr = [SFSmartStoreDatabaseManager sharedManagerForUser:_user];
+        if (_isGlobal) {
+            _dbMgr = [SFSmartStoreDatabaseManager sharedGlobalManager];
+        } else {
+            _dbMgr = [SFSmartStoreDatabaseManager sharedManagerForUser:_user];
+        }
         
         // Setup listening for data protection available / unavailable
         _dataProtectionKnownAvailable = NO;
@@ -226,7 +240,10 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
         [self.dbMgr removeStoreDir:self.storeName];
     }
     
-    [SFSmartStoreUpgrade setUsesKeyStoreEncryption:result forUser:self.user store:self.storeName];
+    if (self.user != nil) {
+        [SFSmartStoreUpgrade setUsesKeyStoreEncryption:result forUser:self.user store:self.storeName];
+    }
+    
     return result;
 }
 
@@ -255,6 +272,13 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
     return (self.storeQueue != nil);
 }
 
+- (NSString *)storePath {
+    if (self.storeName.length == 0)
+        return nil;
+    
+    return [self.dbMgr fullDbFilePathForStoreName:self.storeName];
+}
+
 #pragma mark - Store methods
 
 + (id)sharedStoreWithName:(NSString *)storeName {
@@ -265,6 +289,11 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
 
 + (id)sharedStoreWithName:(NSString*)storeName user:(SFUserAccount *)user {
     @synchronized (self) {
+        if (user == nil) {
+            [SFLogger log:self level:SFLogLevelWarning format:@"%@ Cannot create shared store with name '%@' for nil user.  Did you mean to call [%@ sharedGlobalStoreWithName:]?", NSStringFromSelector(_cmd), storeName, NSStringFromClass(self)];
+            return nil;
+        }
+        
         if (nil == _allSharedStores) {
             _allSharedStores = [NSMutableDictionary dictionary];
         }
@@ -284,6 +313,23 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
     }
 }
 
++ (id)sharedGlobalStoreWithName:(NSString *)storeName {
+    @synchronized (self) {
+        if (nil == _allGlobalSharedStores) {
+            _allGlobalSharedStores = [NSMutableDictionary dictionary];
+        }
+
+        SFSmartStore *store = _allGlobalSharedStores[storeName];
+        if (nil == store) {
+            store = [[self alloc] initWithName:storeName user:nil isGlobal:YES];
+            if (store)
+                _allGlobalSharedStores[storeName] = store;
+        }
+        
+        return store;
+    }
+}
+
 + (void)removeSharedStoreWithName:(NSString *)storeName {
     @synchronized (self) {
         [self removeSharedStoreWithName:storeName forUser:[SFUserAccountManager sharedInstance].currentUser];
@@ -292,6 +338,11 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
 
 + (void)removeSharedStoreWithName:(NSString*)storeName forUser:(SFUserAccount *)user {
     @synchronized (self) {
+        if (user == nil) {
+            [SFLogger log:self level:SFLogLevelInfo format:@"%@ Cannot remove store with name '%@' for nil user.  Did you mean to call [%@ removeSharedGlobalStoreWithName:]?", NSStringFromSelector(_cmd), storeName, NSStringFromClass(self)];
+            return;
+        }
+        
         [self log:SFLogLevelDebug format:@"removeSharedStoreWithName: %@, user: %@", storeName, user];
         NSString *userKey = [SFSmartStoreUtils userKeyForUser:user];
         SFSmartStore *existingStore = _allSharedStores[userKey][storeName];
@@ -304,6 +355,18 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
     }
 }
 
++ (void)removeSharedGlobalStoreWithName:(NSString *)storeName {
+    @synchronized (self) {
+        [SFLogger log:self level:SFLogLevelDebug format:@"%@ %@", NSStringFromSelector(_cmd), storeName];
+        SFSmartStore *existingStore = _allGlobalSharedStores[storeName];
+        if (nil != existingStore) {
+            [existingStore.storeQueue close];
+            [_allGlobalSharedStores removeObjectForKey:storeName];
+        }
+        [[SFSmartStoreDatabaseManager sharedGlobalManager] removeStoreDir:storeName];
+    }
+}
+
 + (void)removeAllStores {
     @synchronized (self) {
         [self removeAllStoresForUser:[SFUserAccountManager sharedInstance].currentUser];
@@ -312,6 +375,11 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
 
 + (void)removeAllStoresForUser:(SFUserAccount *)user {
     @synchronized (self) {
+        if (user == nil) {
+            [SFLogger log:self level:SFLogLevelInfo format:@"%@ Cannot remove all stores for nil user.  Did you mean to call [%@ removeAllGlobalStores]?", NSStringFromSelector(_cmd), NSStringFromClass(self)];
+            return;
+        }
+        
         NSArray *allStoreNames = [[SFSmartStoreDatabaseManager sharedManagerForUser:user] allStoreNames];
         for (NSString *storeName in allStoreNames) {
             [self removeSharedStoreWithName:storeName forUser:user];
@@ -320,10 +388,20 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
     }
 }
 
++ (void)removeAllGlobalStores {
+    @synchronized (self) {
+        NSArray *allStoreNames = [[SFSmartStoreDatabaseManager sharedGlobalManager] allStoreNames];
+        for (NSString *storeName in allStoreNames) {
+            [self removeSharedGlobalStoreWithName:storeName];
+        }
+    }
+}
+
 + (void)clearSharedStoreMemoryState
 {
     @synchronized (self) {
         [_allSharedStores removeAllObjects];
+        [_allGlobalSharedStores removeAllObjects];
     }
 }
 
@@ -667,7 +745,7 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
 
 - (NSString*) convertSmartSql:(NSString*)smartSql withDb:(FMDatabase*)db
 {
-    [self log:SFLogLevelDebug format:@"convertSmartSQl:%@", smartSql];
+    [self log:SFLogLevelVerbose format:@"convertSmartSQl:%@", smartSql];
     NSObject* sql = _smartSqlToSql[smartSql];
     
     if (nil == sql) {
@@ -675,17 +753,17 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
         
         // Conversion failed, putting the NULL in the cache so that we don't retry conversion
         if (sql == nil) {
-            [self log:SFLogLevelDebug format:@"convertSmartSql:putting NULL in cache"];
+            [self log:SFLogLevelVerbose format:@"convertSmartSql:putting NULL in cache"];
             _smartSqlToSql[smartSql] = [NSNull null];
         }
         // Updating cache
         else {
-            [self log:SFLogLevelDebug format:@"convertSmartSql:putting %@ in cache", sql];
+            [self log:SFLogLevelVerbose format:@"convertSmartSql:putting %@ in cache", sql];
             _smartSqlToSql[smartSql] = sql;
         }
     }
     else if ([sql isEqual:[NSNull null]]) {
-        [self log:SFLogLevelDebug format:@"convertSmartSql:found NULL in cache"];
+        [self log:SFLogLevelVerbose format:@"convertSmartSql:found NULL in cache"];
         return nil;
     }
     
@@ -746,8 +824,8 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
 }
 
 
-- (NSString *)tableNameBySoupId:(long)soupId {
-    return [NSString stringWithFormat:@"TABLE_%ld",soupId];
+- (NSString *)tableNameBySoupId:(sqlite_int64)soupId {
+    return [NSString stringWithFormat:@"TABLE_%lld", soupId];
 }
 
 - (NSArray *)tableNamesForAllSoupsWithDb:(FMDatabase*) db{
@@ -1111,7 +1189,7 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
     // SQL
     NSString* sql = [self convertSmartSql: querySpec.smartSql withDb:db];
     NSString* limitSql = [@[@"SELECT * FROM (", sql, @") LIMIT ", limit] componentsJoinedByString:@""];
-    [self log:SFLogLevelDebug format:@"queryWithQuerySpec: \nlimitSql:%@ \npageIndex:%d \n", limitSql, pageIndex];
+    [self log:SFLogLevelDebug format:@"queryWithQuerySpec: \nlimitSql:%@ \npageIndex:%lu \n", limitSql, (unsigned long)pageIndex];
     
     // Args
     NSArray* args = [querySpec bindsForQuerySpec];
@@ -1121,12 +1199,18 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
     while ([frs next]) {
         // Smart queries
         if (querySpec.queryType == kSFSoupQueryTypeSmart) {
-            [result addObject:[self getDataFromRow:frs]];
+            NSArray *data = [self getDataFromRow:frs];
+            if (data) {
+                [result addObject:data];
+            }
         }
         // Exact/like/range queries
         else {
             NSString *rawJson = [frs stringForColumn:SOUP_COL];
-            [result addObject:[SFJsonUtils objectFromJSONString:rawJson]];
+            id entry = [SFJsonUtils objectFromJSONString:rawJson];
+            if (entry) {
+                [result addObject:entry];
+            }
         }
     }
     [frs close];
@@ -1141,11 +1225,16 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
     for(int i=0; i<frs.columnCount; i++) {
         NSString* columnName = [frs columnNameForIndex:i];
         id value = valuesMap[columnName];
-        if ([columnName hasSuffix:SOUP_COL]) {
-            [result addObject:[SFJsonUtils objectFromJSONString:(NSString*)value]];
+        if ([columnName hasSuffix:SOUP_COL] && [value isKindOfClass:[NSString class]]) {
+            id entry = [SFJsonUtils objectFromJSONString:value];
+            if (entry) {
+                [result addObject:entry];
+            }
         }
         else {
-            [result addObject:value];
+            if (value) {
+                [result addObject:value];
+            }
         }
     }
     return result;
@@ -1217,7 +1306,7 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
     [self insertIntoTable:soupTableName values:baseColumns withDb:db];
     
     //set the newly-calculated entry ID so that our next update will update this entry (and not create a new one)
-    NSNumber *newEntryId = [NSNumber numberWithInteger:[db lastInsertRowId]];
+    NSNumber *newEntryId = [NSNumber numberWithLongLong:[db lastInsertRowId]];
     
     //clone the entry so that we can insert the new SOUP_ENTRY_ID into the json
     NSMutableDictionary *mutableEntry = [entry mutableCopy];
@@ -1293,9 +1382,10 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
             if (fieldValue == nil) {
                 // Cannot have empty values for user-defined external ID upsert.
                 if (error != nil) {
+                    NSString *errorDescription = [NSString stringWithFormat:kSFSmartStoreExternalIdNilDescription, externalIdPath];
                     *error = [NSError errorWithDomain:kSFSmartStoreErrorDomain
                                                  code:kSFSmartStoreExternalIdNilCode
-                                             userInfo:@{NSLocalizedDescriptionKey: kSFSmartStoreExternalIdNilDescription}];
+                                             userInfo:@{NSLocalizedDescriptionKey: errorDescription}];
                 }
                 return nil;
             }
@@ -1410,9 +1500,9 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
     }
 }
 
-- (long)getDatabaseSize
+- (unsigned long long)getDatabaseSize
 {
-    NSString *dbPath = [[SFSmartStoreDatabaseManager sharedManager] fullDbFilePathForStoreName:_storeName];
+    NSString *dbPath = [self.dbMgr fullDbFilePathForStoreName:_storeName];
     return [[[NSFileManager defaultManager] attributesOfItemAtPath:dbPath error:nil] fileSize];
 }
 

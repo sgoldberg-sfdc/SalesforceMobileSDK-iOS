@@ -27,6 +27,7 @@
 #import "SFUserAccountManagerUpgrade.h"
 #import "SFDirectoryManager.h"
 #import "SFCommunityData.h"
+#import "SFManagedPreferences.h"
 
 #import <SalesforceSecurity/SFKeyStoreManager.h>
 #import <SalesforceSecurity/SFKeyStoreKey.h>
@@ -139,6 +140,10 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         case SFLogLevelError:
             credentials.logLevel = kSFOAuthLogLevelError;
             break;
+            
+        case SFLogLevelVerbose:
+            credentials.logLevel = kSFOAuthLogLevelVerbose;
+            break;
     }
 }
 
@@ -196,25 +201,27 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
     
     // Fetch from the standard defaults or bundle
     NSString *loginHost = [defaults stringForKey:kSFUserAccountOAuthLoginHost];
-    BOOL loginHostInitialized = (loginHost != nil);
-    if (nil == loginHost || 0 == [loginHost length]) {
-        loginHost = [[NSBundle mainBundle] objectForInfoDictionaryKey:kSFUserAccountOAuthLoginHost];
-        if (nil == loginHost || 0 == [loginHost length]) {
+    if ([loginHost length] > 0) return loginHost;
+    
+    // Login host not initialized.  Set it up.
+    NSString *managedLoginHost = ([SFManagedPreferences sharedPreferences].loginHosts)[0];
+    if ([managedLoginHost length] > 0) {
+        loginHost = managedLoginHost;
+    } else {
+        NSString *bundleLoginHost = [[NSBundle mainBundle] objectForInfoDictionaryKey:kSFUserAccountOAuthLoginHost];
+        if ([bundleLoginHost length] > 0) {
+            loginHost = bundleLoginHost;
+        } else {
             loginHost = [self appSettingsLoginHost];
+            if ([loginHost length] == 0) {
+                loginHost = kSFUserAccountOAuthLoginHostDefault;
+            }
         }
     }
     
-    // Finaly, default to something reasonnable
-    if (nil == loginHost || 0 == [loginHost length]) {
-        loginHost = kSFUserAccountOAuthLoginHostDefault;
-    }
-    
-    // If the login host wasn't previously initialized, set it up.
-    if (!loginHostInitialized) {
-        [defaults setObject:loginHost forKey:kSFUserAccountOAuthLoginHost];
-        [defaults synchronize];
-        [self updateAppSettingsLoginHost:loginHost];
-    }
+    [defaults setObject:loginHost forKey:kSFUserAccountOAuthLoginHost];
+    [defaults synchronize];
+    [self updateAppSettingsLoginHost:loginHost];
     
     return loginHost;
 }
@@ -536,7 +543,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
     
     // Get the root directory, usually ~/Library/<appBundleId>/
     NSString *rootDirectory = [[SFDirectoryManager sharedManager] directoryForUser:nil type:NSLibraryDirectory components:nil];
-    NSFileManager *fm = [NSFileManager defaultManager];
+    NSFileManager *fm = [[NSFileManager alloc] init];
     if (![fm fileExistsAtPath:rootDirectory]) {
         // There is no root directory, that's fine, probably a fresh app install,
         // new user will be created later on.
@@ -583,7 +590,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
                         [self addAccount:userAccount];
                     } else {
                         // Error logging will already have occurred.  Make sure account file data is removed.
-                        [[NSFileManager defaultManager] removeItemAtPath:userAccountPath error:nil];
+                        [fm removeItemAtPath:userAccountPath error:nil];
                     }
                 } else {
                     [self log:SFLogLevelDebug format:@"There is no user account file in this user directory: %@", orgPath];
@@ -614,7 +621,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
     self.previousCommunityId = self.activeCommunityId;
     
     SFUserAccount *account = [self userAccountForUserIdentity:curUserIdentity];
-    account.communityId = self.previousCommunityId;
+    account.communityId = nil;
     self.currentUser = account;
     
     // update the client ID in case it's changed (via settings, etc)
@@ -626,14 +633,13 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 }
 
 - (SFUserAccount *)loadUserAccountFromFile:(NSString *)filePath {
-    if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+    NSFileManager *fm = [[NSFileManager alloc] init];
+    if (![fm fileExistsAtPath:filePath]) {
         [self log:SFLogLevelDebug format:@"No account data exists at '%@'", filePath];
         return nil;
     }
     
     @try {
-        // TODO: Refactor so this "read plaintext account" case is a fallback.  This upgrade
-        // case generates (caught) exceptions every time through the account load.
         SFUserAccount *plainTextUserAccount = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
         
         // Upgrade step.  If we got this far, the file is in the old plaintext format, and we'll
@@ -641,14 +647,14 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         BOOL encryptUserAccountSuccess = [self saveUserAccount:plainTextUserAccount toFile:filePath];
         if (!encryptUserAccountSuccess) {
             // Specific error messages will already be logged.  Make sure old user account file is removed.
-            [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+            [fm removeItemAtPath:filePath error:nil];
             return nil;
         }
     }
     @finally {
-        NSData *encryptedUserAccountData = [[NSFileManager defaultManager] contentsAtPath:filePath];
+        NSData *encryptedUserAccountData = [fm contentsAtPath:filePath];
         if (!encryptedUserAccountData) {
-            [self log:SFLogLevelWarning format:@"Could not retrieve user account data from file '%@'", filePath];
+            [self log:SFLogLevelDebug format:@"Could not retrieve user account data from '%@'", filePath];
             return nil;
         }
         
@@ -656,7 +662,7 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         NSData *decryptedArchiveData = [SFSDKCryptoUtils aes256DecryptData:encryptedUserAccountData withKey:encKey.key iv:encKey.initializationVector];
         if (!decryptedArchiveData) {
             [self log:SFLogLevelWarning msg:@"User account data could not be decrypted.  Can't load account."];
-            [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+            [fm removeItemAtPath:filePath error:nil];
             return nil;
         }
         
@@ -666,87 +672,89 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         }
         @catch (NSException *exception) {
             [self log:SFLogLevelWarning format:@"Error deserializing the user account data: %@", [exception reason]];
-            [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+            [fm removeItemAtPath:filePath error:nil];
             return nil;
         }
     }
 }
 
 - (BOOL)saveAccounts:(NSError**)error {
-    NSDictionary *userAccountMap = [self.userAccountMap copy];
-    
-    for (SFUserAccountIdentity *userIdentity in userAccountMap) {
-        // Don't save the temporary user id
-        if ([userIdentity isEqual:self.temporaryUserIdentity]) {
-            continue;
-        }
-        
-        // Grab the user account...
-        SFUserAccount *user = userAccountMap[userIdentity];
-        
-        // And it's persistent file path
-        NSString *userAccountPath = [[self class] userAccountPlistFileForUser:user];
-        
-        // Make sure to remove any existing file
-        NSFileManager *fm = [NSFileManager defaultManager];
-        if ([fm fileExistsAtPath:userAccountPath]) {
-            if (![fm removeItemAtPath:userAccountPath error:error]) {
-                [self log:SFLogLevelDebug format:@"failed to remove old user account %@: %@", userAccountPath, *error];
+    @synchronized (self.userAccountMap) {
+        NSDictionary *userAccountMapCopy = [self.userAccountMap copy];
+        for (SFUserAccountIdentity *userIdentity in userAccountMapCopy) {
+            // Don't save the temporary user id
+            if ([userIdentity isEqual:self.temporaryUserIdentity]) {
+                continue;
+            }
+            
+            // Grab the user account...
+            SFUserAccount *user = userAccountMapCopy[userIdentity];
+            
+            // And it's persistent file path
+            NSString *userAccountPath = [[self class] userAccountPlistFileForUser:user];
+            
+            // Make sure to remove any existing file
+            NSFileManager *fm = [[NSFileManager alloc] init];
+            if ([fm fileExistsAtPath:userAccountPath]) {
+                if (![fm removeItemAtPath:userAccountPath error:error]) {
+                    [self log:SFLogLevelDebug format:@"failed to remove old user account %@: %@", userAccountPath, *error];
+                    return NO;
+                }
+            }
+            
+            // And now save its content
+            if (![self saveUserAccount:user toFile:userAccountPath]) {
+                [self log:SFLogLevelDebug format:@"failed to archive user account: %@", userAccountPath];
                 return NO;
             }
         }
-        
-        // And now save its content
-        if (![self saveUserAccount:user toFile:userAccountPath]) {
-            [self log:SFLogLevelDebug format:@"failed to archive user account: %@", userAccountPath];
-            return NO;
-        }
     }
-    
     return YES;
 }
 
 - (BOOL)saveUserAccount:(SFUserAccount *)userAccount toFile:(NSString *)filePath {
-    if (!userAccount) {
-        [self log:SFLogLevelDebug msg:@"Cannot save empty user account."];
-        return NO;
-    }
-    if ([filePath length] == 0) {
-        [self log:SFLogLevelDebug msg:@"File path cannot be empty.  Can't save account."];
-        return NO;
-    }
-    
-    // Remove any existing file.
-    if ([[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-        NSError *removeAccountFileError = nil;
-        if (![[NSFileManager defaultManager] removeItemAtPath:filePath error:&removeAccountFileError]) {
-            [self log:SFLogLevelDebug format:@"Failed to remove old user account data at path '%@': %@", filePath, [removeAccountFileError localizedDescription]];
+    @synchronized (userAccount) {
+        if (!userAccount) {
+            [self log:SFLogLevelDebug msg:@"Cannot save empty user account."];
+            return NO;
+        }
+        if ([filePath length] == 0) {
+            [self log:SFLogLevelDebug msg:@"File path cannot be empty.  Can't save account."];
+            return NO;
+        }
+        
+        // Remove any existing file.
+        NSFileManager *fm = [[NSFileManager alloc] init];
+        if ([fm fileExistsAtPath:filePath]) {
+            NSError *removeAccountFileError = nil;
+            if (![fm removeItemAtPath:filePath error:&removeAccountFileError]) {
+                [self log:SFLogLevelDebug format:@"Failed to remove old user account data at path '%@': %@", filePath, [removeAccountFileError localizedDescription]];
+                return NO;
+            }
+        }
+        
+        // Serialize the user account data.
+        NSData *archiveData = [NSKeyedArchiver archivedDataWithRootObject:userAccount];
+        if (!archiveData) {
+            [self log:SFLogLevelDebug msg:@"Could not archive user account data to save it."];
+            return NO;
+        }
+        
+        // Encrypt it.
+        SFEncryptionKey *encKey = [[SFKeyStoreManager sharedInstance] retrieveKeyWithLabel:kUserAccountEncryptionKeyLabel keyType:SFKeyStoreKeyTypeGenerated autoCreate:YES];
+        NSData *encryptedArchiveData = [SFSDKCryptoUtils aes256EncryptData:archiveData withKey:encKey.key iv:encKey.initializationVector];
+        if (!encryptedArchiveData) {
+            [self log:SFLogLevelDebug msg:@"User account data could not be encrypted.  Can't save account."];
+            return NO;
+        }
+        
+        // Save it.
+        BOOL saveFileSuccess = [fm createFileAtPath:filePath contents:encryptedArchiveData attributes:@{ NSFileProtectionKey : NSFileProtectionComplete }];
+        if (!saveFileSuccess) {
+            [self log:SFLogLevelDebug format:@"Could not create user account data file at path '%@'", filePath];
             return NO;
         }
     }
-    
-    // Serialize the user account data.
-    NSData *archiveData = [NSKeyedArchiver archivedDataWithRootObject:userAccount];
-    if (!archiveData) {
-        [self log:SFLogLevelDebug msg:@"Could not archive user account data to save it."];
-        return NO;
-    }
-    
-    // Encrypt it.
-    SFEncryptionKey *encKey = [[SFKeyStoreManager sharedInstance] retrieveKeyWithLabel:kUserAccountEncryptionKeyLabel keyType:SFKeyStoreKeyTypeGenerated autoCreate:YES];
-    NSData *encryptedArchiveData = [SFSDKCryptoUtils aes256EncryptData:archiveData withKey:encKey.key iv:encKey.initializationVector];
-    if (!encryptedArchiveData) {
-        [self log:SFLogLevelDebug msg:@"User account data could not be encrypted.  Can't save account."];
-        return NO;
-    }
-    
-    // Save it.
-    BOOL saveFileSuccess = [[NSFileManager defaultManager] createFileAtPath:filePath contents:encryptedArchiveData attributes:@{ NSFileProtectionKey : [SFFileProtectionHelper fileProtectionForPath:filePath] }];
-    if (!saveFileSuccess) {
-        [self log:SFLogLevelDebug format:@"Could not create user account data file at path '%@'", filePath];
-        return NO;
-    }
-    
     return YES;
 }
 
@@ -794,9 +802,10 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
                                                                                  scope:SFUserAccountScopeUser
                                                                                   type:NSLibraryDirectory
                                                                             components:nil];
-        if ([[NSFileManager defaultManager] fileExistsAtPath:userDirectory]) {
+        NSFileManager *fm = [[NSFileManager alloc] init];
+        if ([fm fileExistsAtPath:userDirectory]) {
             NSError *folderRemovalError = nil;
-            BOOL removeUserFolderSucceeded = [[NSFileManager defaultManager] removeItemAtPath:userDirectory error:&folderRemovalError];
+            BOOL removeUserFolderSucceeded = [fm removeItemAtPath:userDirectory error:&folderRemovalError];
             if (!removeUserFolderSucceeded) {
                 [self log:SFLogLevelDebug
                    format:@"Error removing the user folder for '%@': %@", user.userName, [folderRemovalError localizedDescription]];
@@ -950,7 +959,12 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         self.currentUser = [self createUserAccountWithCredentials:credentials];
         change |= SFUserAccountChangeNewUser;
     } else {
-        self.currentUser.credentials = credentials;
+        if ([self.currentUser.accountIdentity matchesCredentials:credentials]) {
+            self.currentUser.credentials = credentials;
+        } else {
+            [self log:SFLogLevelWarning format:@"Attempted to apply credentials to incorrect user"];
+            return;
+        }
     }
     
     // If the user has logged using a community-base URL, then let's create the community data
@@ -967,7 +981,6 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
                 self.currentUser.communities = @[communityData];
             }
         }
-        
         [self setActiveCommunityId:self.currentUser.communityId];
     }
     
@@ -1016,19 +1029,19 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
 }
 
 - (void)userChanged:(SFUserAccountChange)change {
-    if (![self.lastChangedOrgId isEqualToString:self.currentUser.credentials.organizationId] || (self.lastChangedOrgId == nil && self.currentUser.credentials.organizationId != nil)) {
+    if (![self.lastChangedOrgId isEqualToString:self.currentUser.credentials.organizationId]) {
         self.lastChangedOrgId = self.currentUser.credentials.organizationId;
         change |= SFUserAccountChangeOrgId;
         change &= ~SFUserAccountChangeUnknown; // clear the unknown bit
     }
 
-    if (![self.lastChangedUserId isEqualToString:self.currentUser.credentials.userId] || (self.lastChangedUserId == nil && self.currentUser.credentials.userId != nil)) {
+    if (![self.lastChangedUserId isEqualToString:self.currentUser.credentials.userId]) {
         self.lastChangedUserId = self.currentUser.credentials.userId;
         change |= SFUserAccountChangeUserId;
         change &= ~SFUserAccountChangeUnknown; // clear the unknown bit
     }
 
-    if (![self.lastChangedCommunityId isEqualToString:self.currentUser.communityId] || (self.lastChangedCommunityId == nil && self.currentUser.communityId != nil)) {
+    if (![self.lastChangedCommunityId isEqualToString:self.currentUser.communityId]) {
         self.lastChangedCommunityId = self.currentUser.communityId;
         change |= SFUserAccountChangeCommunityId;
         change &= ~SFUserAccountChangeUnknown; // clear the unknown bit

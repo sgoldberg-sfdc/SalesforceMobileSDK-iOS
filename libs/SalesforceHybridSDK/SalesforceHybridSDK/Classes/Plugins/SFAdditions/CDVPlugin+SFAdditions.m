@@ -33,37 +33,31 @@ NSString * const kPluginSDKVersion = @"pluginSDKVersion";
 
 - (void)writeSuccessResultToJsRealm:(CDVPluginResult*)result callbackId:(NSString*)callbackId
 {
-    NSString *jsString = [result toSuccessCallbackString:callbackId];
-    
-	if (jsString){
-		[self writeJavascript:jsString];
-    }
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
 
 - (void)writeErrorResultToJsRealm:(CDVPluginResult*)result callbackId:(NSString*)callbackId
 {
-    NSString *jsString = [result toErrorCallbackString:callbackId];
-	if (jsString){
-		[self writeJavascript:jsString];
-    }
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
 
 - (void)writeCommandOKResultToJsRealm:(NSString*)callbackId
 {
-    [self writeSuccessResultToJsRealm:[CDVPluginResult resultWithStatus:CDVCommandStatus_OK] callbackId:callbackId];
+    CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
 
 - (void)writeSuccessArrayToJsRealm:(NSArray*)array callbackId:(NSString*)callbackId
 {
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:array];
-    [self writeSuccessResultToJsRealm:result callbackId:callbackId];
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
 
 
 - (void)writeSuccessDictToJsRealm:(NSDictionary*)dict callbackId:(NSString*)callbackId
 {
     CDVPluginResult* result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
-    [self writeSuccessResultToJsRealm:result callbackId:callbackId];
+    [self.commandDelegate sendPluginResult:result callbackId:callbackId];
 }
 
 #pragma mark - Versioning support
