@@ -1348,7 +1348,14 @@
 			baseConfigurationReference = 6F8960751A9E96C400A48FF1 /* SalesforceSDKCore-Static-iOS-Release.xcconfig */;
 			buildSettings = {
 				DSTROOT = /tmp/SalesforceSDKCore.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "SalesforceSDKCore/SalesforceSDKCore-Prefix.pch";
+				INSTALL_PATH = /;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				OTHER_CFLAGS = "-DSQLITE_HAS_CODEC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PUBLIC_HEADERS_FOLDER_PATH = "Headers/${PRODUCT_NAME}";
+				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
