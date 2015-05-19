@@ -1,6 +1,9 @@
 #import "SalesforceSDKManager.h"
+
 #import "SFUserAccountManager.h"
 #import "SFAuthenticationManager.h"
+#import "SFUserAccount.h"
+#import "SFSDKAppConfig.h"
 
 @protocol SalesforceSDKManagerFlow <NSObject>
 
@@ -18,10 +21,14 @@
 
 @end
 
+@interface SnapshotViewController : UIViewController
+
+@end
+
 @interface SalesforceSDKManager () <SalesforceSDKManagerFlow, SFUserAccountManagerDelegate, SFAuthenticationManagerDelegate>
 {
     BOOL _isLaunching;
-    UIViewController *_snapshotViewController;
+    SnapshotViewController *_snapshotViewController;
     NSMutableOrderedSet *_delegates;
 }
 
