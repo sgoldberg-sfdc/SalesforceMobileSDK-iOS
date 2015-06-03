@@ -374,7 +374,7 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
 }
 
 + (void)removeAllStoresForUser:(SFUserAccount *)user {
-    @synchronized (user) {
+    @synchronized (self) {
         if (user == nil) {
             [SFLogger log:self level:SFLogLevelInfo format:@"%@ Cannot remove all stores for nil user.  Did you mean to call [%@ removeAllGlobalStores]?", NSStringFromSelector(_cmd), NSStringFromClass(self)];
             return;
