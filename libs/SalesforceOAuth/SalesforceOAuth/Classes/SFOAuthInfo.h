@@ -30,7 +30,8 @@
 typedef NS_ENUM(NSUInteger, SFOAuthType) {
     SFOAuthTypeUnknown = 0,
     SFOAuthTypeUserAgent,
-    SFOAuthTypeRefresh
+    SFOAuthTypeRefresh,
+    SFOAuthTypeAdvancedBrowser
 };
 
 /**
@@ -43,6 +44,11 @@ typedef NS_ENUM(NSUInteger, SFOAuthType) {
  The type of authentication being performed.
  */
 @property (nonatomic, readonly, assign) SFOAuthType authType;
+
+/**
+ The string description of the auth type.
+ */
+@property (nonatomic, readonly) NSString *authTypeDescription;
 
 /**
  Creates a new instance with the given auth type.

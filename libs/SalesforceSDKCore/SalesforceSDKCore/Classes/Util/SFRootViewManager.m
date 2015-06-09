@@ -24,15 +24,9 @@
 
 #import "SFRootViewManager.h"
 
-@interface SFRootViewManager ()
-{
-    
-}
+@interface SFRootViewManager()
 
-/**
- The app delegate's UIWindow property, assumed as the entry point of the view hierarchy.
- */
-@property (nonatomic, strong) UIWindow *mainWindow;
+@property (nonatomic, weak) UIWindow* previousKeyWindow;
 
 @end
 
@@ -54,14 +48,22 @@
 {
     self = [super init];
     if (self) {
-        self.mainWindow = [[UIApplication sharedApplication] delegate].window;
-        if (self.mainWindow == nil) {
-            [self log:SFLogLevelError format:@"SFRootViewManager should not be initialized before the app delegate's window property."];
-            self = nil;
-        }
+        
     }
     
     return self;
+}
+
+- (UIWindow *)mainWindow
+{
+    if (_mainWindow == nil) {
+        // Try to set a sane value for mainWindow, if it hasn't been set already.
+        _mainWindow = [UIApplication sharedApplication].windows[0];
+        if (_mainWindow == nil) {
+            [self log:SFLogLevelError format:@"UIApplication has no defined windows."];
+        }
+    }
+    return _mainWindow;
 }
 
 //
@@ -86,23 +88,18 @@
         if (currentViewController != nil) {
             if (currentViewController != viewController) {
                 [weakSelf log:SFLogLevelDebug format:@"pushViewController: Presenting view controller (%@).", viewController];
-                __block BOOL presentCompleted = NO;
-                [currentViewController presentViewController:viewController animated:NO completion:^{ presentCompleted = YES; }];
-                [weakSelf waitForPresentCompletion:&presentCompleted];
+                [currentViewController presentViewController:viewController animated:NO completion:NULL];
             } else {
                 [weakSelf log:SFLogLevelDebug format:@"pushViewController: View controller (%@) is already presented.", viewController];
             }
         } else {
             [weakSelf log:SFLogLevelDebug format:@"pushViewController: Making view controller (%@) the root view controller.", viewController];
             weakSelf.mainWindow.rootViewController = viewController;
+            [self saveCurrentKeyWindow];
+            [weakSelf.mainWindow makeKeyAndVisible];
         }
     };
-    
-    if (![NSThread isMainThread]) {
-        dispatch_sync(dispatch_get_main_queue(), pushControllerBlock);
-    } else {
-        pushControllerBlock();
-    }
+    dispatch_async(dispatch_get_main_queue(), pushControllerBlock);
 }
 
 - (void)popViewController:(UIViewController *)viewController
@@ -113,6 +110,7 @@
         if (currentViewController == viewController) {
             [weakSelf log:SFLogLevelDebug format:@"popViewController: Removing rootViewController (%@).", viewController];
             weakSelf.mainWindow.rootViewController = nil;
+            [self restorePreviousKeyWindow];
         } else {
             while ((currentViewController != nil) && (currentViewController != viewController)) {
                 currentViewController = [currentViewController presentedViewController];
@@ -122,25 +120,29 @@
                 [weakSelf log:SFLogLevelDebug format:@"popViewController: View controller (%@) not found in the view controller stack.  No action taken.", viewController];
             } else {
                 [weakSelf log:SFLogLevelDebug format:@"popViewController: View controller (%@) is now being dismissed from presentation.", viewController];
-                __block BOOL dismissCompleted = NO;
-                [[currentViewController presentingViewController] dismissViewControllerAnimated:NO completion:^{ dismissCompleted = YES; }];
-                [weakSelf waitForPresentCompletion:&dismissCompleted];
+                [[currentViewController presentingViewController] dismissViewControllerAnimated:NO completion:NULL];
             }
         }
     };
-    
-    if (![NSThread isMainThread]) {
-        dispatch_sync(dispatch_get_main_queue(), popControllerBlock);
-    } else {
-        popControllerBlock();
+    dispatch_async(dispatch_get_main_queue(), popControllerBlock);
+}
+
+#pragma mark - Private
+
+- (void)saveCurrentKeyWindow
+{
+    for (UIWindow* w in [UIApplication sharedApplication].windows) {
+        if ([w isKeyWindow]) {
+            self.previousKeyWindow = w;
+            break;
+        }
     }
 }
 
-- (void)waitForPresentCompletion:(BOOL *)completionVar
+- (void)restorePreviousKeyWindow
 {
-    while (*completionVar == NO) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
-    }
+    [self.previousKeyWindow makeKeyAndVisible];
+    self.previousKeyWindow = nil;
 }
 
 @end

@@ -25,29 +25,6 @@
 #import <UIKit/UIKit.h>
 
 /**
- * Protocol defining an SDK-based app delegate.
- */
-@protocol SFSDKAppDelegate <UIApplicationDelegate>
-
-/**
- The User-Agent string presented by this application
- */
-@property (nonatomic, readonly) NSString *userAgentString;
-
-/**
- * Forces a logout from the current account.
- * This throws out the OAuth refresh token.
- */
-- (void)logout;
-
-/**
- * Creates a snapshot view.
- */
-- (UIView*)createSnapshotView;
-
-@end
-
-/**
  * Mobile SDK extension of the UIApplication object.  Currently just gathers
  * date/time information about user events.
  */
@@ -57,5 +34,12 @@
  * The date of the last user event in the application.
  */
 @property (atomic, readonly) NSDate *lastEventDate;
+
+/**
+ * Boolean which defaults to NO, and is only set to YES in the viewDidAppear of ChatterPasscodeViewController and is set to NO in the dealloc of the VC.
+ * The boolean is used to ignore the keypressed & touch gestures in the UIApplication's sendEvents & keyPressed methods.  Otherwise, the lastEventDate
+ * variable was being updated and if the timing was right on the Notification/Control Center displaying the PIN Code View could be circumvented.
+ */
+@property (nonatomic) BOOL ignoreEvents;
 
 @end

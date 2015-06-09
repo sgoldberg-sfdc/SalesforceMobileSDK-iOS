@@ -50,8 +50,11 @@ static NSError *sLastError = nil;
 }
 
 + (id)objectFromJSONString:(NSString *)jsonString {
-    NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-    id result = [self objectFromJSONData:jsonData];
+    id result = nil;
+    if ([jsonString isKindOfClass:[NSString class]]) {
+        NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+        result = [self objectFromJSONData:jsonData];
+    }
     return result;
 }
 
@@ -70,7 +73,7 @@ static NSError *sLastError = nil;
     NSError *err = nil;
     NSData *jsonData = nil;
     
-    if (nil != obj) {
+    if ([NSJSONSerialization isValidJSONObject:obj]) {
         NSJSONWritingOptions options = 0;
 #ifdef DEBUG
         options = NSJSONWritingPrettyPrinted;
@@ -90,7 +93,7 @@ static NSError *sLastError = nil;
         }
         
     } else {
-        [self log:SFLogLevelDebug format:@"nil object passed to JSONDataRepresentation???"];
+        [self log:SFLogLevelDebug format:@"invalid object passed to JSONDataRepresentation???"];
     }
     return  jsonData;
 }

@@ -27,6 +27,7 @@
 #import "SFSecurityLockout+Internal.h"
 #import "SFRootViewManager.h"
 #import "SFSDKWebUtils.h"
+#import "SFManagedPreferences.h"
 #import <SalesforceOAuth/SFOAuthInfo.h>
 #import <SalesforceSecurity/SFPasscodeManager.h>
 #import <SalesforceSecurity/SFPasscodeProviderManager.h>
@@ -43,6 +44,23 @@ static NSString * const kSFMobileSDKHybridDesignator = @"Hybrid";
 // Key for whether or not the user has chosen the app setting to logout of the
 // app when it is re-opened.
 static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
+
+@implementation SnapshotViewController
+
+- (BOOL)shouldAutorotate {
+    return !(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone);
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+        return UIInterfaceOrientationMaskPortrait;
+    } else {
+        return UIInterfaceOrientationMaskAll;
+    }
+}
+
+@end
 
 @implementation SalesforceSDKManager
 
@@ -76,22 +94,6 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
         self.useSnapshotView = YES;
         self.authenticateAtLaunch = YES;
         self.userAgentString = [self defaultUserAgentString];
-        
-        // Make sure the login host settings and dependent data are synced at pre-auth app startup.
-        // Note: No event generation necessary here.  This will happen before the first authentication
-        // in the app's lifetime, and is merely meant to rationalize the App Settings data with the in-memory
-        // app state as an initialization step.
-        BOOL logoutAppSettingEnabled = [[self class] logoutSettingEnabled];
-        SFLoginHostUpdateResult *result = [[SFUserAccountManager sharedInstance] updateLoginHost];
-        if (logoutAppSettingEnabled) {
-            [[SFAuthenticationManager sharedManager] clearAccountState:YES];
-            NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
-            [defs setBool:NO forKey:kAppSettingsAccountLogout];
-            [defs synchronize];
-        } else if (result.loginHostChanged) {
-            // Authentication hasn't started yet.  Just reset the current user.
-            [SFUserAccountManager sharedInstance].currentUser = nil;
-        }
     }
     
     return self;
@@ -154,11 +156,22 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
     [self log:SFLogLevelInfo msg:@"Launching the Salesforce SDK."];
     _isLaunching = YES;
     self.launchActions = SFSDKLaunchActionNone;
+    if ([SFRootViewManager sharedManager].mainWindow == nil) {
+        [SFRootViewManager sharedManager].mainWindow = [UIApplication sharedApplication].windows[0];
+    }
+    
     NSError *launchStateError = nil;
     if (![self validateLaunchState:&launchStateError]) {
         [self log:SFLogLevelError msg:@"Please correct errors and try again."];
         [self sendLaunchError:launchStateError];
     } else {
+        // Check for presence of logout or user switch settings at launch.
+        BOOL logoutOrUserSwitchSettingsProcessed = [self processLogoutAndUserSwitchSettings];
+        if (logoutOrUserSwitchSettingsProcessed) {
+            // Logout or user switch will be triggered accordingly.  Exit here.
+            return YES;
+        }
+        
         // If there's a passcode configured, and we haven't validated before (through a previous call to
         // launch), we validate that first.
         if (!self.hasVerifiedPasscodeAtStartup) {
@@ -210,8 +223,11 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
         [self configureWithAppConfig];
     }
     
-    if ([[UIApplication sharedApplication] delegate].window == nil) {
-        NSString *noWindowError = [NSString stringWithFormat:@"%@ cannot perform launch before the UIApplication delegate's window property has been initialized.  Cannot continue.", [self class]];
+    // Managed settings should override any equivalent local app settings.
+    [self configureManagedSettings];
+    
+    if ([SFRootViewManager sharedManager].mainWindow == nil) {
+        NSString *noWindowError = [NSString stringWithFormat:@"%@ cannot perform launch before the UIApplication main window property has been initialized.  Cannot continue.", [self class]];
         [self log:SFLogLevelError msg:noWindowError];
         [launchStateErrorMessages addObject:noWindowError];
         validInputs = NO;
@@ -264,6 +280,21 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
     self.authenticateAtLaunch = self.appConfig.shouldAuthenticate;
 }
 
+- (void)configureManagedSettings
+{
+    if ([SFManagedPreferences sharedPreferences].requireCertificateAuthentication) {
+        [SFAuthenticationManager sharedManager].advancedAuthConfiguration = SFOAuthAdvancedAuthConfigurationRequire;
+    }
+    
+    if ([[SFManagedPreferences sharedPreferences].connectedAppId length] > 0) {
+        self.connectedAppId = [SFManagedPreferences sharedPreferences].connectedAppId;
+    }
+    
+    if ([[SFManagedPreferences sharedPreferences].connectedAppCallbackUri length] > 0) {
+        self.connectedAppCallbackUri = [SFManagedPreferences sharedPreferences].connectedAppCallbackUri;
+    }
+}
+
 - (void)sendLaunchError:(NSError *)theLaunchError
 {
     _isLaunching = NO;
@@ -307,7 +338,7 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
 {
     [self log:SFLogLevelDebug msg:@"App is entering the foreground."];
     
-    [self enumerateDelegates:^(id<SalesforceSDKManagerDelegate> delegate) {
+    [self enumerateDelegates:^(NSObject<SalesforceSDKManagerDelegate> *delegate) {
         if ([delegate respondsToSelector:@selector(sdkManagerWillEnterForeground)]) {
             [delegate sdkManagerWillEnterForeground];
         }
@@ -320,18 +351,10 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
         [self log:SFLogLevelWarning format:@"Exception thrown while removing security snapshot view: '%@'. Will continue to resume app.", [exception reason]];
     }
     
-    BOOL shouldLogout = [[self class] logoutSettingEnabled];
-    SFLoginHostUpdateResult *result = [[SFUserAccountManager sharedInstance] updateLoginHost];
-    if (shouldLogout) {
-        [self log:SFLogLevelInfo msg:@"Logout setting triggered.  Logging out of the application."];
-        NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
-        [defs setBool:NO forKey:kAppSettingsAccountLogout];
-        [defs synchronize];
-        [[SFAuthenticationManager sharedManager] logout];
-    } else if (result.loginHostChanged) {
-        [self log:SFLogLevelInfo format:@"Login host changed ('%@' to '%@').  Switching to new login host.", result.originalLoginHost, result.updatedLoginHost];
-        [[SFAuthenticationManager sharedManager] cancelAuthentication];
-        [[SFUserAccountManager sharedInstance] switchToNewUser];
+    BOOL logoutOrUserSwitchProcessed = [self processLogoutAndUserSwitchSettings];
+    if (logoutOrUserSwitchProcessed) {
+        // Logout or user switch will be raised/handled.  Nothing else to do here.
+        [self log:SFLogLevelInfo format:@"%@ Logout or user switch configured.  No further foregrounding action taken.", NSStringFromSelector(_cmd)];
     } else if (_isLaunching) {
         [self log:SFLogLevelDebug format:@"SDK is still launching.  No foreground action taken."];
     } else {
@@ -365,6 +388,7 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
     }];
     
     [self savePasscodeActivityInfo];
+    [self clearClipboard];
 }
 
 - (void)handleAppTerminate:(NSNotification *)notification
@@ -434,6 +458,30 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
     [self sendUserAccountSwitch:fromUser toUser:toUser];
 }
 
+- (BOOL)processLogoutAndUserSwitchSettings {
+    BOOL shouldLogout = [[self class] logoutSettingEnabled];
+    SFLoginHostUpdateResult *result = [[SFUserAccountManager sharedInstance] updateLoginHost];
+    
+    if (shouldLogout) {
+        [self log:SFLogLevelInfo format:@"%@: Logout setting triggered.  Logging out of the application.", NSStringFromSelector(_cmd)];
+        NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
+        [defs setBool:NO forKey:kAppSettingsAccountLogout];
+        [defs synchronize];
+        [[SFAuthenticationManager sharedManager] logout];
+        return YES;
+    }
+    
+    if (result.loginHostChanged) {
+        [self log:SFLogLevelInfo format:@"%@: Login host changed ('%@' to '%@').  Switching to new login host.", NSStringFromSelector(_cmd), result.originalLoginHost, result.updatedLoginHost];
+        [[SFAuthenticationManager sharedManager] cancelAuthentication];
+        [[SFUserAccountManager sharedInstance] switchToNewUser];
+        return YES;
+    }
+    
+    [self log:SFLogLevelInfo format:@"%@: No updated logout or user switch settings to process.", NSStringFromSelector(_cmd)];
+    return NO;
+}
+
 + (BOOL)logoutSettingEnabled
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
@@ -464,11 +512,23 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
         }
         
         if (_snapshotViewController == nil) {
-            _snapshotViewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
+            _snapshotViewController = [[SnapshotViewController alloc] initWithNibName:nil bundle:nil];
+            // Contrain the default view to its parent views size
+            [self.snapshotView setTranslatesAutoresizingMaskIntoConstraints:NO];
+            _snapshotViewController.view.backgroundColor = [UIColor clearColor];
+            [_snapshotViewController.view addSubview:self.snapshotView];
+            [_snapshotViewController.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[_snapshotView]-0-|"
+                                                                                                     options:NSLayoutFormatDirectionLeadingToTrailing
+                                                                                                     metrics:nil
+                                                                                                       views:NSDictionaryOfVariableBindings(_snapshotView)]];
+            [_snapshotViewController.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[_snapshotView]-0-|"
+                                                                                                     options:NSLayoutFormatDirectionLeadingToTrailing
+                                                                                                     metrics:nil
+                                                                                                       views:NSDictionaryOfVariableBindings(_snapshotView)]];
+        } else {
+            [self removeSnapshotView];
+            [_snapshotViewController.view addSubview:self.snapshotView];
         }
-        
-        [self.snapshotView removeFromSuperview];
-        [_snapshotViewController.view addSubview:self.snapshotView];
         
         [[SFRootViewManager sharedManager] pushViewController:_snapshotViewController];
     }
@@ -480,6 +540,17 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
     opaqueView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     opaqueView.backgroundColor = [UIColor whiteColor];
     return opaqueView;
+}
+
+- (void)clearClipboard
+{
+    if ([SFManagedPreferences sharedPreferences].clearClipboardOnBackground) {
+        [self log:SFLogLevelInfo format:@"%@: Clearing clipboard on app background.", NSStringFromSelector(_cmd)];
+        [UIPasteboard generalPasteboard].strings = @[ ];
+        [UIPasteboard generalPasteboard].URLs = @[ ];
+        [UIPasteboard generalPasteboard].images = @[ ];
+        [UIPasteboard generalPasteboard].colors = @[ ];
+    }
 }
 
 - (void)passcodeValidationAtLaunch
@@ -521,7 +592,7 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
 {
     [self log:SFLogLevelInfo msg:@"No valid credentials found.  Proceeding with authentication."];
     [[SFAuthenticationManager sharedManager] loginWithCompletion:^(SFOAuthInfo *authInfo) {
-        [self log:SFLogLevelInfo format:@"Authentication (%@) succeeded.  Launch completed.", (authInfo.authType == SFOAuthTypeUserAgent ? @"User Agent" : @"Refresh")];
+        [self log:SFLogLevelInfo format:@"Authentication (%@) succeeded.  Launch completed.", authInfo.authTypeDescription];
         [SFSecurityLockout setupTimer];
         [SFSecurityLockout startActivityMonitoring];
         [self authValidatedToPostAuth:SFSDKLaunchActionAuthenticated];
