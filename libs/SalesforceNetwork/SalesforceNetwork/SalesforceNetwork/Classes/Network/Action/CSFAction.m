@@ -60,7 +60,7 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
     if (!action) {
         return nil;
     }
-    NSMutableString *baseUrlString = [NSMutableString stringWithString:[action.enqueuedNetwork.account.credentials.apiUrl absoluteString]];
+    NSMutableString *baseUrlString = [NSMutableString stringWithString:[action.baseURL absoluteString]];
     NSMutableString *path = [NSMutableString stringWithFormat:@"%@%@", action.basePath, action.verb];
 
     // Make sure path is not empty
@@ -84,8 +84,7 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
         [path deleteCharactersInRange:NSMakeRange(0, 1)];
     }
     NSString *urlString = [baseUrlString stringByAppendingString:path];
-    NSURL *url = [NSURL URLWithString:urlString];
-    return url;
+    return [NSURL URLWithString:urlString];
 }
 
 - (NSDictionary *)headersForAction {
@@ -133,16 +132,19 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
 
 + (instancetype)actionWithHTTPMethod:(NSString*)method onURL:(NSURL*)url withResponseBlock:(CSFActionResponseBlock)responseBlock {
     CSFAction *action = [[self alloc] initWithResponseBlock:responseBlock];
-    
     NSString *baseString = nil;
     if (url.port) {
         baseString = [NSString stringWithFormat:@"%@://%@:%@", url.scheme, url.host, url.port];
     } else {
         baseString = [NSString stringWithFormat:@"%@://%@", url.scheme, url.host];
     }
-    
     action.baseURL = [NSURL URLWithString:baseString];
-    action.verb = url.path;
+    NSMutableString *relativePath = [NSMutableString stringWithString:url.path];
+    if (url.query != nil) {
+        [relativePath appendString:@"?"];
+        [relativePath appendString:url.query];
+    }
+    action.verb = relativePath;
     action.method = method;
     return action;
 }
