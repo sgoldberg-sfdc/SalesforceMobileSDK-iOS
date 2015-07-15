@@ -60,28 +60,31 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
     if (!action) {
         return nil;
     }
-    
-    NSString *host = [action.enqueuedNetwork.account.credentials.instanceUrl host];
-    NSString *path = [NSMutableString stringWithFormat:@"%@%@", action.basePath, action.verb];
-    
+    NSMutableString *baseUrlString = [NSMutableString stringWithString:[action.baseURL absoluteString]];
+    NSMutableString *path = [NSMutableString stringWithFormat:@"%@%@", action.basePath, action.verb];
+
     // Make sure path is not empty
-    if (!host || host.length == 0) {
+    if (baseUrlString.length == 0) {
         *error = [NSError errorWithDomain:CSFNetworkErrorDomain
                                      code:CSFNetworkURLCredentialsError
-                                 userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have an instance host",
+                                 userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have an API URL",
                                              CSFNetworkErrorActionKey: action }];
         return nil;
-    } else if (!path || path.length == 0) {
+    } else if (path.length == 0) {
         *error = [NSError errorWithDomain:CSFNetworkErrorDomain
                                      code:CSFNetworkURLCredentialsError
                                  userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have a valid path",
                                              CSFNetworkErrorActionKey: action }];
         return nil;
     }
-    
-    NSString *scheme = @"https";
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@%@", scheme, host, path]];
-    return url;
+    if (![baseUrlString hasSuffix:@"/"]) {
+        [baseUrlString appendString:@"/"];
+    }
+    if ([path hasPrefix:@"/"]) {
+        [path deleteCharactersInRange:NSMakeRange(0, 1)];
+    }
+    NSString *urlString = [baseUrlString stringByAppendingString:path];
+    return [NSURL URLWithString:urlString];
 }
 
 - (NSDictionary *)headersForAction {
@@ -129,16 +132,19 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
 
 + (instancetype)actionWithHTTPMethod:(NSString*)method onURL:(NSURL*)url withResponseBlock:(CSFActionResponseBlock)responseBlock {
     CSFAction *action = [[self alloc] initWithResponseBlock:responseBlock];
-    
     NSString *baseString = nil;
     if (url.port) {
         baseString = [NSString stringWithFormat:@"%@://%@:%@", url.scheme, url.host, url.port];
     } else {
         baseString = [NSString stringWithFormat:@"%@://%@", url.scheme, url.host];
     }
-    
     action.baseURL = [NSURL URLWithString:baseString];
-    action.verb = url.path;
+    NSMutableString *relativePath = [NSMutableString stringWithString:url.path];
+    if (url.query != nil) {
+        [relativePath appendString:@"?"];
+        [relativePath appendString:url.query];
+    }
+    action.verb = relativePath;
     action.method = method;
     return action;
 }
@@ -515,13 +521,13 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
 }
 
 - (void)completeOperationWithError:(NSError *)error {
-    [self willChangeValueForKey:@"executing"];
-    [self willChangeValueForKey:@"finished"];
+    [self willChangeValueForKey:@"isExecuting"];
+    [self willChangeValueForKey:@"isFinished"];
     _executing = NO;
     _finished = YES;
     self.error = error;
-    [self didChangeValueForKey:@"executing"];
-    [self didChangeValueForKey:@"finished"];
+    [self didChangeValueForKey:@"isExecuting"];
+    [self didChangeValueForKey:@"isFinished"];
     
     self.responseData = nil;
     
@@ -535,7 +541,7 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
     
     NSError *jsonParseError = nil;
     if ([self.responseData length] > 0) {
-        content = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonParseError];
+        content = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&jsonParseError];
     }
     
     // If it's an error here, it's a basic parsing error.
