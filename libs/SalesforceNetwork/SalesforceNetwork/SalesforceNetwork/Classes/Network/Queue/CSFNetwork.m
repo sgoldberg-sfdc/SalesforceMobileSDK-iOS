@@ -144,6 +144,7 @@ static NSMutableDictionary *SharedInstances = nil;
     if (self) {
         self.account = account;
         [[SFAuthenticationManager sharedManager] addDelegate:self];
+        self.userAgent = [SalesforceSDKManager sharedManager].userAgentString(@"");
     }
     return self;
 }
