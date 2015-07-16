@@ -49,7 +49,7 @@ NSString *CSFNetworkInstanceKey(SFUserAccount *user) {
     return [NSString stringWithFormat:@"%@-%@-%@", user.credentials.organizationId, user.credentials.userId, user.communityId];
 }
 
-@interface CSFNetwork() {
+@interface CSFNetwork()<SFAuthenticationManagerDelegate> {
     //Flag to ensure that we file CSFActionsRequiredByUICompletedNotification only once through out the application's life cycle
     NSString *_defaultConnectCommunityId;
 }
@@ -104,6 +104,13 @@ static NSMutableDictionary *SharedInstances = nil;
     return instance;
 }
 
++ (void)removeSharedInstance:(SFUserAccount*)userAccount {
+    @synchronized (SharedInstances) {
+        NSString *key = CSFNetworkInstanceKey(userAccount);
+        [SharedInstances removeObjectForKey:key];
+    }
+}
+
 - (id)init {
     self = [super init];
     if (self) {
@@ -136,6 +143,7 @@ static NSMutableDictionary *SharedInstances = nil;
     self = [self init];
     if (self) {
         self.account = account;
+        [[SFAuthenticationManager sharedManager] addDelegate:self];
     }
     return self;
 }
@@ -289,6 +297,12 @@ static NSMutableDictionary *SharedInstances = nil;
 //       This way we don't ahve to reference UIKit from the network stack, and the consumer
 //       is capable of handling the unauthorized response.
 - (void)receivedDevicedUnauthorizedError:(CSFAction *)action {
+}
+
+#pragma mark - SFAuthenticationManagerDelegate
+
+- (void)authManager:(SFAuthenticationManager *)manager willLogoutUser:(SFUserAccount *)user {
+    [[self class] removeSharedInstance:user];
 }
 
 @end
