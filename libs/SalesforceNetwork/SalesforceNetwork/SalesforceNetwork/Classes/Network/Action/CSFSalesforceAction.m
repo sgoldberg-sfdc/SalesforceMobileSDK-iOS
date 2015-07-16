@@ -143,6 +143,7 @@ static void * kObservingKey = &kObservingKey;
         } else if (response.statusCode >= 400 && [content isKindOfClass:[NSDictionary class]]) {
             NSDictionary *errorDict = (NSDictionary*)content;
             msgObj = errorDict[@"msg"];
+            errorCode = errorDict[@"errorCode"] ;
         }
         
         CSFNetwork *network = self.enqueuedNetwork;
@@ -223,6 +224,12 @@ static void * kObservingKey = &kObservingKey;
                 network.securityToken = securityToken;
             }
         }
+    } else if(!content && !responseError && response.statusCode == 304) {
+        // no error and no content, check for 304 error, which means data is not updated on server
+        // surface it as error as that's what client expects
+        responseError = [NSError errorWithDomain:CSFNetworkErrorDomain
+                                                code:response.statusCode
+                                            userInfo:response.allHeaderFields];
     }
     
     if (error) {
