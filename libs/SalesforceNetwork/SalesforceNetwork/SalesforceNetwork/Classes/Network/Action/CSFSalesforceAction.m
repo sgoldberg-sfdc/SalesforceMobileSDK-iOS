@@ -224,12 +224,14 @@ static void * kObservingKey = &kObservingKey;
                 network.securityToken = securityToken;
             }
         }
-    } else if(!content && !responseError && response.statusCode == 304) {
-        // no error and no content, check for 304 error, which means data is not updated on server
-        // surface it as error as that's what client expects
-        responseError = [NSError errorWithDomain:CSFNetworkErrorDomain
+    } else if (!content && !responseError && self.statusCodeToRaiseErrorWithEmptyResponse.count > 0) {
+        // no error and no content, check to see if the response status is one of the status code
+        // we need to raise error on. If yes, make it an error
+        if([self.statusCodeToRaiseErrorWithEmptyResponse containsObject:@(response.statusCode)]) {
+            responseError = [NSError errorWithDomain:CSFNetworkErrorDomain
                                                 code:response.statusCode
                                             userInfo:response.allHeaderFields];
+        }
     }
     
     if (error) {
