@@ -43,19 +43,6 @@ static void * kObservingKey = &kObservingKey;
         _apiVersion = CSFSalesforceDefaultAPIVersion;
         _pathPrefix = CSFSalesforceActionDefaultPathPrefix;
         self.authRefreshClass = [CSFSalesforceOAuthRefresh class];
-        CSFNetwork *network = self.enqueuedNetwork;
-        [network addObserver:self forKeyPath:@"account.credentials.accessToken"
-                      options:(NSKeyValueObservingOptionInitial |
-                               NSKeyValueObservingOptionNew)
-                      context:kObservingKey];
-        [network addObserver:self forKeyPath:@"account.credentials.instanceUrl"
-                      options:(NSKeyValueObservingOptionInitial |
-                               NSKeyValueObservingOptionNew)
-                      context:kObservingKey];
-        [network addObserver:self forKeyPath:@"account.communityId"
-                      options:(NSKeyValueObservingOptionInitial |
-                               NSKeyValueObservingOptionNew)
-                      context:kObservingKey];
         NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
         [notificationCenter addObserver:self
                                selector:@selector(userAccountManagerDidChangeCurrentUser:)

@@ -358,9 +358,9 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
         return;
     }
     
-    [self willChangeValueForKey:@"executing"];
+    [self willChangeValueForKey:@"isExecuting"];
     _executing = YES;
-    [self didChangeValueForKey:@"executing"];
+    [self didChangeValueForKey:@"isExecuting"];
 
     // If this is a duplicate action, the parent must have just completed, so we can safely process our response based
     // on the result of that parent.  By calling the completion handler, the response will automatically be sent,
