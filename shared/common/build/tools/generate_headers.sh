@@ -66,37 +66,22 @@ wrapper_directory=$(dirname $OPT_OUTPUT)
 
 [[ -d $wrapper_directory ]] || mkdir -p $wrapper_directory
 
-# Records the import of the original umbrella header file, if it exists.
-# This will be used later to update the original file if needed.
+# Copy the existing umbrella header file, if it exists.
 orig_imports=""
-if [[ -f $OPT_UMBRELLA ]]; then
+if [[ -f $OPT_UMBRELLA ]]; then 
+    cp "$OPT_UMBRELLA" "$OPT_OUTPUT"
+
+    # We'll compare the imports to see if we need to update the original file.
     while read line; do
         if [[ "$line" =~ ^#import ]]; then
             orig_imports=`echo "${orig_imports}${line}"`
         fi
-    done < "$OPT_UMBRELLA"
-fi
-
-# Records the import of the existing umbrella header file, if it exists.
-# This will be used later to update the existing file if needed.
-existing_imports=""
-if [[ -f $OPT_OUTPUT ]]; then
-    while read line; do
-        if [[ "$line" =~ ^#import ]]; then
-            existing_imports=`echo "${existing_imports}${line}"`
-        fi
     done < "$OPT_OUTPUT"
 fi
 
-# Re-create the umbrella header file in a temporary
-# location and copy it only if it is different from
-# the existing umbrella header file.
-# This is done to avoid re-creating the same file again
-# which will cause Xcode to rebuild the entire project.
-OPT_TEMP=$(mktemp -t umbrella)
-
+# Re-create the umbrella header file.
 updated_imports=""
-cat <<EOF > "$OPT_TEMP"
+cat <<EOF > "$OPT_OUTPUT"
 /*
  $wrapper_filename
  $OPT_NAME
@@ -135,23 +120,12 @@ for file in $(find $wrapper_directory -type f); do
     fi
     import_line=`echo "#import <$OPT_NAME/$filename>"`
     updated_imports=`echo "${updated_imports}${import_line}"`
-    echo "$import_line" >> $OPT_TEMP
+    echo "$import_line" >> $OPT_OUTPUT
 done
 
 # If there was an original file, and the updated import file differs from the original, update the original.
 if [[ "$orig_imports" != "" ]]; then
     if [[ "$orig_imports" != "$updated_imports" ]]; then
-        cp "$OPT_TEMP" "$OPT_UMBRELLA"
+        cp "$OPT_OUTPUT" "$OPT_UMBRELLA"
     fi
 fi
-
-# If there was an existing file, and the updated import file differs from the existing, update the existing.
-# If there was no existing file, copy the updated file to the existing file location.
-if [[ "$existing_imports" != "" ]]; then
-    if [[ "$existing_imports" != "$updated_imports" ]]; then
-        cp "$OPT_TEMP" "$OPT_OUTPUT"
-    fi
-else
-    cp "$OPT_TEMP" "$OPT_OUTPUT"
-fi
-
