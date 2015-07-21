@@ -427,9 +427,9 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         creds.redirectUri = self.oauthCompletionUrl;
         creds.clientId = self.oauthClientId;
         
-        creds.identityUrl = [NSURL URLWithString:[NSString stringWithFormat:@"https://does.not.matter/id/%@/%@", self.anonymousUserIdentity.orgId, self.anonymousUserIdentity.userId]];
-        creds.communityUrl = [NSURL URLWithString:@"https://who-cares.community.com"];
-        creds.instanceUrl = [NSURL URLWithString:@"https://who-cares.instance.com"];
+        creds.identityUrl = [NSURL URLWithString:[NSString stringWithFormat:@"https://does.not.matter.domain-does-not-exist/id/%@/%@", self.anonymousUserIdentity.orgId, self.anonymousUserIdentity.userId]];
+        creds.communityUrl = [NSURL URLWithString:@"https://who-cares.domain-does-not-exist"];
+        creds.instanceUrl = [NSURL URLWithString:@"https://who-cares.domain-does-not-exist"];
         creds.accessToken = [NSUUID UUID].UUIDString;
 
         [self addAccount:self.anonymousUser];
