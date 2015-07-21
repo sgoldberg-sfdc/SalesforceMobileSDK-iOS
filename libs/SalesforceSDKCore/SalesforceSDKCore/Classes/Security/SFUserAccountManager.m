@@ -708,19 +708,30 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         return nil;
     }
     
-    @try {
-        SFUserAccount *plainTextUserAccount = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];
-        
-        // Upgrade step.  If we got this far, the file is in the old plaintext format, and we'll
-        // convert it to the encrypted format before returning the object.
-        BOOL encryptUserAccountSuccess = [self saveUserAccount:plainTextUserAccount toFile:filePath];
-        if (!encryptUserAccountSuccess) {
-            // Specific error messages will already be logged.  Make sure old user account file is removed.
-            [fm removeItemAtPath:filePath error:nil];
-            return nil;
+    SFUserAccount *user = [self loadUserAccountFromFile:filePath encrypted:YES];
+    if (user) {
+        return user;
+    } else {
+        // Unable to retrieve the encrypted user, maybe it's still
+        // in the old plain text format?
+        user = [self loadUserAccountFromFile:filePath encrypted:NO];
+        if (user) {
+            // Upgrade step.  The file is in the old plaintext format, and we'll
+            // convert it to the encrypted format.
+            BOOL encryptUserAccountSuccess = [self saveUserAccount:user toFile:filePath];
+            if (!encryptUserAccountSuccess) {
+                // Specific error messages will already be logged.  Make sure old user account file is removed.
+                [fm removeItemAtPath:filePath error:nil];
+                return nil;
+            }
         }
     }
-    @finally {
+    return user;
+}
+
+- (SFUserAccount *)loadUserAccountFromFile:(NSString *)filePath encrypted:(BOOL)encrypted {
+    NSFileManager *fm = [[NSFileManager alloc] init];
+    if (encrypted) {
         NSData *encryptedUserAccountData = [fm contentsAtPath:filePath];
         if (!encryptedUserAccountData) {
             [self log:SFLogLevelDebug format:@"Could not retrieve user account data from '%@'", filePath];
@@ -742,6 +753,14 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         @catch (NSException *exception) {
             [self log:SFLogLevelWarning format:@"Error deserializing the user account data: %@", [exception reason]];
             [fm removeItemAtPath:filePath error:nil];
+            return nil;
+        }
+    } else {
+        @try {
+            SFUserAccount *plainTextUserAccount = [NSKeyedUnarchiver unarchiveObjectWithFile:filePath];                        
+            return plainTextUserAccount;
+        }
+        @catch (NSException *exception) {
             return nil;
         }
     }
