@@ -49,6 +49,14 @@ NSString * const kSFLoginHostChangedNotificationUpdatedHostKey = @"updatedLoginH
 static NSString * const SFUserAccountManagerTemporaryUserAccountUserId = @"TEMP_USER_ID";
 static NSString * const SFUserAccountManagerTemporaryUserAccountOrgId = @"TEMP_ORG_ID";
 
+// The anonymous user support the application should add to its Info.plist file
+static NSString * const kSFUserAccountSupportAnonymousUsage = @"SFDCSupportAnonymousUsage";
+static NSString * const kSFUserAccountAutocreateAnonymousUser = @"SFDCAutocreateAnonymousUser";
+
+// The anonymous user user id and org id
+static NSString * const SFUserAccountManagerAnonymousUserAccountUserId = @"ANONYM_USER_ID"; // DO NOT EXCEED 15 characters
+static NSString * const SFUserAccountManagerAnonymousUserAccountOrgId = @"ANONYM_ORG_ID"; // DO NOT EXCEED 15 characters
+
 // The key for storing the persisted OAuth scopes.
 NSString * const kOAuthScopesKey = @"oauth_scopes";
 
@@ -140,6 +148,10 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         case SFLogLevelError:
             credentials.logLevel = kSFOAuthLogLevelError;
             break;
+            
+        case SFLogLevelVerbose:
+            credentials.logLevel = kSFOAuthLogLevelVerbose;
+            break;
     }
 }
 
@@ -154,8 +166,16 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         
         _userAccountMap = [[NSMutableDictionary alloc] init];
         _temporaryUserIdentity = [[SFUserAccountIdentity alloc] initWithUserId:SFUserAccountManagerTemporaryUserAccountUserId orgId:SFUserAccountManagerTemporaryUserAccountOrgId];
+        _anonymousUserIdentity = [[SFUserAccountIdentity alloc] initWithUserId:SFUserAccountManagerAnonymousUserAccountUserId orgId:SFUserAccountManagerAnonymousUserAccountOrgId];
         
         [self loadAccounts:nil];
+        
+        // If there is no current user but the application support anonymous user
+        // and wants it to be created automatically, then create it now.
+        if (nil == self.currentUser && self.supportsAnonymousUser && self.autocreateAnonymousUser) {
+            [self log:SFLogLevelInfo msg:@"Creating anonymous user"];
+            [self enableAnonymousAccount];
+        }
 	}
 	return self;
 }
@@ -366,6 +386,59 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
     }
 }
 
+#pragma mark - Anonymous User
+
+- (BOOL)supportsAnonymousUser {
+    return [[[NSBundle mainBundle] objectForInfoDictionaryKey:kSFUserAccountSupportAnonymousUsage] boolValue];
+}
+
+- (BOOL)autocreateAnonymousUser {
+    return [[[NSBundle mainBundle] objectForInfoDictionaryKey:kSFUserAccountAutocreateAnonymousUser] boolValue];
+}
+
+- (BOOL)isCurrentUserAnonymous {
+    SFUserAccountIdentity *identity = self.currentUserIdentity;
+    if (nil == identity) {
+        return NO;
+    }
+    
+    return [identity.userId isEqualToString:SFUserAccountManagerAnonymousUserAccountUserId] &&
+    [identity.orgId isEqualToString:SFUserAccountManagerAnonymousUserAccountOrgId];
+}
+
+- (SFUserAccount *)anonymousUser {
+    if (nil == _anonymousUser) {
+        for (SFUserAccountIdentity *identity in self.allUserIdentities) {
+            if ([identity isEqual:self.anonymousUserIdentity]) {
+                _anonymousUser = [self userAccountForUserIdentity:identity];
+                break;
+            }
+        }
+    }
+    return _anonymousUser;
+}
+
+- (void)enableAnonymousAccount {
+    if (nil == self.anonymousUser) {
+        self.anonymousUser = [[SFUserAccount alloc] initWithIdentifier:[self uniqueUserAccountIdentifier] clientId:self.oauthClientId];
+        
+        SFOAuthCredentials *creds = self.anonymousUser.credentials;
+        creds.domain = self.loginHost;
+        creds.redirectUri = self.oauthCompletionUrl;
+        creds.clientId = self.oauthClientId;
+        
+        creds.identityUrl = [NSURL URLWithString:[NSString stringWithFormat:@"https://does.not.matter/id/%@/%@", self.anonymousUserIdentity.orgId, self.anonymousUserIdentity.userId]];
+        creds.communityUrl = [NSURL URLWithString:@"https://who-cares.community.com"];
+        creds.instanceUrl = [NSURL URLWithString:@"https://who-cares.instance.com"];
+        creds.accessToken = [NSUUID UUID].UUIDString;
+
+        [self addAccount:self.anonymousUser];
+        [self saveAccounts:nil];
+        
+        self.currentUser = self.anonymousUser;
+    }
+}
+
 #pragma mark Account management
 
 - (NSArray *)allUserAccounts
@@ -558,8 +631,8 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
         return NO;
     } else {
         for (NSString *rootContent in rootContents) {
-            // Ignore content that don't represent an organization
-            if (![rootContent hasPrefix:kOrgPrefix]) continue;
+            // Ignore content that don't represent an organization or an anonymous org
+            if (![rootContent hasPrefix:kOrgPrefix] && ![rootContent isEqualToString:SFUserAccountManagerAnonymousUserAccountOrgId]) continue;
 
             NSString *rootPath = [rootDirectory stringByAppendingPathComponent:rootContent];
             
@@ -573,8 +646,8 @@ static NSString * const kUserAccountEncryptionKeyLabel = @"com.salesforce.userAc
             }
             
             for (NSString *orgContent in orgContents) {
-                // Ignore content that don't represent a user
-                if (![orgContent hasPrefix:kUserPrefix]) continue;
+                // Ignore content that don't represent a user or an anonymous user
+                if (![orgContent hasPrefix:kUserPrefix] && ![orgContent isEqualToString:SFUserAccountManagerAnonymousUserAccountUserId]) continue;
 
                 NSString *orgPath = [rootPath stringByAppendingPathComponent:orgContent];
                 
