@@ -445,6 +445,12 @@ static Class InstanceClass = nil;
         return;
     }
     
+    // No-op if the user is anonymous
+    if (user == [SFUserAccountManager sharedInstance].anonymousUser) {
+        [self log:SFLogLevelDebug msg:@"logoutUser: user is anonymous.  No action taken."];
+        return;
+    }
+    
     [self log:SFLogLevelInfo format:@"Logging out user '%@'.", user.userName];
     
     NSDictionary *userInfo = @{ @"account": user };
