@@ -539,26 +539,23 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
 - (id)contentFromData:(NSData*)data fromResponse:(NSHTTPURLResponse*)response error:(NSError**)error {
     id content = nil;
     BOOL requestSucceeded = (response.statusCode >= 200 && response.statusCode < 300);
-    if (requestSucceeded || (response.statusCode >= 400 && response.statusCode < 500)) {
-        // try to parse response if response is not an error or response status code is between the specified status code range
-        // 2xx is for successful request
-        // 4xx is for client error that may contains valuable error information in response
-        NSError *jsonParseError = nil;
-        if ([self.responseData length] > 0) {
-            content = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&jsonParseError];
-        }
-        
-        // Surface error back if we run into JSON parsing error on a successful HTTP response
-        if (jsonParseError && error && requestSucceeded) {
-            *error = [NSError errorWithDomain:CSFNetworkErrorDomain
-                                         code:CSFNetworkJSONInvalidError
-                                     userInfo:@{ NSLocalizedDescriptionKey: @"Processing response content failed",
-                                                 NSUnderlyingErrorKey: jsonParseError,
-                                                 CSFNetworkErrorActionKey: self }];
-        }
+    
+    // try to parse response if response is not an error or response status code is between the specified status code range
+    // 2xx is for successful request
+    // 4xx is for client error that may contains valuable error information in response
+    NSError *jsonParseError = nil;
+    if ([self.responseData length] > 0) {
+        content = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&jsonParseError];
     }
     
-    
+    // Surface error back if we run into JSON parsing error on a successful HTTP response
+    if (jsonParseError && error && requestSucceeded) {
+        *error = [NSError errorWithDomain:CSFNetworkErrorDomain
+                                     code:CSFNetworkJSONInvalidError
+                                 userInfo:@{ NSLocalizedDescriptionKey: @"Processing response content failed",
+                                             NSUnderlyingErrorKey: jsonParseError,
+                                             CSFNetworkErrorActionKey: self }];
+    }
     return content;
 }
 
