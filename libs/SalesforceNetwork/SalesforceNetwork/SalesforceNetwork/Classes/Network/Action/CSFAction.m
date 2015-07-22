@@ -548,7 +548,7 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
             content = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&jsonParseError];
         }
         
-        // If it's an error here, it's a basic parsing error for a successful HTTP response
+        // Surface error back if we run into JSON parsing error on a successful HTTP response
         if (jsonParseError && error && requestSucceeded) {
             *error = [NSError errorWithDomain:CSFNetworkErrorDomain
                                          code:CSFNetworkJSONInvalidError
