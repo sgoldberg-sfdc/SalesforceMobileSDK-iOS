@@ -167,6 +167,8 @@
 		FD8BB17218B6B64700F6927C /* SFUserAccountConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8BB17118B6B5F100F6927C /* SFUserAccountConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDBFFDF91893194D00D8C603 /* SFDirectoryManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FDBFFDF71893194D00D8C603 /* SFDirectoryManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDBFFDFA1893194D00D8C603 /* SFDirectoryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FDBFFDF81893194D00D8C603 /* SFDirectoryManager.m */; };
+		FDC0FD641B5F8805004158AC /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FDC0FD631B5F8805004158AC /* CoreTelephony.framework */; };
+		FDC0FD661B5F8829004158AC /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8280EC1516E15FDD00768DE8 /* SystemConfiguration.framework */; };
 		FDC461191891EAA600E4456B /* SFUserAccount.h in Headers */ = {isa = PBXBuildFile; fileRef = FDC461131891EAA600E4456B /* SFUserAccount.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDC4611A1891EAA600E4456B /* SFUserAccount.m in Sources */ = {isa = PBXBuildFile; fileRef = FDC461141891EAA600E4456B /* SFUserAccount.m */; };
 		FDC4611C1891EAA600E4456B /* SFUserAccountManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FDC461161891EAA600E4456B /* SFUserAccountManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -374,6 +376,7 @@
 		FD8BB17118B6B5F100F6927C /* SFUserAccountConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SFUserAccountConstants.h; sourceTree = "<group>"; };
 		FDBFFDF71893194D00D8C603 /* SFDirectoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFDirectoryManager.h; sourceTree = "<group>"; };
 		FDBFFDF81893194D00D8C603 /* SFDirectoryManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFDirectoryManager.m; sourceTree = "<group>"; };
+		FDC0FD631B5F8805004158AC /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
 		FDC461131891EAA600E4456B /* SFUserAccount.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFUserAccount.h; sourceTree = "<group>"; };
 		FDC461141891EAA600E4456B /* SFUserAccount.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFUserAccount.m; sourceTree = "<group>"; };
 		FDC461161891EAA600E4456B /* SFUserAccountManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFUserAccountManager.h; sourceTree = "<group>"; };
@@ -403,6 +406,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FDC0FD661B5F8829004158AC /* SystemConfiguration.framework in Frameworks */,
+				FDC0FD641B5F8805004158AC /* CoreTelephony.framework in Frameworks */,
 				82D4647F19C7CDE80006BDFE /* libcrypto.a in Frameworks */,
 				82D4647819C7CD580006BDFE /* libSalesforceCommonUtils.a in Frameworks */,
 				82D4647C19C7CDA90006BDFE /* libSalesforceOAuth.a in Frameworks */,
@@ -493,6 +498,7 @@
 		8220B74E16D804CA00EC3921 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FDC0FD631B5F8805004158AC /* CoreTelephony.framework */,
 				6F644D431A9FE414009BF92A /* libsqlite3.dylib */,
 				82D4647D19C7CDE80006BDFE /* libcrypto.a */,
 				82D4647719C7CD580006BDFE /* libSalesforceCommonUtils.a */,
