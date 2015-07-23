@@ -60,30 +60,39 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
     if (!action) {
         return nil;
     }
-    NSMutableString *baseUrlString = [NSMutableString stringWithString:[action.baseURL absoluteString]];
-    NSMutableString *path = [NSMutableString stringWithFormat:@"%@%@", action.basePath, action.verb];
-
-    // Make sure path is not empty
-    if (baseUrlString.length == 0) {
-        *error = [NSError errorWithDomain:CSFNetworkErrorDomain
-                                     code:CSFNetworkURLCredentialsError
-                                 userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have an API URL",
-                                             CSFNetworkErrorActionKey: action }];
-        return nil;
-    } else if (path.length == 0) {
-        *error = [NSError errorWithDomain:CSFNetworkErrorDomain
-                                     code:CSFNetworkURLCredentialsError
-                                 userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have a valid path",
-                                             CSFNetworkErrorActionKey: action }];
-        return nil;
+    NSString *urlString = nil;
+    NSURL *urlFromVerb = action.verb ? [NSURL URLWithString:action.verb] : nil;
+    if (urlFromVerb.host) {
+        // full URL path specified by verb
+        urlString = [urlFromVerb absoluteString];
+    } else {
+        // construct full path using baseURL, basePath and verb
+        NSMutableString *baseUrlString = [NSMutableString stringWithString:[action.baseURL absoluteString]];
+        NSMutableString *path = [NSMutableString stringWithFormat:@"%@%@", action.basePath, action.verb];
+        
+        // Make sure path is not empty
+        if (baseUrlString.length == 0) {
+            *error = [NSError errorWithDomain:CSFNetworkErrorDomain
+                                         code:CSFNetworkURLCredentialsError
+                                     userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have an API URL",
+                                                 CSFNetworkErrorActionKey: action }];
+            return nil;
+        } else if (path.length == 0) {
+            *error = [NSError errorWithDomain:CSFNetworkErrorDomain
+                                         code:CSFNetworkURLCredentialsError
+                                     userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have a valid path",
+                                                 CSFNetworkErrorActionKey: action }];
+            return nil;
+        }
+        if (![baseUrlString hasSuffix:@"/"]) {
+            [baseUrlString appendString:@"/"];
+        }
+        if ([path hasPrefix:@"/"]) {
+            [path deleteCharactersInRange:NSMakeRange(0, 1)];
+        }
+        urlString = [baseUrlString stringByAppendingString:path];
     }
-    if (![baseUrlString hasSuffix:@"/"]) {
-        [baseUrlString appendString:@"/"];
-    }
-    if ([path hasPrefix:@"/"]) {
-        [path deleteCharactersInRange:NSMakeRange(0, 1)];
-    }
-    NSString *urlString = [baseUrlString stringByAppendingString:path];
+    
     return [NSURL URLWithString:urlString];
 }
 
