@@ -65,23 +65,27 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
     if (urlFromVerb.host) {
         // full URL path specified by verb
         urlString = [urlFromVerb absoluteString];
-    } else {
+    } else if (action.baseURL) {
         // construct full path using baseURL, basePath and verb
         NSMutableString *baseUrlString = [NSMutableString stringWithString:[action.baseURL absoluteString]];
         NSMutableString *path = [NSMutableString stringWithFormat:@"%@%@", action.basePath, action.verb];
         
         // Make sure path is not empty
         if (baseUrlString.length == 0) {
-            *error = [NSError errorWithDomain:CSFNetworkErrorDomain
+            if (error) {
+                *error = [NSError errorWithDomain:CSFNetworkErrorDomain
                                          code:CSFNetworkURLCredentialsError
                                      userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have an API URL",
                                                  CSFNetworkErrorActionKey: action }];
+            }
             return nil;
         } else if (path.length == 0) {
-            *error = [NSError errorWithDomain:CSFNetworkErrorDomain
+            if (error) {
+                *error = [NSError errorWithDomain:CSFNetworkErrorDomain
                                          code:CSFNetworkURLCredentialsError
                                      userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have a valid path",
                                                  CSFNetworkErrorActionKey: action }];
+            }
             return nil;
         }
         if (![baseUrlString hasSuffix:@"/"]) {
@@ -91,8 +95,14 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
             [path deleteCharactersInRange:NSMakeRange(0, 1)];
         }
         urlString = [baseUrlString stringByAppendingString:path];
+    } else {
+        if (error) {
+            *error = [NSError errorWithDomain:CSFNetworkErrorDomain
+                                         code:CSFNetworkURLCredentialsError
+                                     userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have an API URL",
+                                                 CSFNetworkErrorActionKey: action }];
+        }
     }
-    
     return [NSURL URLWithString:urlString];
 }
 
