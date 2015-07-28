@@ -289,7 +289,7 @@ static void * kObservingKey = &kObservingKey;
 }
 
 - (NSURLRequest*)createURLRequest:(NSError**)error {
-    if (!self.baseURL.host) {
+    if ( !self.baseURL.scheme && !self.baseURL.host) {
         // only set base URL to apiURL if baseURL is not already specified as absolute URL with it's own host
         // this check is necessary as there are salesforce URL that is content server based and not API based
         self.baseURL = self.enqueuedNetwork.account.credentials.apiUrl;
