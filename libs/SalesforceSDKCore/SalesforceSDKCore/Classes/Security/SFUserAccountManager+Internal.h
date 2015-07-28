@@ -40,6 +40,9 @@
 @property (nonatomic, strong) NSString *lastChangedUserId;
 @property (nonatomic, strong) NSString *lastChangedCommunityId;
 
++ (BOOL)isUserAnonymous:(SFUserAccount*)user;
++ (BOOL)isUserTemporary:(SFUserAccount*)user;
+
 /**
  Executes the given block for each configured delegate.
  @param block The block to execute for each delegate.

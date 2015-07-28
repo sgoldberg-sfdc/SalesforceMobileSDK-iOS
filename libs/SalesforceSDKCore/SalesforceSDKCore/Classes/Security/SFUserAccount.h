@@ -100,6 +100,11 @@
  */
 @property (nonatomic, readonly, getter = isSessionValid) BOOL sessionValid;
 
+/** Returns YES if the user supports networking.
+ For example, an anonymous user or a temporary user don't support networking.
+ */
+@property (nonatomic, readonly) BOOL supportsNetworking;
+
 /** Designated initializer
  @param identifier The user identifier
  @return the account instance
