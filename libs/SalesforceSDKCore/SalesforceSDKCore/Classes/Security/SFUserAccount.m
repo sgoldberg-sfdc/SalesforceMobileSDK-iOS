@@ -23,7 +23,7 @@
  */
 
 #import "SFUserAccount.h"
-#import "SFUserAccountManager.h"
+#import "SFUserAccountManager+Internal.h"
 #import "SFDirectoryManager.h"
 
 #import <SalesforceOAuth/SFOAuthCredentials.h>
@@ -257,6 +257,11 @@ static NSString * const kGlobalScopingKey = @"-global-";
     // A session is considered "valid" when the user
     // has an access token as well as the identity data
     return self.credentials.accessToken != nil && self.idData != nil;
+}
+
+- (BOOL)supportsNetworking {
+    // Anonymous and temporary users don't support networking
+    return ![SFUserAccountManager isUserAnonymous:self] && ![SFUserAccountManager isUserTemporary:self];
 }
 
 - (NSString*)description {

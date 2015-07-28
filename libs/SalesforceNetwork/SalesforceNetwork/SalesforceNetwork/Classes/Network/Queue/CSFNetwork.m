@@ -91,7 +91,7 @@ static NSMutableDictionary *SharedInstances = nil;
 + (instancetype)networkForUserAccount:(SFUserAccount*)account {
     CSFNetwork *instance = nil;
     
-    if (![account.accountIdentity isEqual:[SFUserAccountManager sharedInstance].temporaryUserIdentity]) {
+    if (account.supportsNetworking) {
         @synchronized (SharedInstances) {
             NSString *key = CSFNetworkInstanceKey(account);
             instance = SharedInstances[key];
