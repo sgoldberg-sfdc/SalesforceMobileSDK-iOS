@@ -179,9 +179,12 @@ static const NSUInteger SFUserAccountManagerCannotRetrieveUserData = 10003;
         
         // If there is no current user but the application support anonymous user
         // and wants it to be created automatically, then create it now.
-        if (nil == self.currentUser && self.supportsAnonymousUser && self.autocreateAnonymousUser) {
+        if (self.supportsAnonymousUser && self.autocreateAnonymousUser && nil == self.anonymousUser) {
             [self log:SFLogLevelInfo msg:@"Creating anonymous user"];
             [self enableAnonymousAccount];
+            if (nil == self.currentUser) {
+                self.currentUser = self.anonymousUser;
+            }
         }
 	}
 	return self;
@@ -441,8 +444,6 @@ static const NSUInteger SFUserAccountManagerCannotRetrieveUserData = 10003;
 
         [self addAccount:self.anonymousUser];
         [self saveAccounts:nil];
-        
-        self.currentUser = self.anonymousUser;
     }
 }
 
