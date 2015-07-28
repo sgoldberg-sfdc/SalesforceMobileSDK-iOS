@@ -42,8 +42,7 @@
 
 /** Returns YES if the specified user is anonymous.
  Note: an anonymous user is a user that doesn't require
- credentials towards a server, which means it
- doesn't require any networking at all
+ credentials towards a server.
  */
 + (BOOL)isUserAnonymous:(SFUserAccount*)user;
 

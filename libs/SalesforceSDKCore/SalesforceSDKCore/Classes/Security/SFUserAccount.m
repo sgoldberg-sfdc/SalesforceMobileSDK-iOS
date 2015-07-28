@@ -259,9 +259,12 @@ static NSString * const kGlobalScopingKey = @"-global-";
     return self.credentials.accessToken != nil && self.idData != nil;
 }
 
-- (BOOL)supportsNetworking {
-    // Anonymous and temporary users don't support networking
-    return ![SFUserAccountManager isUserAnonymous:self] && ![SFUserAccountManager isUserTemporary:self];
+- (BOOL)isTemporaryUser {
+    return [SFUserAccountManager isUserTemporary:self];
+}
+
+- (BOOL)isAnonymousUser {
+    return [SFUserAccountManager isUserAnonymous:self];
 }
 
 - (NSString*)description {
