@@ -42,6 +42,7 @@
 }
 
 - (void)completeOperationWithError:(NSError *)error {
+    self.error = error;
     if (self.responseBlock) {
         self.responseBlock(self, self.error);
     }
