@@ -177,15 +177,7 @@ static const NSUInteger SFUserAccountManagerCannotRetrieveUserData = 10003;
         
         [self loadAccounts:nil];
         
-        // If there is no current user but the application support anonymous user
-        // and wants it to be created automatically, then create it now.
-        if (self.supportsAnonymousUser && self.autocreateAnonymousUser && nil == self.anonymousUser) {
-            [self log:SFLogLevelInfo msg:@"Creating anonymous user"];
-            [self enableAnonymousAccount];
-            if (nil == self.currentUser) {
-                self.currentUser = self.anonymousUser;
-            }
-        }
+        [self setupAnonymousUser:self.supportsAnonymousUser autocreateAnonymousUser:self.autocreateAnonymousUser];
 	}
 	return self;
 }
@@ -450,6 +442,18 @@ static const NSUInteger SFUserAccountManagerCannotRetrieveUserData = 10003;
     return _anonymousUser;
 }
 
+- (void)setupAnonymousUser:(BOOL)supportsAnonymousUser autocreateAnonymousUser:(BOOL)autocreateAnonymousUser {
+    // If there is no current user but the application support anonymous user
+    // and wants it to be created automatically, then create it now.
+    if (supportsAnonymousUser && autocreateAnonymousUser && nil == self.anonymousUser) {
+        [self log:SFLogLevelInfo msg:@"Creating anonymous user"];
+        [self enableAnonymousAccount];
+        if (nil == self.currentUser) {
+            self.currentUser = self.anonymousUser;
+        }
+    }
+}
+
 - (void)enableAnonymousAccount {
     if (nil == self.anonymousUser) {
         self.anonymousUser = [[SFUserAccount alloc] initWithIdentifier:[self uniqueUserAccountIdentifier] clientId:self.oauthClientId];
@@ -467,6 +471,14 @@ static const NSUInteger SFUserAccountManagerCannotRetrieveUserData = 10003;
         [self addAccount:self.anonymousUser];
         [self saveAccounts:nil];
     }
+}
+
+- (void)disableAnonymousAccount {
+    NSError *error;
+    if (![self deleteAccountForUser:self.anonymousUser error:&error]) {
+        [self log:SFLogLevelError format:@"Unable to delete the anonymous user: %@", [error localizedDescription]];
+    }
+    self.anonymousUser = nil;
 }
 
 #pragma mark Account management
