@@ -354,6 +354,7 @@ static NSString * const kOrgIdFormatString = @"00D000000000062EA%lu";
     XCTAssertEqual([self.uam.allUserIdentities count], (NSUInteger)0, @"There should be no accounts");
     
     NSArray *accounts = [self createAndVerifyUserAccounts:1];
+    self.uam.currentUser = accounts[0];
     SFUserAccountIdentity *accountIdentity = ((SFUserAccount *)accounts[0]).accountIdentity;
     SFUserAccountIdentity *activeIdentity = self.uam.activeUserIdentity;
     XCTAssertEqualObjects(accountIdentity, activeIdentity, @"Active identity should be account identity.");
