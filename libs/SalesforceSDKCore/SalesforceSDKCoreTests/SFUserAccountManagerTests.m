@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "SFUserAccountManager.h"
+#import "SFUserAccountManager+Internal.h"
 #import "SFUserAccount.h"
 #import "SFDirectoryManager.h"
 
@@ -78,6 +78,8 @@ static NSString * const kOrgIdFormatString = @"00D000000000062EA%lu";
     // Ensure the user account manager doesn't contain any account
     self.uam = [SFUserAccountManager sharedInstance];
     [self.uam clearAllAccountState];
+    [self.uam disableAnonymousAccount];
+    self.uam.currentUser = nil;
     
     [super setUp];
 }
@@ -257,6 +259,45 @@ static NSString * const kOrgIdFormatString = @"00D000000000062EA%lu";
     XCTAssertEqual(tempAccount1, tempAccount2, @"Temp account references should be equal.");
 }
 
+- (void)testAnonymousUser {
+    NSArray *accounts = [self createAndVerifyUserAccounts:1];
+    SFUserAccount *origUser = accounts[0];
+
+    XCTAssertNil(self.uam.anonymousUser, @"Anonymous user shouldn't exist yet");
+    XCTAssertNil(self.uam.currentUser, @"Current user shouldn't be set yet");
+    
+    [self.uam setupAnonymousUser:YES autocreateAnonymousUser:NO];
+    XCTAssertNil(self.uam.anonymousUser, @"Anonymous user shouldn't exist yet");
+    
+    [self.uam setupAnonymousUser:YES autocreateAnonymousUser:YES];
+    XCTAssertNotNil(self.uam.anonymousUser, @"Anonymous user should exist now");
+    XCTAssertTrue(self.uam.currentUser == self.uam.anonymousUser, @"Current user should be the anonymous user");
+    
+    self.uam.currentUser = origUser;
+
+    XCTAssertTrue(self.uam.anonymousUser.isAnonymousUser, @"Anonymous user should be who he is");
+    XCTAssertFalse(self.uam.anonymousUser.isTemporaryUser, @"Anonymous user shouldn't be temporary");
+    
+    XCTAssertFalse(self.uam.currentUser.isAnonymousUser, @"Current user shouldn't be anonymous");
+    XCTAssertFalse(self.uam.currentUser.isTemporaryUser, @"Current user shouldn't be temporary");
+}
+
+- (void)testAnonymousUserFromPreviousVersion {
+    XCTAssertNil(self.uam.anonymousUser, @"Anonymous user shouldn't exist yet");
+    XCTAssertNil(self.uam.currentUser, @"Current user shouldn't be set yet");
+    
+    NSArray *accounts = [self createAndVerifyUserAccounts:1];
+    SFUserAccount *origUser = accounts[0];
+    self.uam.currentUser = origUser;
+
+    [self.uam setupAnonymousUser:YES autocreateAnonymousUser:NO];
+    XCTAssertNil(self.uam.anonymousUser, @"Anonymous user shouldn't exist yet");
+    
+    [self.uam setupAnonymousUser:YES autocreateAnonymousUser:YES];
+    XCTAssertNotNil(self.uam.anonymousUser, @"Anonymous user should exist now");
+    XCTAssertTrue(self.uam.currentUser == origUser, @"Current user should be the anonymous user");
+}
+
 - (void)testSwitchToNewUser {
     NSArray *accounts = [self createAndVerifyUserAccounts:1];
     SFUserAccount *origUser = accounts[0];
@@ -313,6 +354,7 @@ static NSString * const kOrgIdFormatString = @"00D000000000062EA%lu";
     XCTAssertEqual([self.uam.allUserIdentities count], (NSUInteger)0, @"There should be no accounts");
     
     NSArray *accounts = [self createAndVerifyUserAccounts:1];
+    self.uam.currentUser = accounts[0];
     SFUserAccountIdentity *accountIdentity = ((SFUserAccount *)accounts[0]).accountIdentity;
     SFUserAccountIdentity *activeIdentity = self.uam.activeUserIdentity;
     XCTAssertEqualObjects(accountIdentity, activeIdentity, @"Active identity should be account identity.");
