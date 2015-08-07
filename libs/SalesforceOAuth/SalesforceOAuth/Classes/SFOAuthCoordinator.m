@@ -737,7 +737,11 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
 - (void)updateCredentials:(NSDictionary*)params forTokenRefresh:(BOOL)tokenRefresh
 {
     self.credentials.accessToken    = [params objectForKey:kSFOAuthAccessToken];
+    self.credentials.csrfToken          = [params objectForKey:kSFOAuthCSRFToken];
     self.credentials.issuedAt       = [[self class] timestampStringToDate:[params objectForKey:kSFOAuthIssuedAt]];
+    self.credentials.lightningDomain    = [params objectForKey:kSFOauthLightningDomain];
+    self.credentials.lightningSID       = [params objectForKey:kSFOauthLightningSID];
+    
     self.credentials.instanceUrl    = [NSURL URLWithString:[params objectForKey:kSFOAuthInstanceUrl]];
     self.credentials.identityUrl    = [NSURL URLWithString:[params objectForKey:kSFOAuthId]];
     NSString *communityId = [params objectForKey:kSFOAuthCommunityId];
