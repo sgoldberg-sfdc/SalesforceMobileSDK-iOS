@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		101044691B743573007E5B9E /* SFUserAccount_Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 101044681B743573007E5B9E /* SFUserAccount_Internal.h */; };
 		4F3A72EB19DB87D900E6F468 /* test_credentials.json in Resources */ = {isa = PBXBuildFile; fileRef = 4F3A72EA19DB87D900E6F468 /* test_credentials.json */; };
 		4F95CBCC1808BA16006FC87E /* SFPushNotificationManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 4F95CBCA1808BA16006FC87E /* SFPushNotificationManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F95CBCD1808BA16006FC87E /* SFPushNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 4F95CBCB1808BA16006FC87E /* SFPushNotificationManager.m */; };
@@ -193,6 +194,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		101044681B743573007E5B9E /* SFUserAccount_Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFUserAccount_Internal.h; sourceTree = "<group>"; };
 		4F3A72EA19DB87D900E6F468 /* test_credentials.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = test_credentials.json; path = ../../../shared/test/test_credentials.json; sourceTree = "<group>"; };
 		4F95CBCA1808BA16006FC87E /* SFPushNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SFPushNotificationManager.h; path = PushNotification/SFPushNotificationManager.h; sourceTree = "<group>"; };
 		4F95CBCB1808BA16006FC87E /* SFPushNotificationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SFPushNotificationManager.m; path = PushNotification/SFPushNotificationManager.m; sourceTree = "<group>"; };
@@ -636,6 +638,7 @@
 				82AF842D16DFD95F008912EF /* SFSecurityLockout.h */,
 				82AF842E16DFD95F008912EF /* SFSecurityLockout.m */,
 				FDC461131891EAA600E4456B /* SFUserAccount.h */,
+				101044681B743573007E5B9E /* SFUserAccount_Internal.h */,
 				FDC461141891EAA600E4456B /* SFUserAccount.m */,
 				FD8BB17118B6B5F100F6927C /* SFUserAccountConstants.h */,
 				82E273BC19B1322F00BB004E /* SFUserAccountIdentity.h */,
@@ -859,6 +862,7 @@
 				FD280B8A18A2F14D00CEF12E /* SFCommunityData.h in Headers */,
 				822208751937E2D90000C635 /* SFSmartStoreDatabaseManager+Internal.h in Headers */,
 				82E273BE19B1322F00BB004E /* SFUserAccountIdentity.h in Headers */,
+				101044691B743573007E5B9E /* SFUserAccount_Internal.h in Headers */,
 				7C14A6881B433CCA007ADC31 /* SFSDKLoginHostStorage.h in Headers */,
 				82E16D7217E7C52D00E019AD /* SFSDKTestRequestListener.h in Headers */,
 				8222088819390D660000C635 /* SFUserAccountManagerUpgrade.h in Headers */,
