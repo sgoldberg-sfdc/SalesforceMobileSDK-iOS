@@ -100,6 +100,10 @@
  */
 @property (nonatomic, readonly, getter = isSessionValid) BOOL sessionValid;
 
+/** Indicates if this account was deleted.  Returns `YES` if this account was deleted since being created.
+ */
+@property (nonatomic, readonly, getter = isUserDeleted) BOOL userDeleted;
+
 /** Returns YES if the user is a temporary user.
  Note: a temporary user is created when a new user
  is requested, for example during the login into
