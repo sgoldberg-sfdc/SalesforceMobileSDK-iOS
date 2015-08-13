@@ -422,6 +422,8 @@ static Class InstanceClass = nil;
 
 - (void)logoutAllUsers
 {
+    [self log:SFLogLevelInfo msg:@"Logging out all users."];
+
     // Log out all other users, then the current user.
     NSArray *userAccounts = [[SFUserAccountManager sharedInstance] allUserAccounts];
     for (SFUserAccount *account in userAccounts) {
