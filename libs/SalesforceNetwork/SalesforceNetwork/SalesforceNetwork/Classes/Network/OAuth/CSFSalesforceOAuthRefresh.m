@@ -72,7 +72,10 @@
 
 - (void)finishWithOutput:(CSFOutput *)refreshOutput error:(NSError *)error {
     if ([error.domain isEqualToString:kSFOAuthErrorDomain] && error.code == kSFOAuthErrorInvalidGrant) {
-        [[SFAuthenticationManager sharedManager] logoutUser:self.network.account];
+        NSLog(@"[%@ %@] INFO: invalid grant error received, triggering logout.", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[SFAuthenticationManager sharedManager] logoutUser:self.network.account];
+        });
     }
     
     [super finishWithOutput:refreshOutput error:error];
