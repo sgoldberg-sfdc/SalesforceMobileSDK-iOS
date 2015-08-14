@@ -424,7 +424,7 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
 }
 
 - (BOOL)isReady {
-    BOOL result = YES;
+    BOOL result = [super isReady];
     
     if (!self.credentialsReady) {
         result = NO;
