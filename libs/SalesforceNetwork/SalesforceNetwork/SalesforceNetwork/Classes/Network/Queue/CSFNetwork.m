@@ -195,7 +195,11 @@ static NSMutableDictionary *SharedInstances = nil;
             // bypass duplicate detection for POST and PUT
             continue;
         }
-        if ([operation isEqualToAction:action] && !operation.isFinished && !operation.isCancelled) {
+        if (operation.isFinished || operation.isCancelled) {
+            // ignore finshed and cancelled ones
+            continue;
+        }
+        if ([operation isEqualToAction:action]) {
             result = operation;
             break;
         }
@@ -209,20 +213,26 @@ static NSMutableDictionary *SharedInstances = nil;
  @param action The action to execute
  */
 - (void)executeAction:(CSFAction *)action {
-    if (!action)
-        return;
-
-    // Need to assign our network queue to the action so that the equality test
-    // performed in duplicateActionInFlight: will match.
-    action.enqueuedNetwork = self;
-
-    CSFAction *duplicateAction = [self duplicateActionInFlight:action];
-    if (duplicateAction) {
-        action.duplicateParentAction = duplicateAction;
-        [action addDependency:duplicateAction];
+    @synchronized(self) {
+        if (!action)
+            return;
+        
+        if (self.queue.isSuspended) {
+            NSLog(@"network queue is suspended when trying to add action %@, instance URL is %@", action.verb, self.account.credentials.instanceUrl);
+        }
+        
+        // Need to assign our network queue to the action so that the equality test
+        // performed in duplicateActionInFlight: will match.
+        action.enqueuedNetwork = self;
+        
+        CSFAction *duplicateAction = [self duplicateActionInFlight:action];
+        if (duplicateAction) {
+            action.duplicateParentAction = duplicateAction;
+            [action addDependency:duplicateAction];
+        }
+        
+        [self.queue addOperation:action];
     }
-    
-    [self.queue addOperation:action];
 }
 
 - (void)executeActions:(NSArray *)actions completionBlock:(void(^)(NSArray *actions, NSArray *errors))completionBlock {

@@ -424,11 +424,9 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
 }
 
 - (BOOL)isReady {
-    BOOL result = YES;
+    BOOL result = [super isReady];
     
-    if (self.duplicateParentAction) {
-        result = [self.duplicateParentAction isFinished];
-    } else if (!self.credentialsReady) {
+    if (!self.credentialsReady) {
         result = NO;
     } else {
         if ([self.authRefreshClass isSubclassOfClass:[CSFAuthRefresh class]]) {
