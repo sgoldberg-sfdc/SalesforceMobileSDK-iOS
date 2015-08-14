@@ -217,6 +217,10 @@ static NSMutableDictionary *SharedInstances = nil;
         if (!action)
             return;
         
+        if (self.queue.isSuspended) {
+            NSLog(@"network queue is suspended when trying to add action %@, instance URL is %@", action.verb, self.account.credentials.instanceUrl);
+        }
+        
         // Need to assign our network queue to the action so that the equality test
         // performed in duplicateActionInFlight: will match.
         action.enqueuedNetwork = self;
