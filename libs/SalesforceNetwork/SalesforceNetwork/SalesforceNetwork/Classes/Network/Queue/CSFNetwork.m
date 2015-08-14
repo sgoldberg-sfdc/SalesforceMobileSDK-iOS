@@ -195,6 +195,10 @@ static NSMutableDictionary *SharedInstances = nil;
             // bypass duplicate detection for POST and PUT
             continue;
         }
+        if (operation.duplicateParentAction) {
+            // operation already is marked as dup, so ignore this one
+            continue;
+        }
         if ([operation isEqualToAction:action] && !operation.isFinished && !operation.isCancelled) {
             result = operation;
             break;
@@ -209,20 +213,22 @@ static NSMutableDictionary *SharedInstances = nil;
  @param action The action to execute
  */
 - (void)executeAction:(CSFAction *)action {
-    if (!action)
-        return;
-
-    // Need to assign our network queue to the action so that the equality test
-    // performed in duplicateActionInFlight: will match.
-    action.enqueuedNetwork = self;
-
-    CSFAction *duplicateAction = [self duplicateActionInFlight:action];
-    if (duplicateAction) {
-        action.duplicateParentAction = duplicateAction;
-        [action addDependency:duplicateAction];
+    @synchronized(self) {
+        if (!action)
+            return;
+        
+        // Need to assign our network queue to the action so that the equality test
+        // performed in duplicateActionInFlight: will match.
+        action.enqueuedNetwork = self;
+        
+        CSFAction *duplicateAction = [self duplicateActionInFlight:action];
+        if (duplicateAction) {
+            action.duplicateParentAction = duplicateAction;
+            [action addDependency:duplicateAction];
+        }
+        
+        [self.queue addOperation:action];
     }
-    
-    [self.queue addOperation:action];
 }
 
 - (void)executeActions:(NSArray *)actions completionBlock:(void(^)(NSArray *actions, NSArray *errors))completionBlock {
