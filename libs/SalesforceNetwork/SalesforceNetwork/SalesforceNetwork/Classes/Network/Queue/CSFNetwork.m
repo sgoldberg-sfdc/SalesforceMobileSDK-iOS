@@ -195,11 +195,11 @@ static NSMutableDictionary *SharedInstances = nil;
             // bypass duplicate detection for POST and PUT
             continue;
         }
-        if (operation.duplicateParentAction) {
-            // operation already is marked as dup, so ignore this one
+        if (operation.isFinished || operation.isCancelled) {
+            // ignore finshed and cancelled ones
             continue;
         }
-        if ([operation isEqualToAction:action] && !operation.isFinished && !operation.isCancelled) {
+        if ([operation isEqualToAction:action]) {
             result = operation;
             break;
         }
