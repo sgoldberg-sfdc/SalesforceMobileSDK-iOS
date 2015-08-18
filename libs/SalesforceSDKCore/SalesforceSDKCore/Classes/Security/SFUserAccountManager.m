@@ -916,7 +916,7 @@ static const NSUInteger SFUserAccountManagerCannotRetrieveUserData = 10003;
         }
         
         // Save it.
-        BOOL saveFileSuccess = [fm createFileAtPath:filePath contents:encryptedArchiveData attributes:@{ NSFileProtectionKey : NSFileProtectionComplete }];
+        BOOL saveFileSuccess = [fm createFileAtPath:filePath contents:encryptedArchiveData attributes:@{ NSFileProtectionKey : [SFFileProtectionHelper fileProtectionForPath:filePath] }];
         if (!saveFileSuccess) {
             [self log:SFLogLevelDebug format:@"Could not create user account data file at path '%@'", filePath];
             return NO;
