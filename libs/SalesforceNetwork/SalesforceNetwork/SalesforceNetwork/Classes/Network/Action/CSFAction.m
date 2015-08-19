@@ -60,28 +60,50 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
     if (!action) {
         return nil;
     }
-    
-    NSString *host = [action.enqueuedNetwork.account.credentials.instanceUrl host];
-    NSString *path = [NSMutableString stringWithFormat:@"%@%@", action.basePath, action.verb];
-    
-    // Make sure path is not empty
-    if (!host || host.length == 0) {
-        *error = [NSError errorWithDomain:CSFNetworkErrorDomain
-                                     code:CSFNetworkURLCredentialsError
-                                 userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have an instance host",
-                                             CSFNetworkErrorActionKey: action }];
-        return nil;
-    } else if (!path || path.length == 0) {
-        *error = [NSError errorWithDomain:CSFNetworkErrorDomain
-                                     code:CSFNetworkURLCredentialsError
-                                 userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have a valid path",
-                                             CSFNetworkErrorActionKey: action }];
-        return nil;
+    NSString *urlString = nil;
+    NSURL *urlFromVerb = action.verb ? [NSURL URLWithString:action.verb] : nil;
+    if (urlFromVerb.host) {
+        // full URL path specified by verb
+        urlString = [urlFromVerb absoluteString];
+    } else if (action.baseURL) {
+        // construct full path using baseURL, basePath and verb
+        NSMutableString *baseUrlString = [NSMutableString stringWithString:[action.baseURL absoluteString]];
+        NSMutableString *path = [NSMutableString stringWithFormat:@"%@%@", action.basePath, action.verb];
+        
+        // Make sure path is not empty
+        if (baseUrlString.length == 0) {
+            if (error) {
+                *error = [NSError errorWithDomain:CSFNetworkErrorDomain
+                                         code:CSFNetworkURLCredentialsError
+                                     userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have an API URL",
+                                                 CSFNetworkErrorActionKey: action }];
+            }
+            return nil;
+        } else if (path.length == 0) {
+            if (error) {
+                *error = [NSError errorWithDomain:CSFNetworkErrorDomain
+                                         code:CSFNetworkURLCredentialsError
+                                     userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have a valid path",
+                                                 CSFNetworkErrorActionKey: action }];
+            }
+            return nil;
+        }
+        if (![baseUrlString hasSuffix:@"/"]) {
+            [baseUrlString appendString:@"/"];
+        }
+        if ([path hasPrefix:@"/"]) {
+            [path deleteCharactersInRange:NSMakeRange(0, 1)];
+        }
+        urlString = [baseUrlString stringByAppendingString:path];
+    } else {
+        if (error) {
+            *error = [NSError errorWithDomain:CSFNetworkErrorDomain
+                                         code:CSFNetworkURLCredentialsError
+                                     userInfo:@{ NSLocalizedDescriptionKey: @"Network action must have an API URL",
+                                                 CSFNetworkErrorActionKey: action }];
+        }
     }
-    
-    NSString *scheme = @"https";
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@%@", scheme, host, path]];
-    return url;
+    return [NSURL URLWithString:urlString];
 }
 
 - (NSDictionary *)headersForAction {
@@ -129,16 +151,19 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
 
 + (instancetype)actionWithHTTPMethod:(NSString*)method onURL:(NSURL*)url withResponseBlock:(CSFActionResponseBlock)responseBlock {
     CSFAction *action = [[self alloc] initWithResponseBlock:responseBlock];
-    
     NSString *baseString = nil;
     if (url.port) {
         baseString = [NSString stringWithFormat:@"%@://%@:%@", url.scheme, url.host, url.port];
     } else {
         baseString = [NSString stringWithFormat:@"%@://%@", url.scheme, url.host];
     }
-    
     action.baseURL = [NSURL URLWithString:baseString];
-    action.verb = url.path;
+    NSMutableString *relativePath = [NSMutableString stringWithString:url.path];
+    if (url.query != nil) {
+        [relativePath appendString:@"?"];
+        [relativePath appendString:url.query];
+    }
+    action.verb = relativePath;
     action.method = method;
     return action;
 }
@@ -352,9 +377,9 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
         return;
     }
     
-    [self willChangeValueForKey:@"executing"];
+    [self willChangeValueForKey:@"isExecuting"];
     _executing = YES;
-    [self didChangeValueForKey:@"executing"];
+    [self didChangeValueForKey:@"isExecuting"];
 
     // If this is a duplicate action, the parent must have just completed, so we can safely process our response based
     // on the result of that parent.  By calling the completion handler, the response will automatically be sent,
@@ -399,11 +424,9 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
 }
 
 - (BOOL)isReady {
-    BOOL result = YES;
+    BOOL result = [super isReady];
     
-    if (self.duplicateParentAction) {
-        result = [self.duplicateParentAction isFinished];
-    } else if (!self.credentialsReady) {
+    if (!self.credentialsReady) {
         result = NO;
     } else {
         if ([self.authRefreshClass isSubclassOfClass:[CSFAuthRefresh class]]) {
@@ -515,13 +538,13 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
 }
 
 - (void)completeOperationWithError:(NSError *)error {
-    [self willChangeValueForKey:@"executing"];
-    [self willChangeValueForKey:@"finished"];
+    [self willChangeValueForKey:@"isExecuting"];
+    [self willChangeValueForKey:@"isFinished"];
     _executing = NO;
     _finished = YES;
     self.error = error;
-    [self didChangeValueForKey:@"executing"];
-    [self didChangeValueForKey:@"finished"];
+    [self didChangeValueForKey:@"isExecuting"];
+    [self didChangeValueForKey:@"isFinished"];
     
     self.responseData = nil;
     
@@ -532,21 +555,24 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
 
 - (id)contentFromData:(NSData*)data fromResponse:(NSHTTPURLResponse*)response error:(NSError**)error {
     id content = nil;
+    BOOL requestSucceeded = (response.statusCode >= 200 && response.statusCode < 300);
     
+    // try to parse response if response is not an error or response status code is between the specified status code range
+    // 2xx is for successful request
+    // 4xx is for client error that may contains valuable error information in response
     NSError *jsonParseError = nil;
     if ([self.responseData length] > 0) {
-        content = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonParseError];
+        content = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&jsonParseError];
     }
     
-    // If it's an error here, it's a basic parsing error.
-    if (jsonParseError && error) {
+    // Surface error back if we run into JSON parsing error on a successful HTTP response
+    if (jsonParseError && error && requestSucceeded) {
         *error = [NSError errorWithDomain:CSFNetworkErrorDomain
-                                         code:CSFNetworkJSONInvalidError
-                                     userInfo:@{ NSLocalizedDescriptionKey: @"Processing response content failed",
-                                                 NSUnderlyingErrorKey: jsonParseError,
-                                                 CSFNetworkErrorActionKey: self }];
+                                     code:CSFNetworkJSONInvalidError
+                                 userInfo:@{ NSLocalizedDescriptionKey: @"Processing response content failed",
+                                             NSUnderlyingErrorKey: jsonParseError,
+                                             CSFNetworkErrorActionKey: self }];
     }
-    
     return content;
 }
 

@@ -135,7 +135,6 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
 @synthesize userAgentForAuth            = _userAgentForAuth;
 @synthesize origWebUserAgent            = _origWebUserAgent;
 
-
 - (id)init {
     return [self initWithCredentials:nil];
 }
@@ -418,9 +417,23 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
 }
 
 - (void)beginNativeBrowserFlow {
+    if ([self.delegate respondsToSelector:@selector(oauthCoordinator:willBeginBrowserAuthentication:)]) {
+        __weak SFOAuthCoordinator *weakSelf = self;
+        [self.delegate oauthCoordinator:self willBeginBrowserAuthentication:^(BOOL proceed) {
+            if (proceed) {
+                [weakSelf continueNativeBrowserFlow];
+            }
+        }];
+    } else {
+        // If delegate does not implement the method, simply continue with the browser flow.
+        [self continueNativeBrowserFlow];
+    }
+}
+
+- (void)continueNativeBrowserFlow {
     if (![NSThread isMainThread]) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self beginNativeBrowserFlow];
+            [self continueNativeBrowserFlow];
         });
         return;
     }
@@ -462,6 +475,7 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
     } else {
         self.advancedAuthState = SFOAuthAdvancedAuthStateBrowserRequestInitiated;
     }
+
 }
 
 - (void)beginUserAgentFlow {
@@ -477,7 +491,7 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
     
     if (nil == self.view) {
         // lazily create web view if needed
-        self.view = [[UIWebView  alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+        self.view = [[UIWebView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     }
     self.view.delegate = self;
 
@@ -530,10 +544,10 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
 
 - (void)beginTokenEndpointFlow:(SFOAuthTokenEndpointFlow)flowType {
     self.responseData = [NSMutableData dataWithLength:512];
-    NSString *refreshDomain = self.credentials.communityId ? self.credentials.communityUrl.host : self.credentials.domain;
-    NSString *url = [[NSString alloc] initWithFormat:@"%@://%@%@",
-                                                     self.credentials.protocol,
-                                                     refreshDomain,
+    NSString *refreshDomain = self.credentials.communityId ? self.credentials.communityUrl.absoluteString : self.credentials.domain;
+    NSString *protocolHost = self.credentials.communityId ? refreshDomain : [NSString stringWithFormat:@"%@://%@", self.credentials.protocol, refreshDomain];
+    NSString *url = [[NSString alloc] initWithFormat:@"%@%@",
+                                                     protocolHost,
                                                      kSFOAuthEndPointToken];
 	
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url] 
@@ -547,9 +561,9 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
     [request setHTTPShouldHandleCookies:NO];
     
     NSMutableString *params = [[NSMutableString alloc] initWithFormat:@"%@=%@&%@=%@&%@=%@",
-                               kSFOAuthFormat, kSFOAuthFormatJson,
-                               kSFOAuthRedirectUri, self.credentials.redirectUri,
-                               kSFOAuthClientId, self.credentials.clientId];
+                  kSFOAuthFormat, kSFOAuthFormatJson,
+                  kSFOAuthRedirectUri, self.credentials.redirectUri,
+                  kSFOAuthClientId, self.credentials.clientId];
     NSMutableString *logString = [NSMutableString stringWithString:params];
     
     // If an activation code is available (IP bypass flow), then provide the activation code in the request
@@ -629,7 +643,7 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
                 // In a non-IP flow, we already have the refresh token here.
             }
 
-            [self updateCredentials:dict forTokenRefresh:(self.authInfo.authType == SFOAuthTypeRefresh)];
+            [self updateCredentials:dict];
             
             [self notifyDelegateOfSuccess:self.authInfo];
         }
@@ -670,7 +684,7 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
         NSDictionary *params = [[self class] parseQueryString:response];
         NSString *error = params[kSFOAuthError];
         if (nil == error) {
-            [self updateCredentials:params forTokenRefresh:NO];
+            [self updateCredentials:params];
             
             self.credentials.refreshToken   = params[kSFOAuthRefreshToken];
             
@@ -719,26 +733,32 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
  - communityUrl
  */
 
-- (void)updateCredentials:(NSDictionary*)params forTokenRefresh:(BOOL)tokenRefresh
+- (void)updateCredentials:(NSDictionary*)params
 {
-    self.credentials.accessToken        = [params objectForKey:kSFOAuthAccessToken];
+    self.credentials.accessToken    = [params objectForKey:kSFOAuthAccessToken];
     self.credentials.csrfToken          = [params objectForKey:kSFOAuthCSRFToken];
-    self.credentials.issuedAt           = [[self class] timestampStringToDate:[params objectForKey:kSFOAuthIssuedAt]];
+    self.credentials.issuedAt       = [[self class] timestampStringToDate:[params objectForKey:kSFOAuthIssuedAt]];
     self.credentials.lightningDomain    = [params objectForKey:kSFOauthLightningDomain];
     self.credentials.lightningSID       = [params objectForKey:kSFOauthLightningSID];
-    if (!tokenRefresh) {
+
+    if ([params objectForKey:kSFOAuthInstanceUrl]) {
         self.credentials.instanceUrl    = [NSURL URLWithString:[params objectForKey:kSFOAuthInstanceUrl]];
+    }
+    
+    if ([params objectForKey:kSFOAuthId]) {
         self.credentials.identityUrl    = [NSURL URLWithString:[params objectForKey:kSFOAuthId]];
-        
-        NSString *communityId = [params objectForKey:kSFOAuthCommunityId];
-        if (nil != communityId) {
-            self.credentials.communityId = communityId;
-        }
-        
-        NSString *communityUrl = [params objectForKey:kSFOAuthCommunityUrl];
-        if (nil != communityUrl) {
-            self.credentials.communityUrl = [NSURL URLWithString:communityUrl];
-        }
+    }
+    
+    // Need to update the domain as the host may be different after an org split.
+    self.credentials.domain = [self.credentials.instanceUrl host];
+    
+    NSString *communityId = [params objectForKey:kSFOAuthCommunityId];
+    if (nil != communityId) {
+        self.credentials.communityId = communityId;
+    }
+    NSString *communityUrl = [params objectForKey:kSFOAuthCommunityUrl];
+    if (nil != communityUrl) {
+        self.credentials.communityUrl = [NSURL URLWithString:communityUrl];
     }
 }
 

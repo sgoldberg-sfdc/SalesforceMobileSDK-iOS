@@ -1,10 +1,5 @@
 /*
- SalesforceSDKCommon.h
- SalesforceSDKCommon
-
- Created by Behzad Richey on Tue Jun 30 13:40:51 PDT 2015.
-
- Copyright (c) 2015, salesforce.com, inc. All rights reserved.
+ Copyright (c) 2012-2014, salesforce.com, inc. All rights reserved.
  
  Redistribution and use of this software in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
@@ -27,6 +22,10 @@
  WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <SalesforceSDKCommon/NSData+SFSDKUtils.h>
-#import <SalesforceSDKCommon/SFSDKAsyncProcessListener.h>
-#import <SalesforceSDKCommon/SFSDKReachability.h>
+#import "SFUserAccount.h"
+
+@interface SFUserAccount ()
+
+@property (nonatomic, readwrite, getter = isUserDeleted) BOOL userDeleted;
+
+@end

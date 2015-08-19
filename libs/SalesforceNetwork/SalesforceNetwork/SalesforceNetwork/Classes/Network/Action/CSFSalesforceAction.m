@@ -43,19 +43,6 @@ static void * kObservingKey = &kObservingKey;
         _apiVersion = CSFSalesforceDefaultAPIVersion;
         _pathPrefix = CSFSalesforceActionDefaultPathPrefix;
         self.authRefreshClass = [CSFSalesforceOAuthRefresh class];
-        CSFNetwork *network = self.enqueuedNetwork;
-        [network addObserver:self forKeyPath:@"account.credentials.accessToken"
-                      options:(NSKeyValueObservingOptionInitial |
-                               NSKeyValueObservingOptionNew)
-                      context:kObservingKey];
-        [network addObserver:self forKeyPath:@"account.credentials.instanceUrl"
-                      options:(NSKeyValueObservingOptionInitial |
-                               NSKeyValueObservingOptionNew)
-                      context:kObservingKey];
-        [network addObserver:self forKeyPath:@"account.communityId"
-                      options:(NSKeyValueObservingOptionInitial |
-                               NSKeyValueObservingOptionNew)
-                      context:kObservingKey];
         NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
         [notificationCenter addObserver:self
                                selector:@selector(userAccountManagerDidChangeCurrentUser:)
@@ -71,6 +58,38 @@ static void * kObservingKey = &kObservingKey;
     [network removeObserver:self forKeyPath:@"account.credentials.instanceUrl" context:kObservingKey];
     [network removeObserver:self forKeyPath:@"account.communityId" context:kObservingKey];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+// Note: this is a temporary fix to address the KVO crash in Dealloc
+// remove this change when merging from mobileSDK.
+// 00, 01, 10, 11
+
+- (void)setEnqueuedNetwork:(CSFNetwork *)enqueuedNetwork {
+    if (_enqueuedNetwork != enqueuedNetwork) {
+        // remove observer from old network.
+        if (_enqueuedNetwork) {
+            [_enqueuedNetwork removeObserver:self forKeyPath:@"account.credentials.accessToken" context:kObservingKey];
+            [_enqueuedNetwork removeObserver:self forKeyPath:@"account.credentials.instanceUrl" context:kObservingKey];
+            [_enqueuedNetwork removeObserver:self forKeyPath:@"account.communityId" context:kObservingKey];
+        }
+        // add observers to the new network.
+        if (enqueuedNetwork) {
+            [enqueuedNetwork addObserver:self forKeyPath:@"account.credentials.accessToken"
+                                 options:(NSKeyValueObservingOptionInitial |
+                                          NSKeyValueObservingOptionNew)
+                                 context:kObservingKey];
+            [enqueuedNetwork addObserver:self forKeyPath:@"account.credentials.instanceUrl"
+                                 options:(NSKeyValueObservingOptionInitial |
+                                          NSKeyValueObservingOptionNew)
+                                 context:kObservingKey];
+            [enqueuedNetwork addObserver:self forKeyPath:@"account.communityId"
+                                 options:(NSKeyValueObservingOptionInitial |
+                                          NSKeyValueObservingOptionNew)
+                                 context:kObservingKey];
+        }
+    }
+    // set new network.
+    [super setEnqueuedNetwork:enqueuedNetwork];
 }
 
 - (NSDictionary *)headersForAction {
@@ -105,12 +124,13 @@ static void * kObservingKey = &kObservingKey;
             NSArray *jsonArray = (NSArray*)content;
             NSDictionary *errorDict = jsonArray[0];
             if ([errorDict isKindOfClass:[NSDictionary class]] && errorDict[@"errorCode"]) {
-                msgObj = errorDict[@"message"] ?: errorDict[@"msg"];
+                msgObj = errorDict[@"message"] ?: (errorDict[@"msg"] ? :errorDict[@"errorMsg"]);
                 errorCode = errorDict[@"errorCode"] ;
             }
         } else if (response.statusCode >= 400 && [content isKindOfClass:[NSDictionary class]]) {
             NSDictionary *errorDict = (NSDictionary*)content;
-            msgObj = errorDict[@"msg"];
+            msgObj = errorDict[@"message"] ?: (errorDict[@"msg"] ? :errorDict[@"errorMsg"]);
+            errorCode = errorDict[@"errorCode"] ;
         }
         
         CSFNetwork *network = self.enqueuedNetwork;
@@ -129,9 +149,7 @@ static void * kObservingKey = &kObservingKey;
                     // unauthorized (not logged in / session expired)
                     // The session ID or OAuth token used has expired or is invalid.
                     // The response body contains the message and errorCode.
-                    if ([errorCode isEqualToString:@"INVALID_SESSION_ID"]) {
-                        requestSessionRefresh = YES;
-                    }
+                    requestSessionRefresh = YES;
                     break;
                     
                 case 403:
@@ -268,6 +286,15 @@ static void * kObservingKey = &kObservingKey;
             self.enqueuedNetwork.defaultConnectCommunityId = accountManager.currentCommunityId;
         }
     }
+}
+
+- (NSURLRequest*)createURLRequest:(NSError**)error {
+    if (!self.baseURL.scheme && !self.baseURL.host) {
+        // only set base URL to apiURL if baseURL is not already specified as absolute URL with it's own host
+        // this check is necessary as there are salesforce URL that is content server based and not API based
+        self.baseURL = self.enqueuedNetwork.account.credentials.apiUrl;
+    }
+    return [super createURLRequest:error];
 }
 
 @end

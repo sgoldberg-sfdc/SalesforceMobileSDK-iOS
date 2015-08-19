@@ -49,7 +49,7 @@ NSString *CSFNetworkInstanceKey(SFUserAccount *user) {
     return [NSString stringWithFormat:@"%@-%@-%@", user.credentials.organizationId, user.credentials.userId, user.communityId];
 }
 
-@interface CSFNetwork() {
+@interface CSFNetwork()<SFAuthenticationManagerDelegate> {
     //Flag to ensure that we file CSFActionsRequiredByUICompletedNotification only once through out the application's life cycle
     NSString *_defaultConnectCommunityId;
 }
@@ -91,7 +91,7 @@ static NSMutableDictionary *SharedInstances = nil;
 + (instancetype)networkForUserAccount:(SFUserAccount*)account {
     CSFNetwork *instance = nil;
     
-    if (![account.accountIdentity isEqual:[SFUserAccountManager sharedInstance].temporaryUserIdentity]) {
+    if (!account.isTemporaryUser) {
         @synchronized (SharedInstances) {
             NSString *key = CSFNetworkInstanceKey(account);
             instance = SharedInstances[key];
@@ -102,6 +102,13 @@ static NSMutableDictionary *SharedInstances = nil;
     }
     
     return instance;
+}
+
++ (void)removeSharedInstance:(SFUserAccount*)userAccount {
+    @synchronized (SharedInstances) {
+        NSString *key = CSFNetworkInstanceKey(userAccount);
+        [SharedInstances removeObjectForKey:key];
+    }
 }
 
 - (id)init {
@@ -136,6 +143,8 @@ static NSMutableDictionary *SharedInstances = nil;
     self = [self init];
     if (self) {
         self.account = account;
+        [[SFAuthenticationManager sharedManager] addDelegate:self];
+        self.userAgent = [SalesforceSDKManager sharedManager].userAgentString(@"");
     }
     return self;
 }
@@ -182,8 +191,15 @@ static NSMutableDictionary *SharedInstances = nil;
     for (CSFAction *operation in self.queue.operations) {
         if (![operation isKindOfClass:[CSFAction class]])
             continue;
-        
-        if ([operation isEqualToAction:action] && !operation.isFinished && !operation.isCancelled) {
+        if ([action.method isEqualToString:@"POST"] || [action.method isEqualToString:@"PUT"]) {
+            // bypass duplicate detection for POST and PUT
+            continue;
+        }
+        if (operation.isFinished || operation.isCancelled) {
+            // ignore finshed and cancelled ones
+            continue;
+        }
+        if ([operation isEqualToAction:action]) {
             result = operation;
             break;
         }
@@ -197,20 +213,26 @@ static NSMutableDictionary *SharedInstances = nil;
  @param action The action to execute
  */
 - (void)executeAction:(CSFAction *)action {
-    if (!action)
-        return;
-
-    // Need to assign our network queue to the action so that the equality test
-    // performed in duplicateActionInFlight: will match.
-    action.enqueuedNetwork = self;
-
-    CSFAction *duplicateAction = [self duplicateActionInFlight:action];
-    if (duplicateAction) {
-        action.duplicateParentAction = duplicateAction;
-        [action addDependency:duplicateAction];
+    @synchronized(self) {
+        if (!action)
+            return;
+        
+        if (self.queue.isSuspended) {
+            NSLog(@"network queue is suspended when trying to add action %@, instance URL is %@", action.verb, self.account.credentials.instanceUrl);
+        }
+        
+        // Need to assign our network queue to the action so that the equality test
+        // performed in duplicateActionInFlight: will match.
+        action.enqueuedNetwork = self;
+        
+        CSFAction *duplicateAction = [self duplicateActionInFlight:action];
+        if (duplicateAction) {
+            action.duplicateParentAction = duplicateAction;
+            [action addDependency:duplicateAction];
+        }
+        
+        [self.queue addOperation:action];
     }
-    
-    [self.queue addOperation:action];
 }
 
 - (void)executeActions:(NSArray *)actions completionBlock:(void(^)(NSArray *actions, NSArray *errors))completionBlock {
@@ -289,6 +311,12 @@ static NSMutableDictionary *SharedInstances = nil;
 //       This way we don't ahve to reference UIKit from the network stack, and the consumer
 //       is capable of handling the unauthorized response.
 - (void)receivedDevicedUnauthorizedError:(CSFAction *)action {
+}
+
+#pragma mark - SFAuthenticationManagerDelegate
+
+- (void)authManager:(SFAuthenticationManager *)manager willLogoutUser:(SFUserAccount *)user {
+    [[self class] removeSharedInstance:user];
 }
 
 @end

@@ -70,12 +70,27 @@
     });
 }
 
+- (void)finishWithOutput:(CSFOutput *)refreshOutput error:(NSError *)error {
+    if ([error.domain isEqualToString:kSFOAuthErrorDomain] && error.code == kSFOAuthErrorInvalidGrant) {
+        NSLog(@"[%@ %@] INFO: invalid grant error received, triggering logout.", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[SFAuthenticationManager sharedManager] logoutUser:self.network.account];
+        });
+    }
+    
+    [super finishWithOutput:refreshOutput error:error];
+}
+
 #pragma mark - SFOAuthCoordinatorDelegate
 
 - (void)oauthCoordinatorDidAuthenticate:(SFOAuthCoordinator *)coordinator authInfo:(SFOAuthInfo *)info {
     self.network.account.credentials = coordinator.credentials;
     CSFOAuthTokenRefreshOutput *output = [[CSFOAuthTokenRefreshOutput alloc] initWithCoordinator:coordinator];
     [self finishWithOutput:output error:nil];
+}
+
+- (void)oauthCoordinator:(SFOAuthCoordinator *)coordinator willBeginBrowserAuthentication:(SFOAuthBrowserFlowCallbackBlock)callbackBlock {
+    // noop
 }
 
 - (void)oauthCoordinator:(SFOAuthCoordinator *)coordinator didFailWithError:(NSError *)error authInfo:(SFOAuthInfo *)info {
