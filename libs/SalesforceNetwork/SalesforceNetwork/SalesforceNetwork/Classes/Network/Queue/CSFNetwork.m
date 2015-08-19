@@ -188,13 +188,14 @@ static NSMutableDictionary *SharedInstances = nil;
 - (CSFAction*)duplicateActionInFlight:(CSFAction*)action {
     CSFAction *result = nil;
     
+    // bypass duplicate detection for post and put
+    if ([action.method isEqualToString:@"POST"] || [action.method isEqualToString:@"PUT"]) {
+        return nil;
+    }
+    
     for (CSFAction *operation in self.queue.operations) {
         if (![operation isKindOfClass:[CSFAction class]])
             continue;
-        if ([action.method isEqualToString:@"POST"] || [action.method isEqualToString:@"PUT"]) {
-            // bypass duplicate detection for POST and PUT
-            continue;
-        }
         if (operation.isFinished || operation.isCancelled) {
             // ignore finshed and cancelled ones
             continue;
