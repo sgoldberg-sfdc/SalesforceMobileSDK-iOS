@@ -195,8 +195,8 @@ static NSMutableDictionary *SharedInstances = nil;
     for (CSFAction *operation in self.queue.operations) {
         if (![operation isKindOfClass:[CSFAction class]])
             continue;
-        if (operation.isFinished || operation.isCancelled) {
-            // ignore finshed and cancelled ones
+        if (operation.isFinished || operation.isCancelled || operation.isExecuting) {
+            // ignore finshed, cancelled and executing ones
             continue;
         }
         if ([operation isEqualToAction:action]) {
