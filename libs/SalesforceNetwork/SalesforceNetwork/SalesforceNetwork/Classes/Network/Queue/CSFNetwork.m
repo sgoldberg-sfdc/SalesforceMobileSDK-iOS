@@ -196,7 +196,7 @@ static NSMutableDictionary *SharedInstances = nil;
         if (![operation isKindOfClass:[CSFAction class]])
             continue;
         if (operation.isFinished || operation.isCancelled) {
-            // ignore finshed, cancelled and executing ones
+            // ignore finshed, cancelled ones
             continue;
         }
         if ([operation isEqualToAction:action]) {
