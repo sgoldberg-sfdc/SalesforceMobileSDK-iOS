@@ -192,8 +192,7 @@ static NSMutableDictionary *SharedInstances = nil;
 - (CSFAction*)duplicateActionInFlight:(CSFAction*)action {
     CSFAction *result = nil;
     
-    for (NSInteger index = self.queue.operations.count - 1; index>=0; index--) {
-        CSFAction *operation = self.queue.operations[index];
+    for (CSFAction *operation in self.queue.operations.reverseObjectEnumerator) {
         if (![operation isKindOfClass:[CSFAction class]])
             continue;
         if (operation.isFinished || operation.isCancelled) {
