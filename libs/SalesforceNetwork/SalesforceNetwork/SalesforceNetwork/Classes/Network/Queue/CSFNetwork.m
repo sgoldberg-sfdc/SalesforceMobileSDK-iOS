@@ -192,7 +192,8 @@ static NSMutableDictionary *SharedInstances = nil;
 - (CSFAction*)duplicateActionInFlight:(CSFAction*)action {
     CSFAction *result = nil;
     
-    for (CSFAction *operation in self.queue.operations) {
+    for (NSInteger index = self.queue.operations.count - 1; index>=0; index--) {
+        CSFAction *operation = self.queue.operations[index];
         if (![operation isKindOfClass:[CSFAction class]])
             continue;
         if (operation.isFinished || operation.isCancelled) {
@@ -213,32 +214,30 @@ static NSMutableDictionary *SharedInstances = nil;
  @param action The action to execute
  */
 - (void)executeAction:(CSFAction *)action {
-    @synchronized(self) {
-        if (!action)
-            return;
-        
-        if (self.queue.isSuspended) {
-            NSLog(@"network queue is suspended when trying to add action %@, instance URL is %@", action.verb, self.account.credentials.instanceUrl);
-        }
-        
-        // Need to assign our network queue to the action so that the equality test
-        // performed in duplicateActionInFlight: will match.
-        action.enqueuedNetwork = self;
-        
-        // bypass duplicate detection for POST and PUT
-        if ([action.method isEqualToString:@"POST"] || [action.method isEqualToString:@"PUT"]) {
+    if (!action)
+        return;
+    
+    if (self.queue.isSuspended) {
+        NSLog(@"network queue is suspended when trying to add action %@, instance URL is %@", action.verb, self.account.credentials.instanceUrl);
+    }
+    
+    // Need to assign our network queue to the action so that the equality test
+    // performed in duplicateActionInFlight: will match.
+    action.enqueuedNetwork = self;
+    
+    // bypass duplicate detection for POST and PUT
+    if ([action.method isEqualToString:@"POST"] || [action.method isEqualToString:@"PUT"]) {
+        [self.queue addOperation:action];
+    }
+    else {
+        dispatch_async(self.duplicateActionDetectionQueue, ^{
+            CSFAction *duplicateAction = [self duplicateActionInFlight:action];
+            if (duplicateAction) {
+                action.duplicateParentAction = duplicateAction;
+                [action addDependency:duplicateAction];
+            }
             [self.queue addOperation:action];
-        }
-        else {
-            dispatch_async(self.duplicateActionDetectionQueue, ^{
-                CSFAction *duplicateAction = [self duplicateActionInFlight:action];
-                if (duplicateAction) {
-                    action.duplicateParentAction = duplicateAction;
-                    [action addDependency:duplicateAction];
-                }
-                [self.queue addOperation:action];
-            });
-        }
+        });
     }
 }
 
