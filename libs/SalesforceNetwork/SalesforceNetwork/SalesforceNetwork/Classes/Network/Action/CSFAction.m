@@ -317,7 +317,6 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
     __weak CSFAction *weakSelf = self;
     [self.authRefreshInstance refreshAuthWithCompletionBlock:^(CSFOutput *output, NSError *error) {
         __strong CSFAction *strongSelf = weakSelf;
-        strongSelf.enqueuedNetwork.networkSuspended = NO;
         if (error) {
             [strongSelf completeOperationWithError:error];
         } else {
