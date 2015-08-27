@@ -48,12 +48,12 @@ static NSObject *AuthRefreshLock = nil;
 
 - (void)finishWithOutput:(CSFOutput *)refreshOutput error:(NSError *)error {
     @synchronized (AuthRefreshLock) {
+        RefreshingClasses[(id<NSCopying>)[self class]] = @NO;
         NSMutableArray *classCompletionBlocks = CompletionBlocks[[self class]];
         for (CSFAuthRefreshCompletionBlock completionBlock in classCompletionBlocks) {
             completionBlock(refreshOutput, error);
         }
         [classCompletionBlocks removeAllObjects];
-        RefreshingClasses[(id<NSCopying>)[self class]] = @NO;
     }
 }
 
@@ -62,7 +62,6 @@ static NSObject *AuthRefreshLock = nil;
         if (CompletionBlocks[[self class]] == nil) {
             CompletionBlocks[(id<NSCopying>)[self class]] = [[NSMutableArray alloc] init];
         }
-        
         NSMutableArray *classCompletionBlocks = CompletionBlocks[[self class]];
         [classCompletionBlocks addObject:[completionBlock copy]];
         if (classCompletionBlocks.count == 1) {
