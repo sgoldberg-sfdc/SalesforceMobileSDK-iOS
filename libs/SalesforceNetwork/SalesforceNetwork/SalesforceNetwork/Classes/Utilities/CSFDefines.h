@@ -131,4 +131,3 @@ typedef enum : NSUInteger {
 } CSFParameterStyle;
 
 CSF_EXTERN NSString * const CSFNetworkInitializedNotification;
-CSF_EXTERN NSString * const CSFNetworkTokenRevokedNotification;
