@@ -26,4 +26,3 @@
 
 NSString * const CSFValidationErrorDomain = @"CSFValidationErrorDomain";
 NSString * const CSFNetworkInitializedNotification = @"CSFNetworkInitializedNotification";
-NSString * const CSFNetworkTokenRevokedNotification = @"CSFNetworkTokenRevokedNotification";

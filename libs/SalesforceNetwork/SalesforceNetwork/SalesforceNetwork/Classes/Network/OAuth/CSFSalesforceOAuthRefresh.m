@@ -74,7 +74,7 @@
     if ([error.domain isEqualToString:kSFOAuthErrorDomain] && error.code == kSFOAuthErrorInvalidGrant) {
         NSLog(@"[%@ %@] INFO: invalid grant error received, triggering logout.", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
         dispatch_async(dispatch_get_main_queue(), ^{
-            [[NSNotificationCenter defaultCenter] postNotificationName:CSFNetworkTokenRevokedNotification object:nil userInfo:nil];
+            [[SFAuthenticationManager sharedManager] logoutUser:self.network.account];
         });
     }
     
