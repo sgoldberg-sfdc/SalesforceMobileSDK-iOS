@@ -59,6 +59,7 @@ NSString *CSFNetworkInstanceKey(SFUserAccount *user) {
 @property (nonatomic, strong) dispatch_queue_t actionQueue;
 @property (nonatomic, readwrite, getter = isOnline) BOOL online;
 
+@property (nonatomic, strong) dispatch_queue_t duplicateActionDetectionQueue; //The queue used to check for duplicate actions
 @end
 
 
@@ -114,6 +115,9 @@ static NSMutableDictionary *SharedInstances = nil;
 - (id)init {
     self = [super init];
     if (self) {
+        NSString *queueName = [NSString stringWithFormat:@"CSFNetworkDuplicateActionDetectionQueue[%p]", self];
+        self.duplicateActionDetectionQueue = dispatch_queue_create([queueName UTF8String], DISPATCH_QUEUE_SERIAL);
+        
         self.queue = [NSOperationQueue new];
         [self.queue addObserver:self forKeyPath:@"operationCount" options:NSKeyValueObservingOptionNew context:kObservingKey];
         _online = YES;
@@ -188,15 +192,11 @@ static NSMutableDictionary *SharedInstances = nil;
 - (CSFAction*)duplicateActionInFlight:(CSFAction*)action {
     CSFAction *result = nil;
     
-    for (CSFAction *operation in self.queue.operations) {
+    for (CSFAction *operation in self.queue.operations.reverseObjectEnumerator) {
         if (![operation isKindOfClass:[CSFAction class]])
             continue;
-        if ([action.method isEqualToString:@"POST"] || [action.method isEqualToString:@"PUT"]) {
-            // bypass duplicate detection for POST and PUT
-            continue;
-        }
         if (operation.isFinished || operation.isCancelled) {
-            // ignore finshed and cancelled ones
+            // ignore finshed, cancelled ones
             continue;
         }
         if ([operation isEqualToAction:action]) {
@@ -213,25 +213,30 @@ static NSMutableDictionary *SharedInstances = nil;
  @param action The action to execute
  */
 - (void)executeAction:(CSFAction *)action {
-    @synchronized(self) {
-        if (!action)
-            return;
-        
-        if (self.queue.isSuspended) {
-            NSLog(@"network queue is suspended when trying to add action %@, instance URL is %@", action.verb, self.account.credentials.instanceUrl);
-        }
-        
-        // Need to assign our network queue to the action so that the equality test
-        // performed in duplicateActionInFlight: will match.
-        action.enqueuedNetwork = self;
-        
-        CSFAction *duplicateAction = [self duplicateActionInFlight:action];
-        if (duplicateAction) {
-            action.duplicateParentAction = duplicateAction;
-            [action addDependency:duplicateAction];
-        }
-        
+    if (!action)
+        return;
+    
+    if (self.queue.isSuspended) {
+        NSLog(@"network queue is suspended when trying to add action %@, instance URL is %@", action.verb, self.account.credentials.instanceUrl);
+    }
+    
+    // Need to assign our network queue to the action so that the equality test
+    // performed in duplicateActionInFlight: will match.
+    action.enqueuedNetwork = self;
+    
+    // bypass duplicate detection for POST and PUT
+    if ([action.method isEqualToString:@"POST"] || [action.method isEqualToString:@"PUT"]) {
         [self.queue addOperation:action];
+    }
+    else {
+        dispatch_async(self.duplicateActionDetectionQueue, ^{
+            CSFAction *duplicateAction = [self duplicateActionInFlight:action];
+            if (duplicateAction) {
+                action.duplicateParentAction = duplicateAction;
+                [action addDependency:duplicateAction];
+            }
+            [self.queue addOperation:action];
+        });
     }
 }
 

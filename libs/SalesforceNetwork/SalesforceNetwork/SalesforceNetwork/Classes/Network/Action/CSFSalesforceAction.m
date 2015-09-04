@@ -32,6 +32,9 @@ NSString * const CSFAuthorizationHeaderName = @"Authorization";
 NSString * const CSFSalesforceActionDefaultPathPrefix = @"/services/data";
 NSString * const CSFSalesforceDefaultAPIVersion = @"v33.0";
 
+static NSString * const kNetworkAccessTokenPath   = @"account.credentials.accessToken";
+static NSString * const kNetworkInstanceURLPath   = @"account.credentials.instanceUrl";
+static NSString * const kNetworkCommunityIDPath   = @"account.communityId";
 static void * kObservingKey = &kObservingKey;
 
 @implementation CSFSalesforceAction
@@ -54,9 +57,9 @@ static void * kObservingKey = &kObservingKey;
 
 - (void)dealloc {
     CSFNetwork *network = self.enqueuedNetwork;
-    [network removeObserver:self forKeyPath:@"account.credentials.accessToken" context:kObservingKey];
-    [network removeObserver:self forKeyPath:@"account.credentials.instanceUrl" context:kObservingKey];
-    [network removeObserver:self forKeyPath:@"account.communityId" context:kObservingKey];
+    [network removeObserver:self forKeyPath:kNetworkAccessTokenPath context:kObservingKey];
+    [network removeObserver:self forKeyPath:kNetworkInstanceURLPath context:kObservingKey];
+    [network removeObserver:self forKeyPath:kNetworkCommunityIDPath context:kObservingKey];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -68,21 +71,21 @@ static void * kObservingKey = &kObservingKey;
     if (_enqueuedNetwork != enqueuedNetwork) {
         // remove observer from old network.
         if (_enqueuedNetwork) {
-            [_enqueuedNetwork removeObserver:self forKeyPath:@"account.credentials.accessToken" context:kObservingKey];
-            [_enqueuedNetwork removeObserver:self forKeyPath:@"account.credentials.instanceUrl" context:kObservingKey];
-            [_enqueuedNetwork removeObserver:self forKeyPath:@"account.communityId" context:kObservingKey];
+            [_enqueuedNetwork removeObserver:self forKeyPath:kNetworkAccessTokenPath context:kObservingKey];
+            [_enqueuedNetwork removeObserver:self forKeyPath:kNetworkInstanceURLPath context:kObservingKey];
+            [_enqueuedNetwork removeObserver:self forKeyPath:kNetworkCommunityIDPath context:kObservingKey];
         }
         // add observers to the new network.
         if (enqueuedNetwork) {
-            [enqueuedNetwork addObserver:self forKeyPath:@"account.credentials.accessToken"
+            [enqueuedNetwork addObserver:self forKeyPath:kNetworkAccessTokenPath
                                  options:(NSKeyValueObservingOptionInitial |
                                           NSKeyValueObservingOptionNew)
                                  context:kObservingKey];
-            [enqueuedNetwork addObserver:self forKeyPath:@"account.credentials.instanceUrl"
+            [enqueuedNetwork addObserver:self forKeyPath:kNetworkInstanceURLPath
                                  options:(NSKeyValueObservingOptionInitial |
                                           NSKeyValueObservingOptionNew)
                                  context:kObservingKey];
-            [enqueuedNetwork addObserver:self forKeyPath:@"account.communityId"
+            [enqueuedNetwork addObserver:self forKeyPath:kNetworkCommunityIDPath
                                  options:(NSKeyValueObservingOptionInitial |
                                           NSKeyValueObservingOptionNew)
                                  context:kObservingKey];
@@ -232,10 +235,9 @@ static void * kObservingKey = &kObservingKey;
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     if (context == kObservingKey) {
-        [self willChangeValueForKey:@"ready"];
-        [self didChangeValueForKey:@"ready"];
+        [self willChangeValueForKey:@"isReady"];
         if ([self requiresAuthentication] && (self.enqueuedNetwork.account == object)) {
-            if ([keyPath isEqualToString:@"communityId"]) {
+            if ([keyPath isEqualToString:kNetworkCommunityIDPath]) {
                 self.enqueuedNetwork.defaultConnectCommunityId = self.enqueuedNetwork.account.communityId;
             } else if (self.enqueuedNetwork.account.credentials.accessToken
                        && self.enqueuedNetwork.account.credentials.instanceUrl) {
@@ -246,6 +248,8 @@ static void * kObservingKey = &kObservingKey;
                 self.credentialsReady = NO;
             }
         }
+        // notify change on isReady after we have updated credentialsReady flag
+        [self didChangeValueForKey:@"isReady"];
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }

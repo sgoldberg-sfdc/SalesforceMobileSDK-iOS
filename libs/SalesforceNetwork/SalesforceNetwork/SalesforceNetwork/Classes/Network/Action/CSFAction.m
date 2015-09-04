@@ -312,6 +312,19 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
     return @"";
 }
 
+- (void)triggerActionAfterTokenRefresh {
+    self.authRefreshInstance = [(CSFAuthRefresh *)[self.authRefreshClass alloc] initWithNetwork:self.enqueuedNetwork];
+    __weak CSFAction *weakSelf = self;
+    [self.authRefreshInstance refreshAuthWithCompletionBlock:^(CSFOutput *output, NSError *error) {
+        __strong CSFAction *strongSelf = weakSelf;
+        if (error) {
+            [strongSelf completeOperationWithError:error];
+        } else {
+            [strongSelf start];
+        }
+    }];
+}
+
 #pragma mark Implementation override methods
 
 - (NSURLSessionTask*)sessionTaskToProcessRequest:(NSURLRequest*)request session:(NSURLSession*)session {
@@ -389,6 +402,18 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
         return;
     }
     
+    if (self.requiresAuthentication) {
+        BOOL isTokenBeingRefreshed = NO;
+        if ([self.authRefreshClass isSubclassOfClass:[CSFAuthRefresh class]]) {
+            isTokenBeingRefreshed = [self.authRefreshClass isRefreshing];
+        }
+        
+        if (isTokenBeingRefreshed) {
+            [self triggerActionAfterTokenRefresh];
+            return;
+        }
+    }
+    
     // Create NSURLRequest from the Action
     NSError *error =  nil;
     NSURLRequest *request = [self createURLRequest:&error];
@@ -426,11 +451,11 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
 - (BOOL)isReady {
     BOOL result = [super isReady];
     
-    if (!self.credentialsReady) {
-        result = NO;
-    } else {
-        if ([self.authRefreshClass isSubclassOfClass:[CSFAuthRefresh class]]) {
-            result = ![self.authRefreshClass isRefreshing];
+    if (result) {
+        // we do the following additional checking
+        // only if [super isReady] returns true
+        if (!self.credentialsReady) {
+            result = NO;
         }
     }
     
@@ -674,16 +699,7 @@ NSTimeInterval const CSFActionDefaultTimeOut = 3 * 60; // 3 minutes
             NSLog(@"[%@ %@] WARNING: authRefreshClass property not set.  Cannot refresh credentials", NSStringFromClass([self class]), NSStringFromSelector(_cmd));
             refreshLaunched = NO;
         } else {
-            self.authRefreshInstance = [(CSFAuthRefresh *)[self.authRefreshClass alloc] initWithNetwork:self.enqueuedNetwork];
-            __weak CSFAction *weakSelf = self;
-            [self.authRefreshInstance refreshAuthWithCompletionBlock:^(CSFOutput *output, NSError *error) {
-                __strong CSFAction *strongSelf = weakSelf;
-                if (error) {
-                    [strongSelf completeOperationWithError:error];
-                } else {
-                    [strongSelf start];
-                }
-            }];
+            [self triggerActionAfterTokenRefresh];
         }
     } else {
         NSLog(@"[%@ %@] WARNING: Unauthorized response, but requiresAuthentication not set.  Cannot replay original request.",
