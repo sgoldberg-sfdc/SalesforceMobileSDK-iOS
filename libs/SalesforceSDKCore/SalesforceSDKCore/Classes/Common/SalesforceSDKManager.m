@@ -547,10 +547,12 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
 {
     if ([SFManagedPreferences sharedPreferences].clearClipboardOnBackground) {
         [self log:SFLogLevelInfo format:@"%@: Clearing clipboard on app background.", NSStringFromSelector(_cmd)];
+#if !TARGET_OS_TV
         [UIPasteboard generalPasteboard].strings = @[ ];
         [UIPasteboard generalPasteboard].URLs = @[ ];
         [UIPasteboard generalPasteboard].images = @[ ];
         [UIPasteboard generalPasteboard].colors = @[ ];
+#endif
     }
 }
 

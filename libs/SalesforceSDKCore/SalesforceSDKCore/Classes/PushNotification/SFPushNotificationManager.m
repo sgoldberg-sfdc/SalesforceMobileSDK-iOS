@@ -39,7 +39,9 @@ static NSString* const kSFPushNotificationEndPoint = @"services/data/v33.0/sobje
 //
 // < iOS 8 notification types
 //
+#if !TARGET_OS_TV
 static UIRemoteNotificationType const kiOS7RemoteNotificationTypes = UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert;
+#endif
 
 //
 // >= iOS 8 notification types have to be NSUInteger, for backward compatibility with < iOS 8 build environments.
@@ -126,7 +128,9 @@ static NSUInteger const kiOS8UserNotificationTypes = ((1 << 0) | (1 << 1) | (1 <
     if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
         [self registerNotificationsForiOS8];
     } else {
+#if !TARGET_OS_TV
         [[UIApplication sharedApplication] registerForRemoteNotificationTypes:kiOS7RemoteNotificationTypes];
+#endif
     }
 }
 

@@ -76,7 +76,9 @@ typedef void (^SFOAuthFlowFailureCallbackBlock)(SFOAuthInfo *, NSError *);
  @param manager The instance of SFAuthenticationManager making the call.
  @param view The instance of the auth view to be displayed.
  */
+#if !TARGET_OS_TV
 - (void)authManager:(SFAuthenticationManager *)manager willDisplayAuthWebView:(UIWebView *)view;
+#endif
 
 /**
  Called before the auth manager will perform an authentication, this includes token refresh.
@@ -195,7 +197,9 @@ extern NSString * const kSFAuthenticationManagerFinishedNotification;
 /**
  Alert view for displaying auth-related status messages.
  */
+#if !TARGET_OS_TV
 @property (nonatomic, strong) UIAlertView *statusAlert;
+#endif
 
 /**
  The view controller used to present the authentication dialog.

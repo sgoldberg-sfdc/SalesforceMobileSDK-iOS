@@ -55,6 +55,15 @@
 		CFA9ADD813AA86DA0024260E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFA9ADD713AA86DA0024260E /* Foundation.framework */; };
 		CFCB5FA413B73F1C00F90FEB /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFCB5FA313B73F1C00F90FEB /* Security.framework */; };
 		CFCB5FA513B7458000F90FEB /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFCB5FA313B73F1C00F90FEB /* Security.framework */; };
+		FDC826F81BD1FE800018C257 /* SalesforceOAuth.h in Headers */ = {isa = PBXBuildFile; fileRef = FDC826F71BD1FE800018C257 /* SalesforceOAuth.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FDC826FF1BD1FF0D0018C257 /* SFOAuthCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = 6FFCCF8F13BD7C0100F4B22B /* SFOAuthCoordinator.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FDC827001BD1FF140018C257 /* SFOAuthCredentials.h in Headers */ = {isa = PBXBuildFile; fileRef = CF19784513B510EC00AFCA56 /* SFOAuthCredentials.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FDC827011BD1FF410018C257 /* SFOAuthInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 82B0FC1315F5AE420054B066 /* SFOAuthInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FDC827211BD208C20018C257 /* SFOAuthCoordinator.m in Sources */ = {isa = PBXBuildFile; fileRef = 6FFCCF9013BD7C0100F4B22B /* SFOAuthCoordinator.m */; };
+		FDC827A11BD218C90018C257 /* SFOAuthInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 82B0FC1415F5AE420054B066 /* SFOAuthInfo.m */; };
+		FDC827A21BD218D00018C257 /* SFOAuthOrgAuthConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 8201F1AB1A310AED00C6696A /* SFOAuthOrgAuthConfiguration.m */; };
+		FDC827A31BD218DF0018C257 /* SFOAuthCredentials.m in Sources */ = {isa = PBXBuildFile; fileRef = CF19784613B510EC00AFCA56 /* SFOAuthCredentials.m */; };
+		FDC827A41BD218DF0018C257 /* SFOAuthCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = BEEA6CF014C4E61A00487C9D /* SFOAuthCrypto.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +132,9 @@
 		CFA9ADD413AA86DA0024260E /* libSalesforceOAuth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSalesforceOAuth.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFA9ADD713AA86DA0024260E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		CFCB5FA313B73F1C00F90FEB /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		FDC826F51BD1FE800018C257 /* SalesforceOAuth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceOAuth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FDC826F71BD1FE800018C257 /* SalesforceOAuth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SalesforceOAuth.h; sourceTree = "<group>"; };
+		FDC826F91BD1FE800018C257 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,6 +169,13 @@
 			files = (
 				CFCB5FA413B73F1C00F90FEB /* Security.framework in Frameworks */,
 				CFA9ADD813AA86DA0024260E /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FDC826F11BD1FE800018C257 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,6 +275,7 @@
 				CFA9ADD913AA86DA0024260E /* SalesforceOAuth */,
 				CF7F346713B52B4E001AB761 /* SalesforceOAuthTest */,
 				829A08731A3235DE00DC17A5 /* SalesforceOAuthUnitTests */,
+				FDC826F61BD1FE800018C257 /* SalesforceOAuthtvOS */,
 				CFA9ADD613AA86DA0024260E /* Frameworks */,
 				CFA9ADD513AA86DA0024260E /* Products */,
 			);
@@ -267,6 +287,7 @@
 				CFA9ADD413AA86DA0024260E /* libSalesforceOAuth.a */,
 				CF7F346213B52B4E001AB761 /* SalesforceOAuthTest.app */,
 				829A08721A3235DE00DC17A5 /* SalesforceOAuthUnitTests.xctest */,
+				FDC826F51BD1FE800018C257 /* SalesforceOAuth.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -313,6 +334,15 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		FDC826F61BD1FE800018C257 /* SalesforceOAuthtvOS */ = {
+			isa = PBXGroup;
+			children = (
+				FDC826F71BD1FE800018C257 /* SalesforceOAuth.h */,
+				FDC826F91BD1FE800018C257 /* Info.plist */,
+			);
+			path = SalesforceOAuthtvOS;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -327,6 +357,17 @@
 				82C2B71117BBF2EB0023218F /* SFOAuthCredentials+Internal.h in Headers */,
 				82C2B71217BBF2EB0023218F /* SFOAuthCrypto.h in Headers */,
 				8201F1AC1A310AED00C6696A /* SFOAuthOrgAuthConfiguration.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FDC826F21BD1FE800018C257 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FDC827001BD1FF140018C257 /* SFOAuthCredentials.h in Headers */,
+				FDC827011BD1FF410018C257 /* SFOAuthInfo.h in Headers */,
+				FDC826FF1BD1FF0D0018C257 /* SFOAuthCoordinator.h in Headers */,
+				FDC826F81BD1FE800018C257 /* SalesforceOAuth.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,6 +429,24 @@
 			productReference = CFA9ADD413AA86DA0024260E /* libSalesforceOAuth.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		FDC826F41BD1FE800018C257 /* SalesforceOAuthtvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FDC826FE1BD1FE800018C257 /* Build configuration list for PBXNativeTarget "SalesforceOAuthtvOS" */;
+			buildPhases = (
+				FDC826F01BD1FE800018C257 /* Sources */,
+				FDC826F11BD1FE800018C257 /* Frameworks */,
+				FDC826F21BD1FE800018C257 /* Headers */,
+				FDC826F31BD1FE800018C257 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SalesforceOAuthtvOS;
+			productName = SalesforceOAuthtvOS;
+			productReference = FDC826F51BD1FE800018C257 /* SalesforceOAuth.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -400,6 +459,9 @@
 					829A08711A3235DE00DC17A5 = {
 						CreatedOnToolsVersion = 6.1;
 						TestTargetID = CF7F346113B52B4E001AB761;
+					};
+					FDC826F41BD1FE800018C257 = {
+						CreatedOnToolsVersion = 7.1;
 					};
 				};
 			};
@@ -419,6 +481,7 @@
 				CF7F346113B52B4E001AB761 /* SalesforceOAuthTest */,
 				2DE48CCF18BFAF08008345C7 /* Documentation */,
 				829A08711A3235DE00DC17A5 /* SalesforceOAuthUnitTests */,
+				FDC826F41BD1FE800018C257 /* SalesforceOAuthtvOS */,
 			);
 		};
 /* End PBXProject section */
@@ -437,6 +500,13 @@
 			files = (
 				CF0886C113C397C30022C321 /* SalesforceOAuthTestViewController.xib in Resources */,
 				82F06EB117B5B05300F287A2 /* Default-568h@2x.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FDC826F31BD1FE800018C257 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -515,6 +585,18 @@
 				6FFCCF9213BD7C0100F4B22B /* SFOAuthCoordinator.m in Sources */,
 				BEEA6CF214C4E61B00487C9D /* SFOAuthCrypto.m in Sources */,
 				82B0FC1615F5AE420054B066 /* SFOAuthInfo.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FDC826F01BD1FE800018C257 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FDC827A41BD218DF0018C257 /* SFOAuthCrypto.m in Sources */,
+				FDC827A21BD218D00018C257 /* SFOAuthOrgAuthConfiguration.m in Sources */,
+				FDC827A11BD218C90018C257 /* SFOAuthInfo.m in Sources */,
+				FDC827211BD208C20018C257 /* SFOAuthCoordinator.m in Sources */,
+				FDC827A31BD218DF0018C257 /* SFOAuthCredentials.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -920,6 +1002,212 @@
 			};
 			name = Release;
 		};
+		FDC826FA1BD1FE800018C257 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_VERSION = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = SalesforceOAuthtvOS/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRIVATE_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/PrivateHeaders";
+				PRODUCT_BUNDLE_IDENTIFIER = com.salesforce.SalesforceOAuthtvOS;
+				PRODUCT_NAME = SalesforceOAuth;
+				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		FDC826FB1BD1FE800018C257 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_VERSION = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = SalesforceOAuthtvOS/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/PrivateHeaders";
+				PRODUCT_BUNDLE_IDENTIFIER = com.salesforce.SalesforceOAuthtvOS;
+				PRODUCT_NAME = SalesforceOAuth;
+				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		FDC826FC1BD1FE800018C257 /* Enterprise-Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_VERSION = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = SalesforceOAuthtvOS/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/PrivateHeaders";
+				PRODUCT_BUNDLE_IDENTIFIER = com.salesforce.SalesforceOAuthtvOS;
+				PRODUCT_NAME = SalesforceOAuth;
+				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = "Enterprise-Release";
+		};
+		FDC826FD1BD1FE800018C257 /* Enterprise-Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_VERSION = "";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = SalesforceOAuthtvOS/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MTL_ENABLE_DEBUG_INFO = NO;
+				PRIVATE_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/PrivateHeaders";
+				PRODUCT_BUNDLE_IDENTIFIER = com.salesforce.SalesforceOAuthtvOS;
+				PRODUCT_NAME = SalesforceOAuth;
+				PUBLIC_HEADERS_FOLDER_PATH = "$(CONTENTS_FOLDER_PATH)/Headers";
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "appletvsimulator appletvos";
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = "Enterprise-Debug";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -978,6 +1266,16 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		FDC826FE1BD1FE800018C257 /* Build configuration list for PBXNativeTarget "SalesforceOAuthtvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FDC826FA1BD1FE800018C257 /* Debug */,
+				FDC826FB1BD1FE800018C257 /* Release */,
+				FDC826FC1BD1FE800018C257 /* Enterprise-Release */,
+				FDC826FD1BD1FE800018C257 /* Enterprise-Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

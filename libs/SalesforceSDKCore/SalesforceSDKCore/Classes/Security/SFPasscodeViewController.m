@@ -277,6 +277,7 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
 
 - (void)forgotPassAction
 {
+#if !TARGET_OS_TV
     UIAlertView *logoutAlert = [[UIAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:@"forgotPasscodeTitle"]
                                                           message:[SFSDKResourceUtils localizedString:@"logoutAlertViewTitle"]
                                                          delegate:self
@@ -285,8 +286,10 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
     logoutAlert.tag = kPasscodeDialogTag;
     [self log:SFLogLevelDebug msg:@"SFPasscodeViewController forgotPassAction"];
     [logoutAlert show];
+#endif
 }
 
+#if !TARGET_OS_TV
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (alertView.tag == kPasscodeDialogTag) {
@@ -298,6 +301,7 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
         }
     }
 }
+#endif
 
 - (void)viewWillLayoutSubviews
 {

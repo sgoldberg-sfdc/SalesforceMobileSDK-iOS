@@ -190,7 +190,9 @@ static NSString * const kAlertBrowserFlowMessageKey = @"authAlertBrowserFlowMess
  Method to present the authorizing view controller with the given auth webView.
  @param webView The auth webView to present.
  */
+#if !TARGET_OS_TV
 - (void)presentAuthViewController:(UIWebView *)webView;
+#endif
 
 /**
  Dismisses the auth view controller, resetting the UI state back to its original
@@ -278,7 +280,9 @@ static NSString * const kAlertBrowserFlowMessageKey = @"authAlertBrowserFlowMess
 @implementation SFAuthenticationManager
 
 @synthesize authViewController = _authViewController;
+#if !TARGET_OS_TV
 @synthesize statusAlert = _statusAlert;
+#endif
 @synthesize authInfo = _authInfo;
 @synthesize authError = _authError;
 @synthesize authBlockList = _authBlockList;
@@ -322,6 +326,17 @@ static Class InstanceClass = nil;
         
         // Default auth web view handler
         __weak SFAuthenticationManager *weakSelf = self;
+#if TARGET_OS_TV
+        self.authViewHandler = [[SFAuthenticationViewHandler alloc]
+                                initWithDisplayBlock:^(SFAuthenticationManager *authManager, UIView *authWebView) {
+                                    if (weakSelf.authViewController == nil)
+                                        weakSelf.authViewController = [[SFAuthorizingViewController alloc] initWithNibName:nil bundle:nil];
+                                    [weakSelf.authViewController setOauthView:authWebView];
+                                    [[SFRootViewManager sharedManager] pushViewController:weakSelf.authViewController];
+                                } dismissBlock:^(SFAuthenticationManager *authViewManager) {
+                                    [weakSelf dismissAuthViewControllerIfPresent];
+                                }];
+#else
         self.authViewHandler = [[SFAuthenticationViewHandler alloc]
                                 initWithDisplayBlock:^(SFAuthenticationManager *authManager, UIWebView *authWebView) {
                                     if (weakSelf.authViewController == nil)
@@ -331,6 +346,8 @@ static Class InstanceClass = nil;
                                 } dismissBlock:^(SFAuthenticationManager *authViewManager) {
                                     [weakSelf dismissAuthViewControllerIfPresent];
                                 }];
+#endif
+        
         
         [[SFUserAccountManager sharedInstance] addDelegate:self];
         
@@ -353,7 +370,9 @@ static Class InstanceClass = nil;
 {
     [SFSecurityLockout removeDelegate:self];
     [self cleanupStatusAlert];
+#if !TARGET_OS_TV
     SFRelease(_statusAlert);
+#endif
     SFRelease(_authViewController);
     SFRelease(_authInfo);
     SFRelease(_authError);
@@ -850,11 +869,14 @@ static Class InstanceClass = nil;
 
 - (void)cleanupStatusAlert
 {
+#if !TARGET_OS_TV
     [_statusAlert dismissWithClickedButtonIndex:-666 animated:NO];
     [_statusAlert setDelegate:nil];
     SFRelease(_statusAlert);
+#endif
 }
 
+#if !TARGET_OS_TV
 - (void)presentAuthViewController:(UIWebView *)webView
 {
     if (![NSThread isMainThread]) {
@@ -869,6 +891,7 @@ static Class InstanceClass = nil;
     [self.authViewController setOauthView:webView];
     [[SFRootViewManager sharedManager] pushViewController:self.authViewController];
 }
+#endif
 
 - (void)dismissAuthViewControllerIfPresent
 {
@@ -908,6 +931,7 @@ static Class InstanceClass = nil;
 
 - (void)showRetryAlertForAuthError:(NSError *)error alertTag:(NSInteger)tag
 {
+#if !TARGET_OS_TV
     if (nil == _statusAlert) {
         // show alert and allow retry
         [self log:SFLogLevelError format:@"Error during authentication: %@", error];
@@ -919,10 +943,12 @@ static Class InstanceClass = nil;
         _statusAlert.tag = tag;
         [_statusAlert show];
     }
+#endif
 }
 
 - (void)showAlertForConnectedAppVersionMismatchError
 {
+#if !TARGET_OS_TV
     if (nil == _statusAlert) {
         // Show alert and execute failure block.
         _statusAlert = [[UIAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:kAlertErrorTitleKey]
@@ -933,6 +959,7 @@ static Class InstanceClass = nil;
         _statusAlert.tag = kConnectedAppVersionMismatchViewTag;
         [_statusAlert show];
     }
+#endif
 }
 
 #pragma mark - Auth error handler methods
@@ -1090,6 +1117,7 @@ static Class InstanceClass = nil;
 
 #pragma mark - SFOAuthCoordinatorDelegate
 
+#if !TARGET_OS_TV
 - (void)oauthCoordinator:(SFOAuthCoordinator *)coordinator willBeginAuthenticationWithView:(UIWebView *)view
 {
     [self log:SFLogLevelDebug msg:@"oauthCoordinator:willBeginAuthenticationWithView:"];
@@ -1140,6 +1168,7 @@ static Class InstanceClass = nil;
         self.authViewHandler.authViewDisplayBlock(self, view);
     }
 }
+#endif
 
 - (void)oauthCoordinatorWillBeginAuthentication:(SFOAuthCoordinator *)coordinator authInfo:(SFOAuthInfo *)info {
     [self enumerateDelegates:^(id<SFAuthenticationManagerDelegate> delegate) {
@@ -1198,6 +1227,7 @@ static Class InstanceClass = nil;
     self.authCoordinatorBrowserBlock = callbackBlock;
     NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:(id)kCFBundleNameKey];
     NSString *alertMessage = [NSString stringWithFormat:[SFSDKResourceUtils localizedString:kAlertBrowserFlowMessageKey], coordinator.credentials.domain, appName];
+#if !TARGET_OS_TV
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:kAlertBrowserFlowTitleKey]
                                                         message:alertMessage
                                                        delegate:self
@@ -1205,6 +1235,7 @@ static Class InstanceClass = nil;
                                               otherButtonTitles:[SFSDKResourceUtils localizedString:kAlertContinueButtonKey], nil];
     alertView.tag = kAdvancedAuthDialogTag;
     [alertView show];
+#endif
 }
 
 - (void)oauthCoordinatorDidCancelBrowserFlow:(SFOAuthCoordinator *)coordinator {
@@ -1261,6 +1292,7 @@ static Class InstanceClass = nil;
 
 #pragma mark - UIAlertViewDelegate
 
+#if !TARGET_OS_TV
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     if (alertView == _statusAlert) {
@@ -1290,5 +1322,6 @@ static Class InstanceClass = nil;
         }
     }
 }
+#endif
 
 @end

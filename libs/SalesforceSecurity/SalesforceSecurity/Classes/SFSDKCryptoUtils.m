@@ -26,6 +26,7 @@
 #import "SFPBKDFData.h"
 #import <SalesforceCommonUtils/NSData+SFAdditions.h>
 #import <Security/Security.h>
+#import <CommonCrypto/CommonCrypto.h>
 
 // Public constants
 NSUInteger const kSFPBKDFDefaultNumberOfDerivationRounds = 4000;

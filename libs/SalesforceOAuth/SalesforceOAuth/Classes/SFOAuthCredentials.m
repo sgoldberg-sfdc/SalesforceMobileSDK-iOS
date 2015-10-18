@@ -24,10 +24,7 @@
 
 #import "SFOAuthCredentials+Internal.h"
 #import "SFOAuthCrypto.h"
-#import <SalesforceCommonUtils/SFCrypto.h>
-#import <SalesforceCommonUtils/NSString+SFAdditions.h>
-#import <SalesforceCommonUtils/SFKeychainItemWrapper.h>
-#import <SalesforceCommonUtils/UIDevice+SFHardware.h>
+#import <SalesforceCommonUtils/SalesforceCommonUtils.h>
 #import <SalesforceSecurity/SFSDKCryptoUtils.h>
 #import <SalesforceSecurity/SFKeyStoreManager.h>
 
