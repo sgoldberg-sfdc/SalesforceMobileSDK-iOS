@@ -27,8 +27,14 @@
  WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <SalesforceNetwork/CSFAction+Internal.h>
 #import <SalesforceNetwork/CSFAction.h>
+#import <SalesforceNetwork/CSFNetwork.h>
+#import <SalesforceNetwork/CSFNetworkOutputCache.h>
+#import <SalesforceNetwork/CSFParameterStorage.h>
+#import <SalesforceNetwork/CSFSalesforceAction.h>
+
+#if !TARGET_OS_TV
+#import <SalesforceNetwork/CSFAction+Internal.h>
 #import <SalesforceNetwork/CSFActionInput.h>
 #import <SalesforceNetwork/CSFActionModel.h>
 #import <SalesforceNetwork/CSFActionValue.h>
@@ -40,9 +46,6 @@
 #import <SalesforceNetwork/CSFIndexedEntity.h>
 #import <SalesforceNetwork/CSFInput.h>
 #import <SalesforceNetwork/CSFInternalDefines.h>
-#import <SalesforceNetwork/CSFNetwork.h>
-#import <SalesforceNetwork/CSFNetworkOutputCache.h>
 #import <SalesforceNetwork/CSFOutput.h>
-#import <SalesforceNetwork/CSFParameterStorage.h>
-#import <SalesforceNetwork/CSFSalesforceAction.h>
 #import <SalesforceNetwork/SFUserAccount+SalesforceNetwork.h>
+#endif

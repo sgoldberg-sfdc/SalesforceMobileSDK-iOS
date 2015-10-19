@@ -103,7 +103,8 @@
 		82E8022F1A8FF22900648529 /* CSFAuthRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E8022D1A8FF22900648529 /* CSFAuthRefresh.m */; };
 		CE60FE3C1B4E3A6600D80A1A /* CSFGuestAction.h in Headers */ = {isa = PBXBuildFile; fileRef = CE60FE3B1B4E3A6600D80A1A /* CSFGuestAction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		CE60FE3E1B4E3AE900D80A1A /* CSFGuestAction.m in Sources */ = {isa = PBXBuildFile; fileRef = CE60FE3D1B4E3AE900D80A1A /* CSFGuestAction.m */; };
-		FDC826B11BD1F5300018C257 /* SalesforceNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = FDC826B01BD1F5300018C257 /* SalesforceNetwork.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93F71BD5A7450042ACC8 /* SalesforceNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8D93F61BD5A7450042ACC8 /* SalesforceNetwork.h */; };
+		FD8D93F81BD5A7450042ACC8 /* SalesforceNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8D93F61BD5A7450042ACC8 /* SalesforceNetwork.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDC826B81BD1F6090018C257 /* CSFSalesforceAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 827DD4001A7C006E00519F03 /* CSFSalesforceAction.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDC826B91BD1F60E0018C257 /* CSFSalesforceAction_Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 827DD4021A7C006E00519F03 /* CSFSalesforceAction_Internal.h */; };
 		FDC826BA1BD1F61B0018C257 /* CSFAction.h in Headers */ = {isa = PBXBuildFile; fileRef = 827DD3FE1A7C006E00519F03 /* CSFAction.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -269,8 +270,8 @@
 		82E8022D1A8FF22900648529 /* CSFAuthRefresh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSFAuthRefresh.m; sourceTree = "<group>"; };
 		CE60FE3B1B4E3A6600D80A1A /* CSFGuestAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSFGuestAction.h; sourceTree = "<group>"; };
 		CE60FE3D1B4E3AE900D80A1A /* CSFGuestAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSFGuestAction.m; sourceTree = "<group>"; };
+		FD8D93F61BD5A7450042ACC8 /* SalesforceNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SalesforceNetwork.h; sourceTree = "<group>"; };
 		FDC826AE1BD1F5300018C257 /* SalesforceNetwork.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceNetwork.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FDC826B01BD1F5300018C257 /* SalesforceNetwork.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SalesforceNetwork.h; sourceTree = "<group>"; };
 		FDC826B21BD1F5300018C257 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -604,6 +605,7 @@
 		82DBBAEB1A798B290093A54C = {
 			isa = PBXGroup;
 			children = (
+				FD8D93F61BD5A7450042ACC8 /* SalesforceNetwork.h */,
 				6F644C371A9E70C2009BF92A /* Configuration */,
 				827DD3F11A7BF72E00519F03 /* SalesforceNetwork */,
 				FDC826AF1BD1F5300018C257 /* SalesforceNetworktvOS */,
@@ -625,7 +627,6 @@
 		FDC826AF1BD1F5300018C257 /* SalesforceNetworktvOS */ = {
 			isa = PBXGroup;
 			children = (
-				FDC826B01BD1F5300018C257 /* SalesforceNetwork.h */,
 				FDC826B21BD1F5300018C257 /* Info.plist */,
 			);
 			path = SalesforceNetworktvOS;
@@ -672,6 +673,7 @@
 				82A0C3AD1A990F0000243931 /* NSValueTransformer+SalesforceNetwork.h in Headers */,
 				820053F81ACDBE7200C96578 /* NSDate+ActionValue.h in Headers */,
 				82A0C3D11A99107800243931 /* CSFPNGImageValueTransformer.h in Headers */,
+				FD8D93F71BD5A7450042ACC8 /* SalesforceNetwork.h in Headers */,
 				82A0C3C51A99100A00243931 /* CSFParameterStorage_Internal.h in Headers */,
 				827DD4FD1A7C05BA00519F03 /* CSFIndexedEntity.h in Headers */,
 				827DD5011A7C05C100519F03 /* CSFForceDefines.h in Headers */,
@@ -688,10 +690,10 @@
 			files = (
 				FDE9A6C81BD31005007F434C /* CSFNetworkOutputCache.h in Headers */,
 				FDC826B81BD1F6090018C257 /* CSFSalesforceAction.h in Headers */,
+				FD8D93F81BD5A7450042ACC8 /* SalesforceNetwork.h in Headers */,
 				FDC826BB1BD1F6200018C257 /* CSFDefines.h in Headers */,
 				FDE9A6A21BD30A08007F434C /* CSFNetwork.h in Headers */,
 				FDC826B91BD1F60E0018C257 /* CSFSalesforceAction_Internal.h in Headers */,
-				FDC826B11BD1F5300018C257 /* SalesforceNetwork.h in Headers */,
 				FDC826BA1BD1F61B0018C257 /* CSFAction.h in Headers */,
 				FDE9A6AE1BD30CC0007F434C /* CSFParameterStorage.h in Headers */,
 			);

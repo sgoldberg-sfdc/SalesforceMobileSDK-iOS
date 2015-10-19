@@ -55,7 +55,9 @@
 		CFA9ADD813AA86DA0024260E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFA9ADD713AA86DA0024260E /* Foundation.framework */; };
 		CFCB5FA413B73F1C00F90FEB /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFCB5FA313B73F1C00F90FEB /* Security.framework */; };
 		CFCB5FA513B7458000F90FEB /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CFCB5FA313B73F1C00F90FEB /* Security.framework */; };
-		FDC826F81BD1FE800018C257 /* SalesforceOAuth.h in Headers */ = {isa = PBXBuildFile; fileRef = FDC826F71BD1FE800018C257 /* SalesforceOAuth.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93DC1BD5A1BE0042ACC8 /* SalesforceSecurity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD8D93DB1BD5A1BE0042ACC8 /* SalesforceSecurity.framework */; };
+		FD8D93E41BD5A4670042ACC8 /* SalesforceOAuth.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8D93E31BD5A4670042ACC8 /* SalesforceOAuth.h */; };
+		FD8D93E51BD5A4670042ACC8 /* SalesforceOAuth.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8D93E31BD5A4670042ACC8 /* SalesforceOAuth.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDC826FF1BD1FF0D0018C257 /* SFOAuthCoordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = 6FFCCF8F13BD7C0100F4B22B /* SFOAuthCoordinator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDC827001BD1FF140018C257 /* SFOAuthCredentials.h in Headers */ = {isa = PBXBuildFile; fileRef = CF19784513B510EC00AFCA56 /* SFOAuthCredentials.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDC827011BD1FF410018C257 /* SFOAuthInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 82B0FC1315F5AE420054B066 /* SFOAuthInfo.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -132,8 +134,9 @@
 		CFA9ADD413AA86DA0024260E /* libSalesforceOAuth.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSalesforceOAuth.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFA9ADD713AA86DA0024260E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		CFCB5FA313B73F1C00F90FEB /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		FD8D93DB1BD5A1BE0042ACC8 /* SalesforceSecurity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceSecurity.framework; path = "../SalesforceSecurity/build/Debug-appletvos/SalesforceSecurity.framework"; sourceTree = "<group>"; };
+		FD8D93E31BD5A4670042ACC8 /* SalesforceOAuth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SalesforceOAuth.h; sourceTree = "<group>"; };
 		FDC826F51BD1FE800018C257 /* SalesforceOAuth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceOAuth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FDC826F71BD1FE800018C257 /* SalesforceOAuth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SalesforceOAuth.h; sourceTree = "<group>"; };
 		FDC826F91BD1FE800018C257 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -176,6 +179,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FD8D93DC1BD5A1BE0042ACC8 /* SalesforceSecurity.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,6 +299,7 @@
 		CFA9ADD613AA86DA0024260E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FD8D93DB1BD5A1BE0042ACC8 /* SalesforceSecurity.framework */,
 				8293A8E11A43AFE700ABC43C /* libSalesforceSDKCommon.a */,
 				82E0D87F191AC65100A8FC23 /* libSalesforceSecurity.a */,
 				827C82DD17DD86E10011BBA1 /* libz.dylib */,
@@ -321,6 +326,7 @@
 		CFA9ADDA13AA86DA0024260E /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				FD8D93E31BD5A4670042ACC8 /* SalesforceOAuth.h */,
 				CF19784D13B5114100AFCA56 /* SalesforceOAuth-Prefix.pch */,
 			);
 			name = "Supporting Files";
@@ -337,7 +343,6 @@
 		FDC826F61BD1FE800018C257 /* SalesforceOAuthtvOS */ = {
 			isa = PBXGroup;
 			children = (
-				FDC826F71BD1FE800018C257 /* SalesforceOAuth.h */,
 				FDC826F91BD1FE800018C257 /* Info.plist */,
 			);
 			path = SalesforceOAuthtvOS;
@@ -357,6 +362,7 @@
 				82C2B71117BBF2EB0023218F /* SFOAuthCredentials+Internal.h in Headers */,
 				82C2B71217BBF2EB0023218F /* SFOAuthCrypto.h in Headers */,
 				8201F1AC1A310AED00C6696A /* SFOAuthOrgAuthConfiguration.h in Headers */,
+				FD8D93E41BD5A4670042ACC8 /* SalesforceOAuth.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,7 +373,7 @@
 				FDC827001BD1FF140018C257 /* SFOAuthCredentials.h in Headers */,
 				FDC827011BD1FF410018C257 /* SFOAuthInfo.h in Headers */,
 				FDC826FF1BD1FF0D0018C257 /* SFOAuthCoordinator.h in Headers */,
-				FDC826F81BD1FE800018C257 /* SalesforceOAuth.h in Headers */,
+				FD8D93E51BD5A4670042ACC8 /* SalesforceOAuth.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1039,6 +1045,10 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/Headers",
+					"$(TARGET_BUILD_DIR)/Headers",
+				);
 				INFOPLIST_FILE = SalesforceOAuthtvOS/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1090,6 +1100,10 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/Headers",
+					"$(TARGET_BUILD_DIR)/Headers",
+				);
 				INFOPLIST_FILE = SalesforceOAuthtvOS/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1140,6 +1154,10 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/Headers",
+					"$(TARGET_BUILD_DIR)/Headers",
+				);
 				INFOPLIST_FILE = SalesforceOAuthtvOS/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1190,6 +1208,10 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/Headers",
+					"$(TARGET_BUILD_DIR)/Headers",
+				);
 				INFOPLIST_FILE = SalesforceOAuthtvOS/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -1276,6 +1298,7 @@
 				FDC826FD1BD1FE800018C257 /* Enterprise-Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

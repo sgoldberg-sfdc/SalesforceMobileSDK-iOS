@@ -30,7 +30,8 @@
 		82D53D541A3627EC00E46F8F /* NSData+SFSDKUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 82D53D521A3627EC00E46F8F /* NSData+SFSDKUtils.m */; };
 		82D53D561A363CF100E46F8F /* NSData+SFSDKUtils_Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D53D551A363CF100E46F8F /* NSData+SFSDKUtils_Internal.h */; };
 		82D53D581A363E2100E46F8F /* SDKCommonNSDataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 82D53D571A363E2100E46F8F /* SDKCommonNSDataTests.m */; };
-		FDC827991BD217E50018C257 /* SalesforceSDKCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = FDC827981BD217E50018C257 /* SalesforceSDKCommon.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93DE1BD5A40E0042ACC8 /* SalesforceSDKCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8D93DD1BD5A40E0042ACC8 /* SalesforceSDKCommon.h */; };
+		FD8D93DF1BD5A40E0042ACC8 /* SalesforceSDKCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8D93DD1BD5A40E0042ACC8 /* SalesforceSDKCommon.h */; };
 		FDC8279E1BD218120018C257 /* NSData+SFSDKUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D53D511A3627EC00E46F8F /* NSData+SFSDKUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDC8279F1BD218150018C257 /* NSData+SFSDKUtils_Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D53D551A363CF100E46F8F /* NSData+SFSDKUtils_Internal.h */; };
 		FDC827A01BD218180018C257 /* NSData+SFSDKUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 82D53D521A3627EC00E46F8F /* NSData+SFSDKUtils.m */; };
@@ -74,8 +75,8 @@
 		82D53D521A3627EC00E46F8F /* NSData+SFSDKUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSData+SFSDKUtils.m"; path = "Classes/NSData+SFSDKUtils.m"; sourceTree = "<group>"; };
 		82D53D551A363CF100E46F8F /* NSData+SFSDKUtils_Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSData+SFSDKUtils_Internal.h"; path = "Classes/NSData+SFSDKUtils_Internal.h"; sourceTree = "<group>"; };
 		82D53D571A363E2100E46F8F /* SDKCommonNSDataTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDKCommonNSDataTests.m; sourceTree = "<group>"; };
+		FD8D93DD1BD5A40E0042ACC8 /* SalesforceSDKCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SalesforceSDKCommon.h; sourceTree = "<group>"; };
 		FDC827961BD217E50018C257 /* SalesforceSDKCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceSDKCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FDC827981BD217E50018C257 /* SalesforceSDKCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SalesforceSDKCommon.h; sourceTree = "<group>"; };
 		FDC8279A1BD217E50018C257 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -149,6 +150,7 @@
 		82D53D331A3618CD00E46F8F /* SalesforceSDKCommon */ = {
 			isa = PBXGroup;
 			children = (
+				FD8D93DD1BD5A40E0042ACC8 /* SalesforceSDKCommon.h */,
 				82D53D4B1A36198900E46F8F /* Classes */,
 			);
 			path = SalesforceSDKCommon;
@@ -187,7 +189,6 @@
 		FDC827971BD217E50018C257 /* SalesforceSDKCommontvOS */ = {
 			isa = PBXGroup;
 			children = (
-				FDC827981BD217E50018C257 /* SalesforceSDKCommon.h */,
 				FDC8279A1BD217E50018C257 /* Info.plist */,
 			);
 			path = SalesforceSDKCommontvOS;
@@ -203,6 +204,7 @@
 				82BB4F011A70637B001DAF88 /* SFSDKReachability.h in Headers */,
 				8293A8DF1A43AAC600ABC43C /* SFSDKAsyncProcessListener.h in Headers */,
 				82D53D561A363CF100E46F8F /* NSData+SFSDKUtils_Internal.h in Headers */,
+				FD8D93DE1BD5A40E0042ACC8 /* SalesforceSDKCommon.h in Headers */,
 				82D53D531A3627EC00E46F8F /* NSData+SFSDKUtils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -211,8 +213,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FD8D93DF1BD5A40E0042ACC8 /* SalesforceSDKCommon.h in Headers */,
 				FDC8279F1BD218150018C257 /* NSData+SFSDKUtils_Internal.h in Headers */,
-				FDC827991BD217E50018C257 /* SalesforceSDKCommon.h in Headers */,
 				FDC8279E1BD218120018C257 /* NSData+SFSDKUtils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -662,6 +664,7 @@
 				FDC8279C1BD217E50018C257 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

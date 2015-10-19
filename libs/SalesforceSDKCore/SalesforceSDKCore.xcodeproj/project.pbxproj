@@ -166,6 +166,18 @@
 		FD8BB16F18B6730B00F6927C /* SFPreferences.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8BB16D18B6730B00F6927C /* SFPreferences.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FD8BB17018B6730B00F6927C /* SFPreferences.m in Sources */ = {isa = PBXBuildFile; fileRef = FD8BB16E18B6730B00F6927C /* SFPreferences.m */; };
 		FD8BB17218B6B64700F6927C /* SFUserAccountConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8BB17118B6B5F100F6927C /* SFUserAccountConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93E71BD5A4BA0042ACC8 /* SalesforceSDKCore.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8D93E61BD5A4BA0042ACC8 /* SalesforceSDKCore.h */; };
+		FD8D93E81BD5A4BA0042ACC8 /* SalesforceSDKCore.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8D93E61BD5A4BA0042ACC8 /* SalesforceSDKCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93EA1BD5A6250042ACC8 /* SalesforceSecurity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD8D93E91BD5A6250042ACC8 /* SalesforceSecurity.framework */; };
+		FD8D93ED1BD5A6930042ACC8 /* NSURL+SFStringUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 82AF844316DFD95F008912EF /* NSURL+SFStringUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93EE1BD5A69F0042ACC8 /* SFAbstractPasscodeViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 8281E90C1884B4DD002C1B0A /* SFAbstractPasscodeViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93EF1BD5A6AB0042ACC8 /* SFSecurityLockout.h in Headers */ = {isa = PBXBuildFile; fileRef = 82AF842D16DFD95F008912EF /* SFSecurityLockout.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93F01BD5A6AE0042ACC8 /* SFPasscodeViewControllerTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 821F91E719F99A1C0078372D /* SFPasscodeViewControllerTypes.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93F11BD5A6BE0042ACC8 /* SFAuthenticationManager+Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = FD62914818AAABFD00A1C2A1 /* SFAuthenticationManager+Internal.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93F21BD5A6C90042ACC8 /* SFAuthenticationViewHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 82867575181C759A007AA18A /* SFAuthenticationViewHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93F31BD5A6D40042ACC8 /* SFAuthErrorHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 82A55A6D182020B00002E22A /* SFAuthErrorHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93F41BD5A6DE0042ACC8 /* SFAuthErrorHandlerList.h in Headers */ = {isa = PBXBuildFile; fileRef = 82A55A721821A48B0002E22A /* SFAuthErrorHandlerList.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD8D93F51BD5A6E60042ACC8 /* SFAuthorizingViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 82AF841E16DFD95F008912EF /* SFAuthorizingViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDBFFDF91893194D00D8C603 /* SFDirectoryManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FDBFFDF71893194D00D8C603 /* SFDirectoryManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDBFFDFA1893194D00D8C603 /* SFDirectoryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = FDBFFDF81893194D00D8C603 /* SFDirectoryManager.m */; };
 		FDC0FD641B5F8805004158AC /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FDC0FD631B5F8805004158AC /* CoreTelephony.framework */; };
@@ -243,7 +255,6 @@
 		FDC827AE1BD21AF40018C257 /* SFSoupIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = 82AF843B16DFD95F008912EF /* SFSoupIndex.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDC827AF1BD21B000018C257 /* SFQuerySpec.h in Headers */ = {isa = PBXBuildFile; fileRef = 82AF843216DFD95F008912EF /* SFQuerySpec.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDC827B01BD21B0D0018C257 /* SFSDKWebUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 82AF844B16DFD95F008912EF /* SFSDKWebUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		FDD075E61BD0A83700BF27DC /* SalesforceSDKCore.h in Headers */ = {isa = PBXBuildFile; fileRef = FDD075E51BD0A83700BF27DC /* SalesforceSDKCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDD075EE1BD0A83E00BF27DC /* SFJsonUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 82AF844616DFD95F008912EF /* SFJsonUtils.m */; };
 		FDD075EF1BD0A84100BF27DC /* SFJsonUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 82AF844516DFD95F008912EF /* SFJsonUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDE9A5B01BD3007D007F434C /* SFDirectoryManager.h in Headers */ = {isa = PBXBuildFile; fileRef = FDBFFDF71893194D00D8C603 /* SFDirectoryManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -452,6 +463,8 @@
 		FD8BB16D18B6730B00F6927C /* SFPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFPreferences.h; sourceTree = "<group>"; };
 		FD8BB16E18B6730B00F6927C /* SFPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFPreferences.m; sourceTree = "<group>"; };
 		FD8BB17118B6B5F100F6927C /* SFUserAccountConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SFUserAccountConstants.h; sourceTree = "<group>"; };
+		FD8D93E61BD5A4BA0042ACC8 /* SalesforceSDKCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SalesforceSDKCore.h; sourceTree = "<group>"; };
+		FD8D93E91BD5A6250042ACC8 /* SalesforceSecurity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceSecurity.framework; path = "../SalesforceSecurity/build/Debug-appletvos/SalesforceSecurity.framework"; sourceTree = "<group>"; };
 		FDBFFDF71893194D00D8C603 /* SFDirectoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFDirectoryManager.h; sourceTree = "<group>"; };
 		FDBFFDF81893194D00D8C603 /* SFDirectoryManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFDirectoryManager.m; sourceTree = "<group>"; };
 		FDC0FD631B5F8805004158AC /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
@@ -463,7 +476,6 @@
 		FDC8278D1BD2177D0018C257 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/usr/lib/libsqlite3.tbd; sourceTree = DEVELOPER_DIR; };
 		FDC8278F1BD217990018C257 /* SalesforceOAuth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceOAuth.framework; path = "../SalesforceOAuth/build/Debug-appletvos/SalesforceOAuth.framework"; sourceTree = "<group>"; };
 		FDD075E31BD0A83700BF27DC /* SalesforceSDKCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceSDKCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		FDD075E51BD0A83700BF27DC /* SalesforceSDKCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SalesforceSDKCore.h; sourceTree = "<group>"; };
 		FDD075E71BD0A83700BF27DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FDD075F31BD0ACF300BF27DC /* SalesforceCommonUtilstvOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceCommonUtilstvOS.framework; path = "../../../SalesforceCommonUtils/build/Debug-appletvos/SalesforceCommonUtilstvOS.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -512,6 +524,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FD8D93EA1BD5A6250042ACC8 /* SalesforceSecurity.framework in Frameworks */,
 				FDC827901BD217990018C257 /* SalesforceOAuth.framework in Frameworks */,
 				FDC8278E1BD2177D0018C257 /* libsqlite3.tbd in Frameworks */,
 				FDC827861BD215ED0018C257 /* SalesforceCommonUtils.framework in Frameworks */,
@@ -595,6 +608,7 @@
 		8220B74E16D804CA00EC3921 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FD8D93E91BD5A6250042ACC8 /* SalesforceSecurity.framework */,
 				FDC8278F1BD217990018C257 /* SalesforceOAuth.framework */,
 				FDC8278D1BD2177D0018C257 /* libsqlite3.tbd */,
 				FDC827851BD215ED0018C257 /* SalesforceCommonUtils.framework */,
@@ -636,6 +650,7 @@
 		8220B75216D804CA00EC3921 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				FD8D93E61BD5A4BA0042ACC8 /* SalesforceSDKCore.h */,
 				8220B75316D804CA00EC3921 /* SalesforceSDKCore-Prefix.pch */,
 			);
 			name = "Supporting Files";
@@ -901,7 +916,6 @@
 		FDD075E41BD0A83700BF27DC /* SalesforceSDKCoretvOS */ = {
 			isa = PBXGroup;
 			children = (
-				FDD075E51BD0A83700BF27DC /* SalesforceSDKCore.h */,
 				FD3E28F91BD42B0100C4F76D /* SalesforceSDKCoretvOS-Prefix.pch */,
 				FDD075E71BD0A83700BF27DC /* Info.plist */,
 			);
@@ -918,6 +932,7 @@
 				FDBFFDF91893194D00D8C603 /* SFDirectoryManager.h in Headers */,
 				82BBB56B17909D3100374DD8 /* SalesforceSDKConstants.h in Headers */,
 				82AE8FD61A65F9FC005FF73B /* SFManagedPreferences.h in Headers */,
+				FD8D93E71BD5A4BA0042ACC8 /* SalesforceSDKCore.h in Headers */,
 				82BBB56D17909D5500374DD8 /* SFApplication.h in Headers */,
 				82BBB56E17909D6800374DD8 /* SFAuthenticationManager.h in Headers */,
 				8272300C19D5FA520066A350 /* SFSDKAppConfig.h in Headers */,
@@ -985,14 +1000,21 @@
 			files = (
 				FDE9A6DB1BD32B1C007F434C /* SalesforceSDKCoreDefines.h in Headers */,
 				FDC827A61BD2198D0018C257 /* SFIdentityCoordinator.h in Headers */,
+				FD8D93EE1BD5A69F0042ACC8 /* SFAbstractPasscodeViewController.h in Headers */,
+				FD8D93F31BD5A6D40042ACC8 /* SFAuthErrorHandler.h in Headers */,
 				FDC827AD1BD21AEA0018C257 /* SFSmartStore.h in Headers */,
+				FD8D93F11BD5A6BE0042ACC8 /* SFAuthenticationManager+Internal.h in Headers */,
 				FDC826C01BD1F6630018C257 /* SFUserAccountConstants.h in Headers */,
 				FDC826BD1BD1F6420018C257 /* SFUserAccount.h in Headers */,
 				FDC826BC1BD1F6320018C257 /* SFPreferences.h in Headers */,
+				FD8D93EF1BD5A6AB0042ACC8 /* SFSecurityLockout.h in Headers */,
 				FDC827A51BD2193C0018C257 /* SFUserAccountManager.h in Headers */,
+				FD8D93E81BD5A4BA0042ACC8 /* SalesforceSDKCore.h in Headers */,
+				FD8D93F21BD5A6C90042ACC8 /* SFAuthenticationViewHandler.h in Headers */,
+				FD8D93F41BD5A6DE0042ACC8 /* SFAuthErrorHandlerList.h in Headers */,
 				FDC826EE1BD1FE5B0018C257 /* SFAuthenticationManager.h in Headers */,
 				FDE9A5B01BD3007D007F434C /* SFDirectoryManager.h in Headers */,
-				FDD075E61BD0A83700BF27DC /* SalesforceSDKCore.h in Headers */,
+				FD8D93F01BD5A6AE0042ACC8 /* SFPasscodeViewControllerTypes.h in Headers */,
 				FDC826BE1BD1F6570018C257 /* SFCommunityData.h in Headers */,
 				FDC827AE1BD21AF40018C257 /* SFSoupIndex.h in Headers */,
 				FDD075EF1BD0A84100BF27DC /* SFJsonUtils.h in Headers */,
@@ -1000,8 +1022,10 @@
 				FDC827AC1BD21ADD0018C257 /* SalesforceSDKConstants.h in Headers */,
 				FDC827AF1BD21B000018C257 /* SFQuerySpec.h in Headers */,
 				FDC826A71BD1F3BA0018C257 /* SFApplication.h in Headers */,
+				FD8D93ED1BD5A6930042ACC8 /* NSURL+SFStringUtils.h in Headers */,
 				FDC826C11BD1F6690018C257 /* SFIdentityData.h in Headers */,
 				FDE9A6DA1BD32B03007F434C /* SalesforceSDKManager.h in Headers */,
+				FD8D93F51BD5A6E60042ACC8 /* SFAuthorizingViewController.h in Headers */,
 				FDC827B01BD21B0D0018C257 /* SFSDKWebUtils.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2105,6 +2129,11 @@
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(BUILT_PRODUCTS_DIR)/Headers",
+					"$(TARGET_BUILD_DIR)/Headers",
+					"$(INSTALL_ROOT)/Headers",
+				);
 				INFOPLIST_FILE = SalesforceSDKCoretvOS/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";

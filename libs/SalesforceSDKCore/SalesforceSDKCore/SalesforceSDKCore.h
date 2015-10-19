@@ -40,16 +40,24 @@
 #import <SalesforceSDKCore/SFAuthErrorHandlerList.h>
 #import <SalesforceSDKCore/SFAuthorizingViewController.h>
 #import <SalesforceSDKCore/SFCommunityData.h>
-#import <SalesforceSDKCore/SFDefaultUserManagementViewController.h>
 #import <SalesforceSDKCore/SFDirectoryManager.h>
 #import <SalesforceSDKCore/SFIdentityCoordinator.h>
 #import <SalesforceSDKCore/SFIdentityData.h>
 #import <SalesforceSDKCore/SFJsonUtils.h>
-#import <SalesforceSDKCore/SFManagedPreferences.h>
 #import <SalesforceSDKCore/SFPasscodeViewControllerTypes.h>
 #import <SalesforceSDKCore/SFPreferences.h>
-#import <SalesforceSDKCore/SFPushNotificationManager.h>
 #import <SalesforceSDKCore/SFQuerySpec.h>
+#import <SalesforceSDKCore/SFSecurityLockout.h>
+#import <SalesforceSDKCore/SFSmartStore.h>
+#import <SalesforceSDKCore/SFUserAccount.h>
+#import <SalesforceSDKCore/SFUserAccountConstants.h>
+#import <SalesforceSDKCore/SFUserAccountIdentity.h>
+#import <SalesforceSDKCore/SFUserAccountManager.h>
+
+#if !TARGET_OS_TV
+#import <SalesforceSDKCore/SFDefaultUserManagementViewController.h>
+#import <SalesforceSDKCore/SFManagedPreferences.h>
+#import <SalesforceSDKCore/SFPushNotificationManager.h>
 #import <SalesforceSDKCore/SFSDKAppConfig.h>
 #import <SalesforceSDKCore/SFSDKAppDelegate.h>
 #import <SalesforceSDKCore/SFSDKLoginHost.h>
@@ -60,15 +68,10 @@
 #import <SalesforceSDKCore/SFSDKTestCredentialsData.h>
 #import <SalesforceSDKCore/SFSDKTestRequestListener.h>
 #import <SalesforceSDKCore/SFSDKWebUtils.h>
-#import <SalesforceSDKCore/SFSecurityLockout.h>
-#import <SalesforceSDKCore/SFSmartStore.h>
 #import <SalesforceSDKCore/SFSmartStoreDatabaseManager.h>
 #import <SalesforceSDKCore/SFSmartStoreInspectorViewController.h>
 #import <SalesforceSDKCore/SFSoupIndex.h>
 #import <SalesforceSDKCore/SFStoreCursor.h>
-#import <SalesforceSDKCore/SFUserAccount.h>
-#import <SalesforceSDKCore/SFUserAccountConstants.h>
-#import <SalesforceSDKCore/SFUserAccountIdentity.h>
-#import <SalesforceSDKCore/SFUserAccountManager.h>
 #import <SalesforceSDKCore/SFUserActivityMonitor.h>
 #import <SalesforceSDKCore/TestSetupUtils.h>
+#endif
