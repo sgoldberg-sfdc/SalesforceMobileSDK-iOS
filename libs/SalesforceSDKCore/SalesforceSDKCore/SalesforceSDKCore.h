@@ -2,7 +2,7 @@
  SalesforceSDKCore.h
  SalesforceSDKCore
 
- Created by Behzad Richey on Tue Jun 30 14:56:00 PDT 2015.
+ Created by Jean Bovet on Wed Oct 21 17:54:08 PDT 2015.
 
  Copyright (c) 2015, salesforce.com, inc. All rights reserved.
  
@@ -46,9 +46,6 @@
 #import <SalesforceSDKCore/SFJsonUtils.h>
 #import <SalesforceSDKCore/SFPasscodeViewControllerTypes.h>
 #import <SalesforceSDKCore/SFPreferences.h>
-#import <SalesforceSDKCore/SFQuerySpec.h>
-#import <SalesforceSDKCore/SFSecurityLockout.h>
-#import <SalesforceSDKCore/SFSmartStore.h>
 #import <SalesforceSDKCore/SFUserAccount.h>
 #import <SalesforceSDKCore/SFUserAccountConstants.h>
 #import <SalesforceSDKCore/SFUserAccountIdentity.h>
@@ -58,6 +55,7 @@
 #import <SalesforceSDKCore/SFDefaultUserManagementViewController.h>
 #import <SalesforceSDKCore/SFManagedPreferences.h>
 #import <SalesforceSDKCore/SFPushNotificationManager.h>
+#import <SalesforceSDKCore/SFQuerySpec.h>
 #import <SalesforceSDKCore/SFSDKAppConfig.h>
 #import <SalesforceSDKCore/SFSDKAppDelegate.h>
 #import <SalesforceSDKCore/SFSDKLoginHost.h>
@@ -65,13 +63,12 @@
 #import <SalesforceSDKCore/SFSDKLoginHostListViewController.h>
 #import <SalesforceSDKCore/SFSDKLoginHostStorage.h>
 #import <SalesforceSDKCore/SFSDKResourceUtils.h>
-#import <SalesforceSDKCore/SFSDKTestCredentialsData.h>
-#import <SalesforceSDKCore/SFSDKTestRequestListener.h>
 #import <SalesforceSDKCore/SFSDKWebUtils.h>
+#import <SalesforceSDKCore/SFSecurityLockout.h>
+#import <SalesforceSDKCore/SFSmartStore.h>
 #import <SalesforceSDKCore/SFSmartStoreDatabaseManager.h>
 #import <SalesforceSDKCore/SFSmartStoreInspectorViewController.h>
 #import <SalesforceSDKCore/SFSoupIndex.h>
 #import <SalesforceSDKCore/SFStoreCursor.h>
 #import <SalesforceSDKCore/SFUserActivityMonitor.h>
-#import <SalesforceSDKCore/TestSetupUtils.h>
 #endif

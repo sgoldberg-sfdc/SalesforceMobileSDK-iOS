@@ -2,7 +2,7 @@
  SalesforceNetwork.h
  SalesforceNetwork
 
- Created by Bharath Hariharan on Fri Jul 10 16:41:22 PDT 2015.
+ Created by Jean Bovet on Wed Oct 21 17:54:09 PDT 2015.
 
  Copyright (c) 2015, salesforce.com, inc. All rights reserved.
  
@@ -28,13 +28,9 @@
  */
 
 #import <SalesforceNetwork/CSFAction.h>
-#import <SalesforceNetwork/CSFNetwork.h>
-#import <SalesforceNetwork/CSFNetworkOutputCache.h>
-#import <SalesforceNetwork/CSFParameterStorage.h>
 #import <SalesforceNetwork/CSFSalesforceAction.h>
 
 #if !TARGET_OS_TV
-#import <SalesforceNetwork/CSFAction+Internal.h>
 #import <SalesforceNetwork/CSFActionInput.h>
 #import <SalesforceNetwork/CSFActionModel.h>
 #import <SalesforceNetwork/CSFActionValue.h>
@@ -46,6 +42,9 @@
 #import <SalesforceNetwork/CSFIndexedEntity.h>
 #import <SalesforceNetwork/CSFInput.h>
 #import <SalesforceNetwork/CSFInternalDefines.h>
+#import <SalesforceNetwork/CSFNetwork.h>
+#import <SalesforceNetwork/CSFNetworkOutputCache.h>
 #import <SalesforceNetwork/CSFOutput.h>
+#import <SalesforceNetwork/CSFParameterStorage.h>
 #import <SalesforceNetwork/SFUserAccount+SalesforceNetwork.h>
 #endif
