@@ -28,6 +28,8 @@
 		FD2E9BAF1BD8764B00504887 /* NSData+SFSDKUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 82D53D521A3627EC00E46F8F /* NSData+SFSDKUtils.m */; };
 		FD2E9BB01BD8764B00504887 /* SFSDKReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 82BB4F001A70637B001DAF88 /* SFSDKReachability.m */; };
 		FD2E9BB31BD876A800504887 /* SFSDKAsyncProcessListener.h in Headers */ = {isa = PBXBuildFile; fileRef = 8293A8DD1A43AAC600ABC43C /* SFSDKAsyncProcessListener.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		FD333A251BDC3C1F00D33C3E /* Enterprise-Debug.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = FD333A231BDC3C1F00D33C3E /* Enterprise-Debug.xcconfig */; };
+		FD333A261BDC3C1F00D33C3E /* Enterprise-Release.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = FD333A241BDC3C1F00D33C3E /* Enterprise-Release.xcconfig */; };
 		FD8D93DF1BD5A40E0042ACC8 /* SalesforceSDKCommon.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8D93DD1BD5A40E0042ACC8 /* SalesforceSDKCommon.h */; };
 		FDC8279E1BD218120018C257 /* NSData+SFSDKUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D53D511A3627EC00E46F8F /* NSData+SFSDKUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FDC8279F1BD218150018C257 /* NSData+SFSDKUtils_Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 82D53D551A363CF100E46F8F /* NSData+SFSDKUtils_Internal.h */; };
@@ -51,6 +53,8 @@
 		82D53D571A363E2100E46F8F /* SDKCommonNSDataTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDKCommonNSDataTests.m; sourceTree = "<group>"; };
 		FD2E9BA41BD8761A00504887 /* SalesforceSDKCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceSDKCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD2E9BA81BD8761A00504887 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FD333A231BDC3C1F00D33C3E /* Enterprise-Debug.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Enterprise-Debug.xcconfig"; sourceTree = "<group>"; };
+		FD333A241BDC3C1F00D33C3E /* Enterprise-Release.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "Enterprise-Release.xcconfig"; sourceTree = "<group>"; };
 		FD8D93DD1BD5A40E0042ACC8 /* SalesforceSDKCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SalesforceSDKCommon.h; sourceTree = "<group>"; };
 		FDC827961BD217E50018C257 /* SalesforceSDKCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceSDKCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDC8279A1BD217E50018C257 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -84,6 +88,8 @@
 		6F8960801A9E9DCA00A48FF1 /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
+				FD333A231BDC3C1F00D33C3E /* Enterprise-Debug.xcconfig */,
+				FD333A241BDC3C1F00D33C3E /* Enterprise-Release.xcconfig */,
 				6F8960811A9E9DCA00A48FF1 /* SalesforceSDKCommon-Common.xcconfig */,
 				6F8960861A9E9DCA00A48FF1 /* SalesforceSDKCommon-Static-iOS-Debug.xcconfig */,
 				6F8960871A9E9DCA00A48FF1 /* SalesforceSDKCommon-Static-iOS-Release.xcconfig */,
@@ -313,6 +319,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FD333A251BDC3C1F00D33C3E /* Enterprise-Debug.xcconfig in Resources */,
+				FD333A261BDC3C1F00D33C3E /* Enterprise-Release.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -610,6 +618,7 @@
 		};
 		FD33399C1BDC369500D33C3E /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A241BDC3C1F00D33C3E /* Enterprise-Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -751,6 +760,7 @@
 		};
 		FD3339FD1BDC38E300D33C3E /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A231BDC3C1F00D33C3E /* Enterprise-Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
