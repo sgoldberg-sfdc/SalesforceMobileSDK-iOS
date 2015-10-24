@@ -129,6 +129,8 @@
 		FD2E9B761BD8749200504887 /* SalesforceCommonUtils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceCommonUtils.framework; path = "../../../SalesforceCommonUtils/build/Debug-iphoneos/SalesforceCommonUtils.framework"; sourceTree = "<group>"; };
 		FD2E9BB11BD8767700504887 /* SalesforceSDKCommon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceSDKCommon.framework; path = "../SalesforceSDKCommon/build/Debug-iphoneos/SalesforceSDKCommon.framework"; sourceTree = "<group>"; };
 		FD2E9BB41BD876DC00504887 /* SalesforceSecurity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceSecurity.framework; path = "../SalesforceSecurity/build/Debug-iphoneos/SalesforceSecurity.framework"; sourceTree = "<group>"; };
+		FD333A411BDC3E8D00D33C3E /* Enterprise-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Enterprise-Debug.xcconfig"; sourceTree = "<group>"; };
+		FD333A421BDC3E8D00D33C3E /* Enterprise-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Enterprise-Release.xcconfig"; sourceTree = "<group>"; };
 		FD8D93DB1BD5A1BE0042ACC8 /* SalesforceSecurity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceSecurity.framework; path = "../SalesforceSecurity/build/Debug-appletvos/SalesforceSecurity.framework"; sourceTree = "<group>"; };
 		FD8D93E31BD5A4670042ACC8 /* SalesforceOAuth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SalesforceOAuth.h; sourceTree = "<group>"; };
 		FDC826F51BD1FE800018C257 /* SalesforceOAuth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceOAuth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -184,6 +186,8 @@
 		6F8960771A9E9ADF00A48FF1 /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
+				FD333A411BDC3E8D00D33C3E /* Enterprise-Debug.xcconfig */,
+				FD333A421BDC3E8D00D33C3E /* Enterprise-Release.xcconfig */,
 				6F8960781A9E9ADF00A48FF1 /* SalesforceOAuth-Common.xcconfig */,
 				6F644CA51A9FCEEB009BF92A /* SalesforceOAuth-Common-Static.xcconfig */,
 				6F89607D1A9E9ADF00A48FF1 /* SalesforceOAuth-Static-iOS-Debug.xcconfig */,
@@ -1030,6 +1034,7 @@
 		};
 		FD2E9B691BD8740E00504887 /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A421BDC3E8D00D33C3E /* Enterprise-Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1079,6 +1084,7 @@
 		};
 		FD2E9B6A1BD8740E00504887 /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A411BDC3E8D00D33C3E /* Enterprise-Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1242,6 +1248,7 @@
 		};
 		FDC826FC1BD1FE800018C257 /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A421BDC3E8D00D33C3E /* Enterprise-Release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1296,6 +1303,7 @@
 		};
 		FDC826FD1BD1FE800018C257 /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A411BDC3E8D00D33C3E /* Enterprise-Debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";

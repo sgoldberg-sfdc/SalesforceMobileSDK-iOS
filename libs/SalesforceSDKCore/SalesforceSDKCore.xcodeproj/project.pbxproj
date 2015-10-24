@@ -453,6 +453,8 @@
 		FD2E9BB61BD8774A00504887 /* SalesforceCommonUtils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceCommonUtils.framework; path = "../../../SalesforceCommonUtils/build/Debug-iphoneos/SalesforceCommonUtils.framework"; sourceTree = "<group>"; };
 		FD2E9BBA1BD877CA00504887 /* SalesforceSecurity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceSecurity.framework; path = "../SalesforceSecurity/build/Debug-iphoneos/SalesforceSecurity.framework"; sourceTree = "<group>"; };
 		FD2E9BBC1BD877D100504887 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
+		FD333A451BDC3EDC00D33C3E /* Enterprise-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Enterprise-Debug.xcconfig"; sourceTree = "<group>"; };
+		FD333A461BDC3EDC00D33C3E /* Enterprise-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Enterprise-Release.xcconfig"; sourceTree = "<group>"; };
 		FD3E28F91BD42B0100C4F76D /* SalesforceSDKCoretvOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SalesforceSDKCoretvOS-Prefix.pch"; sourceTree = "<group>"; };
 		FD62914818AAABFD00A1C2A1 /* SFAuthenticationManager+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SFAuthenticationManager+Internal.h"; sourceTree = "<group>"; };
 		FD8BB16D18B6730B00F6927C /* SFPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFPreferences.h; sourceTree = "<group>"; };
@@ -553,6 +555,8 @@
 		6F89606E1A9E96C400A48FF1 /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
+				FD333A451BDC3EDC00D33C3E /* Enterprise-Debug.xcconfig */,
+				FD333A461BDC3EDC00D33C3E /* Enterprise-Release.xcconfig */,
 				6F89606F1A9E96C400A48FF1 /* SalesforceSDKCore-Common.xcconfig */,
 				6F742A0A1A9EA7BA00FA31C4 /* SalesforceSDKCore-Common-Static.xcconfig */,
 				6F8960741A9E96C400A48FF1 /* SalesforceSDKCore-Static-iOS-Debug.xcconfig */,
@@ -2016,7 +2020,6 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
@@ -2063,7 +2066,6 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2109,7 +2111,6 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2147,6 +2148,7 @@
 		};
 		FD2E9AEA1BD872AA00504887 /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A461BDC3EDC00D33C3E /* Enterprise-Release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -2156,7 +2158,6 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2194,6 +2195,7 @@
 		};
 		FD2E9AEB1BD872AA00504887 /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A451BDC3EDC00D33C3E /* Enterprise-Debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -2203,7 +2205,6 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2251,7 +2252,6 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
@@ -2302,7 +2302,6 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2352,7 +2351,6 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2393,6 +2391,7 @@
 		};
 		FDD075EB1BD0A83700BF27DC /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A461BDC3EDC00D33C3E /* Enterprise-Release.xcconfig */;
 			buildSettings = {
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -2403,7 +2402,6 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -2444,6 +2442,7 @@
 		};
 		FDD075EC1BD0A83700BF27DC /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A451BDC3EDC00D33C3E /* Enterprise-Debug.xcconfig */;
 			buildSettings = {
 				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -2454,7 +2453,6 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";

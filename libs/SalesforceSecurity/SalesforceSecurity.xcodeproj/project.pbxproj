@@ -139,6 +139,8 @@
 		82F6F67C18E5F5880033CACD /* SFKeyStoreManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SFKeyStoreManager.m; path = Classes/SFKeyStoreManager.m; sourceTree = "<group>"; };
 		FD2E9B7D1BD874C000504887 /* SalesforceSecurity.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceSecurity.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD2E9B811BD874C000504887 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FD333A431BDC3EB800D33C3E /* Enterprise-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Enterprise-Debug.xcconfig"; sourceTree = "<group>"; };
+		FD333A441BDC3EB800D33C3E /* Enterprise-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Enterprise-Release.xcconfig"; sourceTree = "<group>"; };
 		FD3E28FB1BD42C3000C4F76D /* SalesforceSecuritytvOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SalesforceSecuritytvOS-Prefix.pch"; sourceTree = "<group>"; };
 		FD8D93E01BD5A4400042ACC8 /* SalesforceSecurity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SalesforceSecurity.h; sourceTree = "<group>"; };
 		FDC827071BD201890018C257 /* SalesforceSecurity.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceSecurity.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -182,6 +184,8 @@
 		6F8960891A9E9ECD00A48FF1 /* Configuration */ = {
 			isa = PBXGroup;
 			children = (
+				FD333A431BDC3EB800D33C3E /* Enterprise-Debug.xcconfig */,
+				FD333A441BDC3EB800D33C3E /* Enterprise-Release.xcconfig */,
 				6F89608A1A9E9ECD00A48FF1 /* SalesforceSecurity-Common.xcconfig */,
 				6F89608F1A9E9ECD00A48FF1 /* SalesforceSecurity-Static-iOS-Debug.xcconfig */,
 				6F8960901A9E9ECD00A48FF1 /* SalesforceSecurity-Static-iOS-Release.xcconfig */,
@@ -911,6 +915,7 @@
 		};
 		FD2E9B841BD874C000504887 /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A441BDC3EB800D33C3E /* Enterprise-Release.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -940,6 +945,7 @@
 		};
 		FD2E9B851BD874C000504887 /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A431BDC3EB800D33C3E /* Enterprise-Debug.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -1030,6 +1036,7 @@
 		};
 		FDC8270E1BD201890018C257 /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A441BDC3EB800D33C3E /* Enterprise-Release.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COPY_PHASE_STRIP = NO;
@@ -1060,6 +1067,7 @@
 		};
 		FDC8270F1BD201890018C257 /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = FD333A431BDC3EB800D33C3E /* Enterprise-Debug.xcconfig */;
 			buildSettings = {
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COPY_PHASE_STRIP = NO;
