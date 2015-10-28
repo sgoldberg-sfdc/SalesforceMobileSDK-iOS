@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "FD2E9BC21BD87BE500504887"
                BuildableName = "SalesforceNetwork.framework"
-               BlueprintName = "SalesforceNetworkSDKiOS"
+               BlueprintName = "SalesforceNetworkiOS"
                ReferencedContainer = "container:SalesforceNetwork.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -47,7 +47,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "FD2E9BC21BD87BE500504887"
             BuildableName = "SalesforceNetwork.framework"
-            BlueprintName = "SalesforceNetworkSDKiOS"
+            BlueprintName = "SalesforceNetworkiOS"
             ReferencedContainer = "container:SalesforceNetwork.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -65,7 +65,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "FD2E9BC21BD87BE500504887"
             BuildableName = "SalesforceNetwork.framework"
-            BlueprintName = "SalesforceNetworkSDKiOS"
+            BlueprintName = "SalesforceNetworkiOS"
             ReferencedContainer = "container:SalesforceNetwork.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

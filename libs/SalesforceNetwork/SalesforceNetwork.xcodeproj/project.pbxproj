@@ -711,9 +711,9 @@
 			productReference = 825347F51A8ADD050019FE0B /* SalesforceNetworkiOSTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		FD2E9BC21BD87BE500504887 /* SalesforceNetworkSDKiOS */ = {
+		FD2E9BC21BD87BE500504887 /* SalesforceNetworkiOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FD2E9BCA1BD87BE500504887 /* Build configuration list for PBXNativeTarget "SalesforceNetworkSDKiOS" */;
+			buildConfigurationList = FD2E9BCA1BD87BE500504887 /* Build configuration list for PBXNativeTarget "SalesforceNetworkiOS" */;
 			buildPhases = (
 				FD2E9BBE1BD87BE500504887 /* Sources */,
 				FD2E9BBF1BD87BE500504887 /* Frameworks */,
@@ -724,7 +724,7 @@
 			);
 			dependencies = (
 			);
-			name = SalesforceNetworkSDKiOS;
+			name = SalesforceNetworkiOS;
 			productName = SalesforceNetworkSDKiOS;
 			productReference = FD2E9BC31BD87BE500504887 /* SalesforceNetwork.framework */;
 			productType = "com.apple.product-type.framework";
@@ -779,7 +779,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FD2E9BC21BD87BE500504887 /* SalesforceNetworkSDKiOS */,
+				FD2E9BC21BD87BE500504887 /* SalesforceNetworkiOS */,
 				FDC826AD1BD1F5300018C257 /* SalesforceNetworktvOS */,
 				825347F41A8ADD050019FE0B /* SalesforceNetworkiOSTests */,
 			);
@@ -1002,7 +1002,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -1059,7 +1058,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -1117,7 +1115,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -1258,7 +1255,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -1522,7 +1518,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FD2E9BCA1BD87BE500504887 /* Build configuration list for PBXNativeTarget "SalesforceNetworkSDKiOS" */ = {
+		FD2E9BCA1BD87BE500504887 /* Build configuration list for PBXNativeTarget "SalesforceNetworkiOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				FD2E9BC81BD87BE500504887 /* Debug */,
