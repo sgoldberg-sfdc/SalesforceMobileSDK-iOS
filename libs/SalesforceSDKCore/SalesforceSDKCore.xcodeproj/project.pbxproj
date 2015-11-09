@@ -2258,7 +2258,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD413ACD1BE2CAA5007BF203 /* Configuration-Developer.xcconfig */;
 			buildSettings = {
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2308,7 +2307,6 @@
 		FDD075E91BD0A83700BF27DC /* Internal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2358,7 +2356,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD413ACD1BE2CAA5007BF203 /* Configuration-Developer.xcconfig */;
 			buildSettings = {
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2409,7 +2406,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Enterprise.xcconfig */;
 			buildSettings = {
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2460,7 +2456,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Enterprise.xcconfig */;
 			buildSettings = {
-				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
