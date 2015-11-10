@@ -35,6 +35,7 @@
 		82AA405A18E3ADAA00BD34D8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 82AA405918E3ADAA00BD34D8 /* libz.dylib */; };
 		82AA405C18E3ADE100BD34D8 /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82AA405B18E3ADE100BD34D8 /* MessageUI.framework */; };
 		82E0D87C1912F01300A8FC23 /* SFKeyStoreTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 82E0D87B1912F01300A8FC23 /* SFKeyStoreTests.m */; };
+		FD13A9861BF2935300AA1FEC /* SalesforceSecurity.h in Headers */ = {isa = PBXBuildFile; fileRef = FD8D93E01BD5A4400042ACC8 /* SalesforceSecurity.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		FD2E9B871BD874F400504887 /* SFEncryptionKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 82F6F67818E5F5880033CACD /* SFEncryptionKey.m */; };
 		FD2E9B881BD874F400504887 /* SFGeneratedKeyStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 82A78633192C22D50023AC99 /* SFGeneratedKeyStore.m */; };
 		FD2E9B891BD874F400504887 /* SFKeyStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 82A7862F192C22A90023AC99 /* SFKeyStore.m */; };
@@ -348,6 +349,7 @@
 				FD2E9B9A1BD8750600504887 /* SFPBKDFData.h in Headers */,
 				FD2E9B9B1BD8750600504887 /* SFPasscodeManager.h in Headers */,
 				FD2E9B9C1BD8750600504887 /* SFPasscodeProviderManager.h in Headers */,
+				FD13A9861BF2935300AA1FEC /* SalesforceSecurity.h in Headers */,
 				FD2E9B9D1BD8750600504887 /* SFSDKCryptoUtils.h in Headers */,
 				FD2E9B9E1BD8750600504887 /* SFSHA256PasscodeProvider.h in Headers */,
 			);

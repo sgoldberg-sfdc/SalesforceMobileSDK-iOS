@@ -110,11 +110,8 @@ static void SFSDKReachabilityCallback(SCNetworkReachabilityRef target, SCNetwork
 	if (reachability != NULL)
 	{
 		returnValue= [[self alloc] init];
-		if (returnValue != NULL)
-		{
-			returnValue->_reachabilityRef = reachability;
-			returnValue->_alwaysReturnLocalWiFiStatus = NO;
-		}
+        returnValue->_reachabilityRef = reachability;
+        returnValue->_alwaysReturnLocalWiFiStatus = NO;
 	}
 	return returnValue;
 }
@@ -129,11 +126,8 @@ static void SFSDKReachabilityCallback(SCNetworkReachabilityRef target, SCNetwork
 	if (reachability != NULL)
 	{
 		returnValue = [[self alloc] init];
-		if (returnValue != NULL)
-		{
-			returnValue->_reachabilityRef = reachability;
-			returnValue->_alwaysReturnLocalWiFiStatus = NO;
-		}
+        returnValue->_reachabilityRef = reachability;
+        returnValue->_alwaysReturnLocalWiFiStatus = NO;
 	}
 	return returnValue;
 }
