@@ -52,7 +52,7 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
     return !(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone);
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         return UIInterfaceOrientationMaskPortrait;
