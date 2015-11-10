@@ -27,6 +27,7 @@
 #import "CSFNetwork+Internal.h"
 #import "CSFAction+Internal.h"
 #import <SalesforceSDKCore/SalesforceSDKCore.h>
+#import <SalesforceOAuth/SalesforceOAuth.h>
 
 #import "CSFInternalDefines.h"
 

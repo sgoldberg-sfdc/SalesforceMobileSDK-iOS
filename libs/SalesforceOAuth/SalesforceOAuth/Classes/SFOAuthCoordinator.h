@@ -133,20 +133,26 @@ typedef void (^SFOAuthBrowserFlowCallbackBlock)(BOOL);
  
  @see SFOAuthCoordinator
  */
+#if !TARGET_OS_TV
 - (void)oauthCoordinator:(SFOAuthCoordinator *)coordinator willBeginAuthenticationWithView:(UIWebView *)view;
+#endif
 
 /** Sent when the web will starts to load its content.
  @param coordinator The SFOAuthCoordinator instance processing this message
  @param view        The UIWebView instance that will be used to conduct the authentication workflow
  */
+#if !TARGET_OS_TV
 - (void)oauthCoordinator:(SFOAuthCoordinator *)coordinator didStartLoad:(UIWebView *)view;
+#endif
 
 /** Sent when the web will completed to load its content.
  @param coordinator The SFOAuthCoordinator instance processing this message
  @param view        The UIWebView instance that will be used to conduct the authentication workflow
  @param errorOrNil  Contains the error or `nil` if no error
  */
+#if !TARGET_OS_TV
 - (void)oauthCoordinator:(SFOAuthCoordinator *)coordinator didFinishLoad:(UIWebView *)view error:(NSError*)errorOrNil;
+#endif
 
 /**
  Sent when authentication successfully completes. Note: This method is deprecated.  You should use
@@ -216,7 +222,9 @@ typedef void (^SFOAuthBrowserFlowCallbackBlock)(BOOL);
  
  @see SFOAuthCoordinator
  */
+#if !TARGET_OS_TV
 - (void)oauthCoordinator:(SFOAuthCoordinator *)coordinator didBeginAuthenticationWithView:(UIWebView *)view;
+#endif
 
 /**
  Sent to notify the delegate that a browser authentication flow is about to begin.
@@ -243,8 +251,11 @@ typedef void (^SFOAuthBrowserFlowCallbackBlock)(BOOL);
  the Security framework and either the NSJSONSerialization iOS 5.0 SDK class 
  or the third party SBJsonParser class.
  */
-@interface SFOAuthCoordinator : NSObject <UIWebViewDelegate> {
-}
+#if TARGET_OS_TV
+@interface SFOAuthCoordinator : NSObject
+#else
+@interface SFOAuthCoordinator : NSObject <UIWebViewDelegate>
+#endif
 
 /** User credentials to use within the authentication process.
  
@@ -303,7 +314,11 @@ typedef void (^SFOAuthBrowserFlowCallbackBlock)(BOOL);
  This is only guaranteed to be non-`nil` after one of the delegate methods returning a web view has been called.
  @see SFOAuthCoordinatorDelegate
  */
+#if TARGET_OS_TV
+@property (nonatomic, readonly) UIView *view;
+#else
 @property (nonatomic, readonly) UIWebView *view;
+#endif
 
 /**
  The user agent string that will be used for authentication.  While this property will persist throughout

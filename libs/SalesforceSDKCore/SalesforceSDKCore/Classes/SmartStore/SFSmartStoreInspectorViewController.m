@@ -154,7 +154,9 @@ static NSUInteger   const kLabelTag              = 99;
 
 - (void) showAlert:(NSString*)message
 {
+#if !TARGET_OS_TV
     [[[UIAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:@"inspectorQueryFailed"] message:message delegate:self cancelButtonTitle:[SFSDKResourceUtils localizedString:@"inspectorOK"] otherButtonTitles:nil] show];
+#endif
 }
 
 - (void) soupsButtonClicked
@@ -409,7 +411,9 @@ static NSUInteger   const kLabelTag              = 99;
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString* label = [[self cellDatawithIndexPath:indexPath] description];
+#if !TARGET_OS_TV
     [[[UIAlertView alloc] initWithTitle:nil message:label delegate:self cancelButtonTitle:[SFSDKResourceUtils localizedString:@"inspectorOK"] otherButtonTitles:nil] show];
+#endif
 }
 
 
