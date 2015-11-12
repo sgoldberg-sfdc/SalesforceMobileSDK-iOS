@@ -27,6 +27,7 @@
 
 #import "SFPasscodeViewController.h"
 #import <SalesforceSecurity/SFPasscodeManager.h>
+#import <SalesforceCommonUtils/SFAlertView.h>
 #import "SFSDKResourceUtils.h"
 
 // Private view layout constants
@@ -278,7 +279,7 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
 - (void)forgotPassAction
 {
 #if !TARGET_OS_TV
-    UIAlertView *logoutAlert = [[UIAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:@"forgotPasscodeTitle"]
+    SFAlertView *logoutAlert = [[SFAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:@"forgotPasscodeTitle"]
                                                           message:[SFSDKResourceUtils localizedString:@"logoutAlertViewTitle"]
                                                          delegate:self
                                                 cancelButtonTitle:[SFSDKResourceUtils localizedString:@"logoutNo"]

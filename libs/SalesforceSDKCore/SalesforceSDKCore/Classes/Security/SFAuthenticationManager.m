@@ -49,6 +49,7 @@
 #import <SalesforceCommonUtils/NSURL+SFAdditions.h>
 #import <SalesforceCommonUtils/SFInactivityTimerCenter.h>
 #import <SalesforceCommonUtils/SFTestContext.h>
+#import <SalesforceCommonUtils/SFAlertView.h>
 
 static SFAuthenticationManager *sharedInstance = nil;
 
@@ -935,7 +936,7 @@ static Class InstanceClass = nil;
     if (nil == _statusAlert) {
         // show alert and allow retry
         [self log:SFLogLevelError format:@"Error during authentication: %@", error];
-        _statusAlert = [[UIAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:kAlertErrorTitleKey]
+        _statusAlert = [[SFAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:kAlertErrorTitleKey]
                                                   message:[NSString stringWithFormat:[SFSDKResourceUtils localizedString:kAlertConnectionErrorFormatStringKey], [error localizedDescription]]
                                                  delegate:self
                                         cancelButtonTitle:[SFSDKResourceUtils localizedString:kAlertRetryButtonKey]
@@ -951,7 +952,7 @@ static Class InstanceClass = nil;
 #if !TARGET_OS_TV
     if (nil == _statusAlert) {
         // Show alert and execute failure block.
-        _statusAlert = [[UIAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:kAlertErrorTitleKey]
+        _statusAlert = [[SFAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:kAlertErrorTitleKey]
                                                   message:[SFSDKResourceUtils localizedString:kAlertVersionMismatchErrorKey]
                                                  delegate:self
                                         cancelButtonTitle:[SFSDKResourceUtils localizedString:kAlertOkButtonKey]
@@ -1228,7 +1229,8 @@ static Class InstanceClass = nil;
     NSString *appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:(id)kCFBundleNameKey];
     NSString *alertMessage = [NSString stringWithFormat:[SFSDKResourceUtils localizedString:kAlertBrowserFlowMessageKey], coordinator.credentials.domain, appName];
 #if !TARGET_OS_TV
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:kAlertBrowserFlowTitleKey]
+    
+    SFAlertView *alertView = [[SFAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:kAlertBrowserFlowTitleKey]
                                                         message:alertMessage
                                                        delegate:self
                                               cancelButtonTitle:[SFSDKResourceUtils localizedString:kAlertChangeHostButtonKey]
