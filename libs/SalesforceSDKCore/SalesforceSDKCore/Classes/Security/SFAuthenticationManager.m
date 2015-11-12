@@ -1297,7 +1297,7 @@ static Class InstanceClass = nil;
 #if !TARGET_OS_TV
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    if (alertView == _statusAlert) {
+    if (alertView == _statusAlert.alertView) {
         _statusAlert = nil;
         [self log:SFLogLevelDebug format:@"clickedButtonAtIndex: %ld", (long)buttonIndex];
         if (alertView.tag == kOAuthGenericAlertViewTag) {
