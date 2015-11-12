@@ -2025,7 +2025,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD413ACD1BE2CAA5007BF203 /* Configuration-Developer.xcconfig */;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2073,7 +2072,6 @@
 		FD2E9AE81BD872AA00504887 /* Internal */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2121,7 +2119,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD413ACD1BE2CAA5007BF203 /* Configuration-Developer.xcconfig */;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2170,7 +2167,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Enterprise.xcconfig */;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -2219,7 +2215,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Enterprise.xcconfig */;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;

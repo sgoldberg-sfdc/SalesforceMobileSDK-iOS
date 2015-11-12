@@ -870,7 +870,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD413ACA1BE2CA4E007BF203 /* Configuration-Developer.xcconfig */;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -901,7 +900,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD413ACA1BE2CA4E007BF203 /* Configuration-Developer.xcconfig */;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -931,7 +929,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD413ACB1BE2CA4E007BF203 /* Configuration-Enterprise.xcconfig */;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
@@ -961,7 +958,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD413ACB1BE2CA4E007BF203 /* Configuration-Enterprise.xcconfig */;
 			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
