@@ -2,3 +2,6 @@
 // For now, let's disable this flag that is warning us if we are missing public
 // header files in the umbrella header. We will fix that going forward.
 OTHER_CFLAGS = -Wno-incomplete-umbrella
+
+// Make sure to use only API that are safe for application extensions
+APPLICATION_EXTENSION_API_ONLY = YES

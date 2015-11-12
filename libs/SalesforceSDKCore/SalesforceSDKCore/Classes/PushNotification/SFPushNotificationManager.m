@@ -23,6 +23,7 @@
  */
 
 #import <SalesforceCommonUtils/NSString+SFAdditions.h>
+#import <SalesforceCommonUtils/SFApplicationHelper.h>
 #import <SalesforceSDKCore/SFPreferences.h>
 #import "SFPushNotificationManager.h"
 #import "SFAuthenticationManager.h"
@@ -125,11 +126,11 @@ static NSUInteger const kiOS8UserNotificationTypes = ((1 << 0) | (1 << 1) | (1 <
     [self log:SFLogLevelInfo msg:@"Registering with Apple for remote push notifications"];
     
     // [UIApplication registerUserNotificationSettings:] is how iOS 8 and above registers for notifications.
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+    if ([[SFApplicationHelper sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
         [self registerNotificationsForiOS8];
     } else {
 #if !TARGET_OS_TV
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:kiOS7RemoteNotificationTypes];
+        [[SFApplicationHelper sharedApplication] registerForRemoteNotificationTypes:kiOS7RemoteNotificationTypes];
 #endif
     }
 }
@@ -155,8 +156,8 @@ static NSUInteger const kiOS8UserNotificationTypes = ((1 << 0) | (1 << 1) | (1 <
     if (settingsForTypesRetVal)
         CFRetain(settingsForTypesRetVal);
     
-    [[UIApplication sharedApplication] performSelector:@selector(registerUserNotificationSettings:) withObject:(__bridge_transfer id)settingsForTypesRetVal];
-    [[UIApplication sharedApplication] performSelector:@selector(registerForRemoteNotifications)];
+    [[SFApplicationHelper sharedApplication] performSelector:@selector(registerUserNotificationSettings:) withObject:(__bridge_transfer id)settingsForTypesRetVal];
+    [[SFApplicationHelper sharedApplication] performSelector:@selector(registerForRemoteNotifications)];
 }
 
 - (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceTokenData

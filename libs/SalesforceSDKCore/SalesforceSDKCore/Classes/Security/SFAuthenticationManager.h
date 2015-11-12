@@ -35,6 +35,7 @@
 @class SFAuthErrorHandler;
 @class SFAuthErrorHandlerList;
 @class SFLoginHostUpdateResult;
+@class SFAlertView;
 
 /**
  Callback block definition for OAuth completion callback.
@@ -198,7 +199,7 @@ extern NSString * const kSFAuthenticationManagerFinishedNotification;
  Alert view for displaying auth-related status messages.
  */
 #if !TARGET_OS_TV
-@property (nonatomic, strong) UIAlertView *statusAlert;
+@property (nonatomic, strong) SFAlertView *statusAlert;
 #endif
 
 /**

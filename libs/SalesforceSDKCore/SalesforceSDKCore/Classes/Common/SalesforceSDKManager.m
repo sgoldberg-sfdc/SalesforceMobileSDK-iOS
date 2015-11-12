@@ -33,6 +33,7 @@
 #import <SalesforceSecurity/SFPasscodeManager.h>
 #import <SalesforceSecurity/SFPasscodeProviderManager.h>
 #import <SalesforceCommonUtils/SFInactivityTimerCenter.h>
+#import <SalesforceCommonUtils/SFApplicationHelper.h>
 
 // Error constants
 NSString * const kSalesforceSDKManagerErrorDomain     = @"com.salesforce.sdkmanager.error";
@@ -158,7 +159,7 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
     _isLaunching = YES;
     self.launchActions = SFSDKLaunchActionNone;
     if ([SFRootViewManager sharedManager].mainWindow == nil) {
-        [SFRootViewManager sharedManager].mainWindow = [UIApplication sharedApplication].windows[0];
+        [SFRootViewManager sharedManager].mainWindow = [SFApplicationHelper sharedApplication].windows[0];
     }
     
     NSError *launchStateError = nil;

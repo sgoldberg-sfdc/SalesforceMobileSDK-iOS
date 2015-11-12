@@ -25,6 +25,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
 #import <UIKit/UITextInputTraits.h>
+#import <SalesforceCommonUtils/SFAlertView.h>
 
 #import "SFSmartStoreInspectorViewController.h"
 #import "SFSDKResourceUtils.h"
@@ -155,7 +156,7 @@ static NSUInteger   const kLabelTag              = 99;
 - (void) showAlert:(NSString*)message
 {
 #if !TARGET_OS_TV
-    [[[UIAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:@"inspectorQueryFailed"] message:message delegate:self cancelButtonTitle:[SFSDKResourceUtils localizedString:@"inspectorOK"] otherButtonTitles:nil] show];
+    [[[SFAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:@"inspectorQueryFailed"] message:message delegate:self cancelButtonTitle:[SFSDKResourceUtils localizedString:@"inspectorOK"] otherButtonTitles:nil] show];
 #endif
 }
 
@@ -412,7 +413,7 @@ static NSUInteger   const kLabelTag              = 99;
 {
     NSString* label = [[self cellDatawithIndexPath:indexPath] description];
 #if !TARGET_OS_TV
-    [[[UIAlertView alloc] initWithTitle:nil message:label delegate:self cancelButtonTitle:[SFSDKResourceUtils localizedString:@"inspectorOK"] otherButtonTitles:nil] show];
+    [[[SFAlertView alloc] initWithTitle:nil message:label delegate:self cancelButtonTitle:[SFSDKResourceUtils localizedString:@"inspectorOK"] otherButtonTitles:nil] show];
 #endif
 }
 
