@@ -455,8 +455,8 @@
 		FD2E9BBC1BD877D100504887 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		FD3E28F91BD42B0100C4F76D /* SalesforceSDKCoretvOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SalesforceSDKCoretvOS-Prefix.pch"; sourceTree = "<group>"; };
 		FD413ACC1BE2CAA5007BF203 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
-		FD413ACD1BE2CAA5007BF203 /* Configuration-Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Configuration-Debug.xcconfig"; sourceTree = "<group>"; };
-		FD413ACE1BE2CAA5007BF203 /* Configuration-Enterprise.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Configuration-Enterprise.xcconfig"; sourceTree = "<group>"; };
+		FD413ACD1BE2CAA5007BF203 /* Configuration-Developer.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Configuration-Developer.xcconfig"; sourceTree = "<group>"; };
+		FD413ACE1BE2CAA5007BF203 /* Configuration-Distribution.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Configuration-Distribution.xcconfig"; sourceTree = "<group>"; };
 		FD62914818AAABFD00A1C2A1 /* SFAuthenticationManager+Internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SFAuthenticationManager+Internal.h"; sourceTree = "<group>"; };
 		FD8BB16D18B6730B00F6927C /* SFPreferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFPreferences.h; sourceTree = "<group>"; };
 		FD8BB16E18B6730B00F6927C /* SFPreferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFPreferences.m; sourceTree = "<group>"; };
@@ -477,7 +477,6 @@
 		FDD075E31BD0A83700BF27DC /* SalesforceSDKCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceSDKCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDD075E71BD0A83700BF27DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FDD075F31BD0ACF300BF27DC /* SalesforceCommonUtilstvOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceCommonUtilstvOS.framework; path = "../../../SalesforceCommonUtils/build/Debug-appletvos/SalesforceCommonUtilstvOS.framework"; sourceTree = "<group>"; };
-		FDFEF3D81BF55EBB0083F480 /* Configuration-Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Configuration-Release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -558,9 +557,8 @@
 			isa = PBXGroup;
 			children = (
 				FD413ACC1BE2CAA5007BF203 /* Common.xcconfig */,
-				FD413ACD1BE2CAA5007BF203 /* Configuration-Debug.xcconfig */,
-				FDFEF3D81BF55EBB0083F480 /* Configuration-Release.xcconfig */,
-				FD413ACE1BE2CAA5007BF203 /* Configuration-Enterprise.xcconfig */,
+				FD413ACD1BE2CAA5007BF203 /* Configuration-Developer.xcconfig */,
+				FD413ACE1BE2CAA5007BF203 /* Configuration-Distribution.xcconfig */,
 				6F89606F1A9E96C400A48FF1 /* SalesforceSDKCore-Common.xcconfig */,
 				6F742A0A1A9EA7BA00FA31C4 /* SalesforceSDKCore-Common-Static.xcconfig */,
 				6F8960741A9E96C400A48FF1 /* SalesforceSDKCore-Static-iOS-Debug.xcconfig */,
@@ -2025,7 +2023,7 @@
 		};
 		FD2E9AE71BD872AA00504887 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413ACD1BE2CAA5007BF203 /* Configuration-Debug.xcconfig */;
+			baseConfigurationReference = FD413ACD1BE2CAA5007BF203 /* Configuration-Developer.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -2119,7 +2117,7 @@
 		};
 		FD2E9AE91BD872AA00504887 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FDFEF3D81BF55EBB0083F480 /* Configuration-Release.xcconfig */;
+			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -2167,7 +2165,7 @@
 		};
 		FD2E9AEA1BD872AA00504887 /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Enterprise.xcconfig */;
+			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -2215,7 +2213,7 @@
 		};
 		FD2E9AEB1BD872AA00504887 /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Enterprise.xcconfig */;
+			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -2263,7 +2261,7 @@
 		};
 		FDD075E81BD0A83700BF27DC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413ACD1BE2CAA5007BF203 /* Configuration-Debug.xcconfig */;
+			baseConfigurationReference = FD413ACD1BE2CAA5007BF203 /* Configuration-Developer.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -2361,7 +2359,7 @@
 		};
 		FDD075EA1BD0A83700BF27DC /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FDFEF3D81BF55EBB0083F480 /* Configuration-Release.xcconfig */;
+			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -2411,7 +2409,7 @@
 		};
 		FDD075EB1BD0A83700BF27DC /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Enterprise.xcconfig */;
+			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -2461,7 +2459,7 @@
 		};
 		FDD075EC1BD0A83700BF27DC /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Enterprise.xcconfig */;
+			baseConfigurationReference = FD413ACE1BE2CAA5007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
