@@ -26,9 +26,11 @@
 #import <objc/runtime.h>
 
 #import "SFPasscodeViewController.h"
-#import <SalesforceSecurity/SFPasscodeManager.h>
-#import <SalesforceCommonUtils/SFAlertView.h>
 #import "SFSDKResourceUtils.h"
+#import <SalesforceSecurity/SFPasscodeManager.h>
+#if !TARGET_OS_TV
+#import <SalesforceCommonUtils/SFAlertView.h>
+#endif
 
 // Private view layout constants
 

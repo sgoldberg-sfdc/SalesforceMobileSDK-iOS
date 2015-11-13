@@ -49,7 +49,9 @@
 #import <SalesforceCommonUtils/NSURL+SFAdditions.h>
 #import <SalesforceCommonUtils/SFInactivityTimerCenter.h>
 #import <SalesforceCommonUtils/SFTestContext.h>
+#if !TARGET_OS_TV
 #import <SalesforceCommonUtils/SFAlertView.h>
+#endif
 
 static SFAuthenticationManager *sharedInstance = nil;
 
