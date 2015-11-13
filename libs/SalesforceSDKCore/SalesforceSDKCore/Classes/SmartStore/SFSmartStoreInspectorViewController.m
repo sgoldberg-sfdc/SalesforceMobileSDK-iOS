@@ -25,7 +25,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
 #import <UIKit/UITextInputTraits.h>
+#if !TARGET_OS_TV
 #import <SalesforceCommonUtils/SFAlertView.h>
+#endif
 
 #import "SFSmartStoreInspectorViewController.h"
 #import "SFSDKResourceUtils.h"
