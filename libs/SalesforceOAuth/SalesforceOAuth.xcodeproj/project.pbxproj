@@ -131,7 +131,7 @@
 		FD2E9BB41BD876DC00504887 /* SalesforceSecurity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceSecurity.framework; path = "../SalesforceSecurity/build/Debug-iphoneos/SalesforceSecurity.framework"; sourceTree = "<group>"; };
 		FD413AC61BE2C69C007BF203 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
 		FD413AC71BE2C69C007BF203 /* Configuration-Developer.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Configuration-Developer.xcconfig"; sourceTree = "<group>"; };
-		FD413AC81BE2C69C007BF203 /* Configuration-Enterprise.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Configuration-Enterprise.xcconfig"; sourceTree = "<group>"; };
+		FD413AC81BE2C69C007BF203 /* Configuration-Distribution.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Configuration-Distribution.xcconfig"; sourceTree = "<group>"; };
 		FD8D93DB1BD5A1BE0042ACC8 /* SalesforceSecurity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SalesforceSecurity.framework; path = "../SalesforceSecurity/build/Debug-appletvos/SalesforceSecurity.framework"; sourceTree = "<group>"; };
 		FD8D93E31BD5A4670042ACC8 /* SalesforceOAuth.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SalesforceOAuth.h; sourceTree = "<group>"; };
 		FDC826F51BD1FE800018C257 /* SalesforceOAuth.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceOAuth.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -189,7 +189,7 @@
 			children = (
 				FD413AC61BE2C69C007BF203 /* Common.xcconfig */,
 				FD413AC71BE2C69C007BF203 /* Configuration-Developer.xcconfig */,
-				FD413AC81BE2C69C007BF203 /* Configuration-Enterprise.xcconfig */,
+				FD413AC81BE2C69C007BF203 /* Configuration-Distribution.xcconfig */,
 				6F8960781A9E9ADF00A48FF1 /* SalesforceOAuth-Common.xcconfig */,
 				6F644CA51A9FCEEB009BF92A /* SalesforceOAuth-Common-Static.xcconfig */,
 				6F89607D1A9E9ADF00A48FF1 /* SalesforceOAuth-Static-iOS-Debug.xcconfig */,
@@ -996,7 +996,7 @@
 		};
 		FD2E9B681BD8740E00504887 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413AC71BE2C69C007BF203 /* Configuration-Developer.xcconfig */;
+			baseConfigurationReference = FD413AC81BE2C69C007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1045,7 +1045,7 @@
 		};
 		FD2E9B691BD8740E00504887 /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413AC81BE2C69C007BF203 /* Configuration-Enterprise.xcconfig */;
+			baseConfigurationReference = FD413AC81BE2C69C007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1094,7 +1094,7 @@
 		};
 		FD2E9B6A1BD8740E00504887 /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413AC81BE2C69C007BF203 /* Configuration-Enterprise.xcconfig */;
+			baseConfigurationReference = FD413AC81BE2C69C007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1204,7 +1204,7 @@
 		};
 		FDC826FB1BD1FE800018C257 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413AC71BE2C69C007BF203 /* Configuration-Developer.xcconfig */;
+			baseConfigurationReference = FD413AC81BE2C69C007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1259,7 +1259,7 @@
 		};
 		FDC826FC1BD1FE800018C257 /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413AC81BE2C69C007BF203 /* Configuration-Enterprise.xcconfig */;
+			baseConfigurationReference = FD413AC81BE2C69C007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -1314,7 +1314,7 @@
 		};
 		FDC826FD1BD1FE800018C257 /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413AC81BE2C69C007BF203 /* Configuration-Enterprise.xcconfig */;
+			baseConfigurationReference = FD413AC81BE2C69C007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";

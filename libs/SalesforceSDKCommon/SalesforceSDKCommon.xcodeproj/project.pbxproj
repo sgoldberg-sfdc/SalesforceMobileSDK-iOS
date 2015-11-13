@@ -53,7 +53,7 @@
 		FD2E9BA81BD8761A00504887 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FD413AC31BE2C64A007BF203 /* Common.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Common.xcconfig; sourceTree = "<group>"; };
 		FD413AC41BE2C64A007BF203 /* Configuration-Developer.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Configuration-Developer.xcconfig"; sourceTree = "<group>"; };
-		FD413AC51BE2C64A007BF203 /* Configuration-Enterprise.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Configuration-Enterprise.xcconfig"; sourceTree = "<group>"; };
+		FD413AC51BE2C64A007BF203 /* Configuration-Distribution.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Configuration-Distribution.xcconfig"; sourceTree = "<group>"; };
 		FD8D93DD1BD5A40E0042ACC8 /* SalesforceSDKCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SalesforceSDKCommon.h; sourceTree = "<group>"; };
 		FDC827961BD217E50018C257 /* SalesforceSDKCommon.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SalesforceSDKCommon.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FDC8279A1BD217E50018C257 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -89,7 +89,7 @@
 			children = (
 				FD413AC31BE2C64A007BF203 /* Common.xcconfig */,
 				FD413AC41BE2C64A007BF203 /* Configuration-Developer.xcconfig */,
-				FD413AC51BE2C64A007BF203 /* Configuration-Enterprise.xcconfig */,
+				FD413AC51BE2C64A007BF203 /* Configuration-Distribution.xcconfig */,
 				6F8960811A9E9DCA00A48FF1 /* SalesforceSDKCommon-Common.xcconfig */,
 				6F8960861A9E9DCA00A48FF1 /* SalesforceSDKCommon-Static-iOS-Debug.xcconfig */,
 				6F8960871A9E9DCA00A48FF1 /* SalesforceSDKCommon-Static-iOS-Release.xcconfig */,
@@ -513,7 +513,7 @@
 		};
 		FD2E9BAA1BD8761A00504887 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413AC41BE2C64A007BF203 /* Configuration-Developer.xcconfig */;
+			baseConfigurationReference = FD413AC51BE2C64A007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -571,7 +571,7 @@
 		};
 		FD33399B1BDC369500D33C3E /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413AC51BE2C64A007BF203 /* Configuration-Enterprise.xcconfig */;
+			baseConfigurationReference = FD413AC51BE2C64A007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -620,7 +620,7 @@
 		};
 		FD33399C1BDC369500D33C3E /* Enterprise-Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413AC51BE2C64A007BF203 /* Configuration-Enterprise.xcconfig */;
+			baseConfigurationReference = FD413AC51BE2C64A007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -710,7 +710,7 @@
 		};
 		FD3339FC1BDC38E300D33C3E /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413AC51BE2C64A007BF203 /* Configuration-Enterprise.xcconfig */;
+			baseConfigurationReference = FD413AC51BE2C64A007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -765,7 +765,7 @@
 		};
 		FD3339FD1BDC38E300D33C3E /* Enterprise-Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413AC51BE2C64A007BF203 /* Configuration-Enterprise.xcconfig */;
+			baseConfigurationReference = FD413AC51BE2C64A007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
@@ -911,7 +911,7 @@
 		};
 		FDC8279C1BD217E50018C257 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FD413AC41BE2C64A007BF203 /* Configuration-Developer.xcconfig */;
+			baseConfigurationReference = FD413AC51BE2C64A007BF203 /* Configuration-Distribution.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
