@@ -36,6 +36,7 @@ static NSString* const kSFPushNotificationEndPoint = @"services/data/v33.0/sobje
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-const-variable"
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 //
 // < iOS 8 notification types
@@ -130,7 +131,10 @@ static NSUInteger const kiOS8UserNotificationTypes = ((1 << 0) | (1 << 1) | (1 <
         [self registerNotificationsForiOS8];
     } else {
 #if !TARGET_OS_TV
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [[SFApplicationHelper sharedApplication] registerForRemoteNotificationTypes:kiOS7RemoteNotificationTypes];
+#pragma clang diagnostic pop
 #endif
     }
 }
