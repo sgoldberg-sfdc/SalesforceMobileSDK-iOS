@@ -124,6 +124,8 @@
 
 @property (nonatomic, strong, readonly) NSError *error;
 
+- (instancetype)init NS_UNAVAILABLE;
+
 + (instancetype)actionWithHTTPMethod:(NSString*)method onURL:(NSURL*)url withResponseBlock:(CSFActionResponseBlock)responseBlock;
 
 - (instancetype)initWithResponseBlock:(CSFActionResponseBlock)responseBlock NS_DESIGNATED_INITIALIZER;
