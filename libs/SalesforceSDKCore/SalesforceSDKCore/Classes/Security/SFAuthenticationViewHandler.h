@@ -24,13 +24,18 @@
  */
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @class SFAuthenticationManager;
 
 /**
  Block definition for displaying the auth view.
  */
+#if TARGET_OS_TV
+typedef void (^SFAuthViewDisplayBlock)(SFAuthenticationManager *, UIView *);
+#else
 typedef void (^SFAuthViewDisplayBlock)(SFAuthenticationManager *, UIWebView *);
+#endif
 
 /**
  Block definition for dismissing the auth view.

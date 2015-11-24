@@ -25,6 +25,9 @@
 #import <QuartzCore/QuartzCore.h>
 #import <objc/runtime.h>
 #import <UIKit/UITextInputTraits.h>
+#if !TARGET_OS_TV
+#import <SalesforceCommonUtils/SFAlertView.h>
+#endif
 
 #import "SFSmartStoreInspectorViewController.h"
 #import "SFSDKResourceUtils.h"
@@ -154,7 +157,9 @@ static NSUInteger   const kLabelTag              = 99;
 
 - (void) showAlert:(NSString*)message
 {
-    [[[UIAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:@"inspectorQueryFailed"] message:message delegate:self cancelButtonTitle:[SFSDKResourceUtils localizedString:@"inspectorOK"] otherButtonTitles:nil] show];
+#if !TARGET_OS_TV
+    [[[SFAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:@"inspectorQueryFailed"] message:message delegate:self cancelButtonTitle:[SFSDKResourceUtils localizedString:@"inspectorOK"] otherButtonTitles:nil] show];
+#endif
 }
 
 - (void) soupsButtonClicked
@@ -409,7 +414,9 @@ static NSUInteger   const kLabelTag              = 99;
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString* label = [[self cellDatawithIndexPath:indexPath] description];
-    [[[UIAlertView alloc] initWithTitle:nil message:label delegate:self cancelButtonTitle:[SFSDKResourceUtils localizedString:@"inspectorOK"] otherButtonTitles:nil] show];
+#if !TARGET_OS_TV
+    [[[SFAlertView alloc] initWithTitle:nil message:label delegate:self cancelButtonTitle:[SFSDKResourceUtils localizedString:@"inspectorOK"] otherButtonTitles:nil] show];
+#endif
 }
 
 

@@ -26,8 +26,11 @@
 #import <objc/runtime.h>
 
 #import "SFPasscodeViewController.h"
-#import <SalesforceSecurity/SFPasscodeManager.h>
 #import "SFSDKResourceUtils.h"
+#import <SalesforceSecurity/SFPasscodeManager.h>
+#if !TARGET_OS_TV
+#import <SalesforceCommonUtils/SFAlertView.h>
+#endif
 
 // Private view layout constants
 
@@ -277,7 +280,8 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
 
 - (void)forgotPassAction
 {
-    UIAlertView *logoutAlert = [[UIAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:@"forgotPasscodeTitle"]
+#if !TARGET_OS_TV
+    SFAlertView *logoutAlert = [[SFAlertView alloc] initWithTitle:[SFSDKResourceUtils localizedString:@"forgotPasscodeTitle"]
                                                           message:[SFSDKResourceUtils localizedString:@"logoutAlertViewTitle"]
                                                          delegate:self
                                                 cancelButtonTitle:[SFSDKResourceUtils localizedString:@"logoutNo"]
@@ -285,8 +289,10 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
     logoutAlert.tag = kPasscodeDialogTag;
     [self log:SFLogLevelDebug msg:@"SFPasscodeViewController forgotPassAction"];
     [logoutAlert show];
+#endif
 }
 
+#if !TARGET_OS_TV
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (alertView.tag == kPasscodeDialogTag) {
@@ -298,6 +304,7 @@ static NSUInteger   const kPasscodeDialogTag                = 111;
         }
     }
 }
+#endif
 
 - (void)viewWillLayoutSubviews
 {

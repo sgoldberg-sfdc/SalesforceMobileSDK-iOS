@@ -29,6 +29,7 @@
 #import "SFOAuthOrgAuthConfiguration.h"
 #import <SalesforceSecurity/SFSDKCryptoUtils.h>
 #import <SalesforceSDKCommon/NSData+SFSDKUtils.h>
+#import <SalesforceCommonUtils/SalesforceCommonUtils.h>
 
 // Public constants
 
@@ -161,7 +162,9 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
     _responseData = nil;
     _scopes = nil;
     [self stopRefreshFlowConnectionTimer];
+#if !TARGET_OS_TV
     _view.delegate = nil;
+#endif
     _view = nil;
 }
 
@@ -264,7 +267,9 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
 }
 
 - (void)stopAuthentication {
+#if !TARGET_OS_TV
     [self.view stopLoading];
+#endif
     [self.connection cancel];
     self.connection = nil;
     [self stopRefreshFlowConnectionTimer];
@@ -465,7 +470,7 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
     // Launch the native browser.
     [self log:SFLogLevelDebug format:@"%@: Initiating native browser flow with URL %@", NSStringFromSelector(_cmd), approvalUrl];
     NSURL *nativeBrowserUrl = [NSURL URLWithString:approvalUrl];
-    BOOL browserOpenSucceeded = [[UIApplication sharedApplication] openURL:nativeBrowserUrl];
+    BOOL browserOpenSucceeded = [SFApplicationHelper openURL:nativeBrowserUrl];
     if (!browserOpenSucceeded) {
         [self log:SFLogLevelError format:@"%@: Could not launch native browser with URL %@", NSStringFromSelector(_cmd), approvalUrl];
         NSError *launchError = [[self class] errorWithType:kSFOAuthErrorTypeBrowserLaunchFailed description:@"The native browser failed to launch for advanced authentication."];
@@ -489,6 +494,7 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
     
     [self configureWebUserAgent];
     
+#if !TARGET_OS_TV
     if (nil == self.view) {
         // lazily create web view if needed
         self.view = [[UIWebView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -504,8 +510,9 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
     if ([self.delegate respondsToSelector:@selector(oauthCoordinator:willBeginAuthenticationWithView:)]) {
         [self.delegate oauthCoordinator:self willBeginAuthenticationWithView:self.view];
     }
+#endif
     
-    // optional query params: 
+    // optional query params:
     //     state - opaque state value to be passed back
     //     immediate - determines whether the user should be prompted for login and approval (default false)
     
@@ -539,7 +546,9 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
 	[request setHTTPShouldHandleCookies:NO]; // don't use shared cookies
     [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData]; // don't use cache
 	
+#if !TARGET_OS_TV
 	[self.view loadRequest:request];
+#endif
 }
 
 - (void)beginTokenEndpointFlow:(SFOAuthTokenEndpointFlow)flowType {
@@ -848,6 +857,8 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
 
 #pragma mark - UIWebViewDelegate (User-Agent Token Flow)
 
+#if !TARGET_OS_TV
+
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
     
     if (self.credentials.logLevel < kSFOAuthLogLevelWarning) {
@@ -915,6 +926,8 @@ static NSString * const kOAuthUserAgentUserDefaultsKey          = @"UserAgent";
         [self notifyDelegateOfFailure:error authInfo:self.authInfo];
     }
 }
+
+#endif
 
 #pragma mark - NSURLConnectionDelegate (Refresh Token Flow)
 

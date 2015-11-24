@@ -63,6 +63,7 @@ static NSString * const kKeyStoreEncryptedStoresKey = @"com.salesforce.smartstor
 
 + (BOOL)updateStoreLocationForStore:(NSString *)storeName
 {
+#if !TARGET_OS_TV
     NSString *origStoreDirPath = [SFSmartStoreUpgrade legacyStoreDirectoryForStoreName:storeName];
     NSString *origStoreFilePath = [SFSmartStoreUpgrade legacyFullDbFilePathForStoreName:storeName];
     NSString *newStoreDirPath = [[SFSmartStoreDatabaseManager sharedManager] storeDirectoryForStoreName:storeName];
@@ -92,11 +93,13 @@ static NSString * const kKeyStoreEncryptedStoresKey = @"com.salesforce.smartstor
     
     // Remove the old store directory.
     [[NSFileManager defaultManager] removeItemAtPath:origStoreDirPath error:nil];
+#endif
     return YES;
 }
 
 + (void)updateEncryption
 {
+#if !TARGET_OS_TV
     [SFLogger log:[SFSmartStoreUpgrade class] level:SFLogLevelInfo msg:@"Updating encryption method for all stores, where necessary."];
     NSArray *allStoreNames = [[SFSmartStoreDatabaseManager sharedManager] allStoreNames];
     [SFLogger log:[SFSmartStoreUpgrade class] level:SFLogLevelInfo format:@"Number of stores to update: %lu", (unsigned long)[allStoreNames count]];
@@ -110,10 +113,12 @@ static NSString * const kKeyStoreEncryptedStoresKey = @"com.salesforce.smartstor
             [SFSmartStore removeSharedStoreWithName:storeName forUser:currentUser];
         }
     }
+#endif
 }
 
 + (BOOL)updateEncryptionForStore:(NSString *)storeName user:(SFUserAccount *)user
 {
+#if !TARGET_OS_TV
     if (![[SFSmartStoreDatabaseManager sharedManagerForUser:user] persistentStoreExists:storeName]) {
         [SFLogger log:[SFSmartStoreUpgrade class] level:SFLogLevelInfo format:@"Store '%@' does not exist on the filesystem.  Skipping.", storeName];
         return YES;
@@ -121,6 +126,7 @@ static NSString * const kKeyStoreEncryptedStoresKey = @"com.salesforce.smartstor
         [SFLogger log:[SFSmartStoreUpgrade class] level:SFLogLevelInfo format:@"Store '%@' is already using the current encryption scheme.  Skipping.", storeName];
         return YES;
     }
+#endif
     
     // All SmartStore encryption key management is now handled by SFKeyStoreManager.  We will convert
     // each store to use that infrastructure, in this method.
@@ -175,6 +181,9 @@ static NSString * const kKeyStoreEncryptedStoresKey = @"com.salesforce.smartstor
 
 + (BOOL)changeEncryptionForStore:(NSString *)storeName user:(SFUserAccount *)user oldKey:(NSString *)oldKey newKey:(NSString *)newKey
 {
+#if TARGET_OS_TV
+    return NO;
+#else
     NSString * const kEncryptionChangeErrorMessage = @"Error changing the encryption key for store '%@': %@";
     NSString * const kNewEncryptionErrorMessage = @"Error encrypting the unencrypted store '%@': %@";
     NSString * const kDecryptionErrorMessage = @"Error decrypting the encrypted store '%@': %@";
@@ -228,6 +237,7 @@ static NSString * const kKeyStoreEncryptedStoresKey = @"com.salesforce.smartstor
             return YES;
         }
     }
+#endif
 }
 
 + (BOOL)usesKeyStoreEncryptionForUser:(SFUserAccount *)user store:(NSString *)storeName

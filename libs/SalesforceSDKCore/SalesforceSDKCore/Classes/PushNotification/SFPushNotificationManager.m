@@ -23,6 +23,7 @@
  */
 
 #import <SalesforceCommonUtils/NSString+SFAdditions.h>
+#import <SalesforceCommonUtils/SFApplicationHelper.h>
 #import <SalesforceSDKCore/SFPreferences.h>
 #import "SFPushNotificationManager.h"
 #import "SFAuthenticationManager.h"
@@ -35,11 +36,14 @@ static NSString* const kSFPushNotificationEndPoint = @"services/data/v33.0/sobje
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-const-variable"
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 //
 // < iOS 8 notification types
 //
+#if !TARGET_OS_TV
 static UIRemoteNotificationType const kiOS7RemoteNotificationTypes = UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert;
+#endif
 
 //
 // >= iOS 8 notification types have to be NSUInteger, for backward compatibility with < iOS 8 build environments.
@@ -123,10 +127,15 @@ static NSUInteger const kiOS8UserNotificationTypes = ((1 << 0) | (1 << 1) | (1 <
     [self log:SFLogLevelInfo msg:@"Registering with Apple for remote push notifications"];
     
     // [UIApplication registerUserNotificationSettings:] is how iOS 8 and above registers for notifications.
-    if ([[UIApplication sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+    if ([[SFApplicationHelper sharedApplication] respondsToSelector:@selector(registerUserNotificationSettings:)]) {
         [self registerNotificationsForiOS8];
     } else {
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:kiOS7RemoteNotificationTypes];
+#if !TARGET_OS_TV
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        [[SFApplicationHelper sharedApplication] registerForRemoteNotificationTypes:kiOS7RemoteNotificationTypes];
+#pragma clang diagnostic pop
+#endif
     }
 }
 
@@ -151,8 +160,8 @@ static NSUInteger const kiOS8UserNotificationTypes = ((1 << 0) | (1 << 1) | (1 <
     if (settingsForTypesRetVal)
         CFRetain(settingsForTypesRetVal);
     
-    [[UIApplication sharedApplication] performSelector:@selector(registerUserNotificationSettings:) withObject:(__bridge_transfer id)settingsForTypesRetVal];
-    [[UIApplication sharedApplication] performSelector:@selector(registerForRemoteNotifications)];
+    [[SFApplicationHelper sharedApplication] performSelector:@selector(registerUserNotificationSettings:) withObject:(__bridge_transfer id)settingsForTypesRetVal];
+    [[SFApplicationHelper sharedApplication] performSelector:@selector(registerForRemoteNotifications)];
 }
 
 - (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceTokenData

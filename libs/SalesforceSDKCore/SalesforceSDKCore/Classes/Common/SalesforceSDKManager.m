@@ -33,6 +33,7 @@
 #import <SalesforceSecurity/SFPasscodeManager.h>
 #import <SalesforceSecurity/SFPasscodeProviderManager.h>
 #import <SalesforceCommonUtils/SFInactivityTimerCenter.h>
+#import <SalesforceCommonUtils/SFApplicationHelper.h>
 
 // Error constants
 NSString * const kSalesforceSDKManagerErrorDomain     = @"com.salesforce.sdkmanager.error";
@@ -52,7 +53,7 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
     return !(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone);
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         return UIInterfaceOrientationMaskPortrait;
@@ -158,7 +159,7 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
     _isLaunching = YES;
     self.launchActions = SFSDKLaunchActionNone;
     if ([SFRootViewManager sharedManager].mainWindow == nil) {
-        [SFRootViewManager sharedManager].mainWindow = [UIApplication sharedApplication].windows[0];
+        [SFRootViewManager sharedManager].mainWindow = [SFApplicationHelper sharedApplication].windows[0];
     }
     
     NSError *launchStateError = nil;
@@ -547,10 +548,12 @@ static NSString * const kAppSettingsAccountLogout = @"account_logout_pref";
 {
     if ([SFManagedPreferences sharedPreferences].clearClipboardOnBackground) {
         [self log:SFLogLevelInfo format:@"%@: Clearing clipboard on app background.", NSStringFromSelector(_cmd)];
+#if !TARGET_OS_TV
         [UIPasteboard generalPasteboard].strings = @[ ];
         [UIPasteboard generalPasteboard].URLs = @[ ];
         [UIPasteboard generalPasteboard].images = @[ ];
         [UIPasteboard generalPasteboard].colors = @[ ];
+#endif
     }
 }
 

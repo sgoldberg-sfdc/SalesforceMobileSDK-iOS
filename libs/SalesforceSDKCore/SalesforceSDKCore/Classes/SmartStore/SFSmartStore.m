@@ -140,11 +140,13 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
         _isGlobal = isGlobal;
         _user = user;
         
+#if !TARGET_OS_TV
         if (_isGlobal) {
             _dbMgr = [SFSmartStoreDatabaseManager sharedGlobalManager];
         } else {
             _dbMgr = [SFSmartStoreDatabaseManager sharedManagerForUser:_user];
         }
+#endif
         
         // Setup listening for data protection available / unavailable
         _dataProtectionKnownAvailable = NO;
@@ -350,7 +352,9 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
             [_allSharedStores[userKey] removeObjectForKey:storeName];
         }
         [SFSmartStoreUpgrade setUsesKeyStoreEncryption:NO forUser:user store:storeName];
+#if !TARGET_OS_TV
         [[SFSmartStoreDatabaseManager sharedManagerForUser:user] removeStoreDir:storeName];
+#endif
     }
 }
 
@@ -362,7 +366,9 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
             [existingStore.storeQueue close];
             [_allGlobalSharedStores removeObjectForKey:storeName];
         }
+#if !TARGET_OS_TV
         [[SFSmartStoreDatabaseManager sharedGlobalManager] removeStoreDir:storeName];
+#endif
     }
 }
 
@@ -379,20 +385,24 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
             return;
         }
         
+#if !TARGET_OS_TV
         NSArray *allStoreNames = [[SFSmartStoreDatabaseManager sharedManagerForUser:user] allStoreNames];
         for (NSString *storeName in allStoreNames) {
             [self removeSharedStoreWithName:storeName forUser:user];
         }
         [SFSmartStoreDatabaseManager removeSharedManagerForUser:user];
+#endif
     }
 }
 
 + (void)removeAllGlobalStores {
     @synchronized (self) {
+#if !TARGET_OS_TV
         NSArray *allStoreNames = [[SFSmartStoreDatabaseManager sharedGlobalManager] allStoreNames];
         for (NSString *storeName in allStoreNames) {
             [self removeSharedGlobalStoreWithName:storeName];
         }
+#endif
     }
 }
 
@@ -486,9 +496,11 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
 {
     // TODO call after opening db
     NSArray* longOperations = [self getLongOperations];
+#if !TARGET_OS_TV
     for(SFAlterSoupLongOperation* longOperation in longOperations) {
         [longOperation run];
     }
+#endif
 }
 
 - (NSArray*) getLongOperations
@@ -513,8 +525,10 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
         long rowId = [frs longForColumn:ID_COL];
         NSDictionary *details = [SFJsonUtils objectFromJSONString:[frs stringForColumn:DETAILS_COL]];
         SFAlterSoupStep status = (SFAlterSoupStep)[frs intForColumn:STATUS_COL];
+#if !TARGET_OS_TV
         SFAlterSoupLongOperation *longOperation = [[SFAlterSoupLongOperation alloc] initWithStore:self rowId:rowId details:details status:status];
         [longOperations addObject:longOperation];
+#endif
     }
     [frs close];
     
@@ -1508,8 +1522,10 @@ NSString *const SOUP_LAST_MODIFIED_DATE = @"_soupLastModifiedDate";
 - (BOOL) alterSoup:(NSString*)soupName withIndexSpecs:(NSArray*)indexSpecs reIndexData:(BOOL)reIndexData
 {
     if ([self soupExists:soupName]) {
+#if !TARGET_OS_TV
         SFAlterSoupLongOperation* operation = [[SFAlterSoupLongOperation alloc] initWithStore:self soupName:soupName newIndexSpecs:indexSpecs reIndexData:reIndexData];
         [operation run];
+#endif
         return YES;
     } else {
         return NO;
