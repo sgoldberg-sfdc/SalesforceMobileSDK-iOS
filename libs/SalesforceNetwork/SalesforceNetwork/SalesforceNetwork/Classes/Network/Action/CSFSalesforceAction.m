@@ -133,7 +133,12 @@ static void * kObservingKey = &kObservingKey;
         } else if (response.statusCode >= 400 && [content isKindOfClass:[NSDictionary class]]) {
             NSDictionary *errorDict = (NSDictionary*)content;
             msgObj = errorDict[@"message"] ?: (errorDict[@"msg"] ? :errorDict[@"errorMsg"]);
-            errorCode = errorDict[@"errorCode"] ;
+            id errorCodeObject = errorDict[@"errorCode"] ;
+            if ([errorCodeObject isKindOfClass:[NSString class]]) {
+                errorCode = errorCodeObject;
+            } else {
+                errorCode = [errorCodeObject description];
+            }
         }
         
         CSFNetwork *network = self.enqueuedNetwork;
