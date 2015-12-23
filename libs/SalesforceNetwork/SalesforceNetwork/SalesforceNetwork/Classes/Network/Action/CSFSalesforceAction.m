@@ -75,24 +75,28 @@ static void * kObservingKey = &kObservingKey;
             [_enqueuedNetwork removeObserver:self forKeyPath:kNetworkInstanceURLPath context:kObservingKey];
             [_enqueuedNetwork removeObserver:self forKeyPath:kNetworkCommunityIDPath context:kObservingKey];
         }
+        // set new network.
+        [super setEnqueuedNetwork:enqueuedNetwork];
+        
         // add observers to the new network.
-        if (enqueuedNetwork) {
-            [enqueuedNetwork addObserver:self forKeyPath:kNetworkAccessTokenPath
-                                 options:(NSKeyValueObservingOptionInitial |
-                                          NSKeyValueObservingOptionNew)
-                                 context:kObservingKey];
-            [enqueuedNetwork addObserver:self forKeyPath:kNetworkInstanceURLPath
-                                 options:(NSKeyValueObservingOptionInitial |
-                                          NSKeyValueObservingOptionNew)
-                                 context:kObservingKey];
-            [enqueuedNetwork addObserver:self forKeyPath:kNetworkCommunityIDPath
-                                 options:(NSKeyValueObservingOptionInitial |
-                                          NSKeyValueObservingOptionNew)
-                                 context:kObservingKey];
+        if (_enqueuedNetwork) {
+            [_enqueuedNetwork addObserver:self forKeyPath:kNetworkAccessTokenPath
+                                  options:(NSKeyValueObservingOptionInitial |
+                                           NSKeyValueObservingOptionNew)
+                                  context:kObservingKey];
+            [_enqueuedNetwork addObserver:self forKeyPath:kNetworkInstanceURLPath
+                                  options:(NSKeyValueObservingOptionInitial |
+                                           NSKeyValueObservingOptionNew)
+                                  context:kObservingKey];
+            [_enqueuedNetwork addObserver:self forKeyPath:kNetworkCommunityIDPath
+                                  options:(NSKeyValueObservingOptionInitial |
+                                           NSKeyValueObservingOptionNew)
+                                  context:kObservingKey];
         }
+    } else {
+        // set new network.
+        [super setEnqueuedNetwork:enqueuedNetwork];
     }
-    // set new network.
-    [super setEnqueuedNetwork:enqueuedNetwork];
 }
 
 - (NSDictionary *)headersForAction {
