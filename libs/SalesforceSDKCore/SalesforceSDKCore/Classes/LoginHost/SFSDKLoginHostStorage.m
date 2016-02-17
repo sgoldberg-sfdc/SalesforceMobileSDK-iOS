@@ -81,8 +81,10 @@ static NSString * const SFSDKLoginHostNameKey = @"ChatterLoginHostNameKey";
     for (SFSDKLoginHost *host in self.loginHostList) {
         if (host.isDeletable) {
             NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-            [dic setObject:host.name forKey:SFSDKLoginHostNameKey];
-            [dic setObject:host.host forKey:SFSDKLoginHostKey];
+            NSString *hostName = host.name ? : @"";
+            NSString *hostAddress = host.host ? : hostName;
+            [dic setObject:hostName forKey:SFSDKLoginHostNameKey];
+            [dic setObject:hostAddress forKey:SFSDKLoginHostKey];
             [persistedList addObject:dic];
         }
     }
