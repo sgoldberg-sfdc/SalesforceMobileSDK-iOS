@@ -31,6 +31,8 @@
 #import "SFApplicationHelper.h"
 #import "SFSDKAppFeatureMarkers.h"
 #import "SFNetwork.h"
+#import "SFSDKCryptoUtils.h"
+#import "SFCrypto.h"
 
 static NSString* const kSFDeviceToken = @"deviceToken";
 static NSString* const kSFDeviceSalesforceId = @"deviceSalesforceId";
@@ -187,7 +189,11 @@ static NSString * const kSFAppFeaturePushNotifications = @"PN";
     
     // Body
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
-    NSDictionary* bodyDict = @{@"ConnectionToken":_deviceToken, @"ServiceType":@"Apple", @"ApplicationBundle":bundleId};
+    NSString *rsaPublicKey = [self getRSAPublicKey];
+    NSDictionary *bodyDict = @{@"ConnectionToken":_deviceToken, @"ServiceType":@"Apple", @"ApplicationBundle":bundleId};
+    if (rsaPublicKey != nil) {
+        bodyDict = @{@"ConnectionToken":_deviceToken, @"ServiceType":@"Apple", @"ApplicationBundle":bundleId, @"RsaPublicKey":rsaPublicKey};
+    }
     [request setHTTPBody:[SFJsonUtils JSONDataRepresentation:bodyDict]];
     
     // Send
@@ -280,6 +286,16 @@ static NSString * const kSFAppFeaturePushNotifications = @"PN";
         [SFSDKCoreLogger i:[self class] format:@"Re-registering for Salesforce notification because application is being foregrounded"];
         [self registerForSalesforceNotifications];
     }
+}
+
+- (NSString *)getRSAPublicKey
+{
+    NSString *rsaPublicKey = nil;
+    NSString *name = [SFCrypto baseAppIdentifier];
+    if (name != nil) {
+        rsaPublicKey = [SFSDKCryptoUtils getRSAPublicKeyStringWithName:name keyLength:128];
+    }
+    return rsaPublicKey;
 }
 
 @end
