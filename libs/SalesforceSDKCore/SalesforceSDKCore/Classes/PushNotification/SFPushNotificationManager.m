@@ -36,7 +36,7 @@
 
 static NSString* const kSFDeviceToken = @"deviceToken";
 static NSString* const kSFDeviceSalesforceId = @"deviceSalesforceId";
-static NSString* const kSFPushNotificationEndPoint = @"services/data/v42.0/sobjects/MobilePushServiceDevice";
+static NSString* const kSFPushNotificationEndPoint = @"services/data/v43.0/sobjects/MobilePushServiceDevice";
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-const-variable"
@@ -293,7 +293,7 @@ static NSString * const kSFAppFeaturePushNotifications = @"PN";
     NSString *rsaPublicKey = nil;
     NSString *name = [SFCrypto baseAppIdentifier];
     if (name != nil) {
-        rsaPublicKey = [SFSDKCryptoUtils getRSAPublicKeyStringWithName:name keyLength:128];
+        rsaPublicKey = [SFSDKCryptoUtils getRSAPublicKeyStringWithName:name keyLength:2048];
     }
     return rsaPublicKey;
 }
