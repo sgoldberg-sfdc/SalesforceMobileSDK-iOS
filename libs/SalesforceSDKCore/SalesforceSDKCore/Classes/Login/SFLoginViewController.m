@@ -280,12 +280,12 @@ SFSDK_USE_DEPRECATED_END
 #pragma mark - SFSDKLoginHostDelegate Methods
 
 - (void)hostListViewControllerDidAddLoginHost:(SFSDKLoginHostListViewController *)hostListViewController {
-    [self hideHostListView:NO];
+    [self hideHostListView:YES];
 }
 
 - (void)hostListViewControllerDidSelectLoginHost:(SFSDKLoginHostListViewController *)hostListViewController {
     // Hide the popover
-    [self hideHostListView:NO];
+    [self hideHostListView:YES];
 }
 
 - (void)hostListViewControllerDidCancelLoginHost:(SFSDKLoginHostListViewController *)hostListViewController {
