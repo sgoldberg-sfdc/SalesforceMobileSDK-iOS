@@ -89,7 +89,9 @@ SFSDK_USE_DEPRECATED_END
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
-    [self layoutViews];
+    if (self.navigationController == nil) {
+        [self layoutViews];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -157,13 +159,16 @@ SFSDK_USE_DEPRECATED_END
 #pragma mark - Setup Navigation bar
 
 - (void)setupNavigationBar {
-    self.navBar = [[UINavigationBar alloc] initWithFrame:CGRectZero];
     NSString *title = [SFSDKResourceUtils localizedString:@"TITLE_LOGIN"];
-
-    // Setup top item.
     UINavigationItem *item = [[UINavigationItem alloc] initWithTitle:title];
-    self.navBar.items = @[item];
-
+    
+    if (self.navigationController != nil) {
+        self.navBar = self.navigationController.navigationBar;
+    } else {
+        self.navBar = [[UINavigationBar alloc] initWithFrame:CGRectZero];
+        self.navBar.items = @[item];
+    }
+    
     // Hides the gear icon if there are no hosts to switch to.
     SFManagedPreferences *managedPreferences = [SFManagedPreferences sharedPreferences];
     if (managedPreferences.onlyShowAuthorizedHosts && managedPreferences.loginHosts.count == 0) {
@@ -178,7 +183,11 @@ SFSDK_USE_DEPRECATED_END
         self.navBar.topItem.rightBarButtonItem = rightButton;
     }
     [self styleNavigationBar:self.navBar];
-    [self.view addSubview:self.navBar];
+    
+    if (self.navigationController == nil) {
+        [self.view addSubview:self.navBar];
+    }
+    
     [self setNeedsStatusBarAppearanceUpdate];
 }
 
@@ -232,7 +241,9 @@ SFSDK_USE_DEPRECATED_END
         _oauthView = oauthView;
         if (nil != _oauthView) {
             [self.view addSubview:_oauthView];
-            [self layoutViews];
+            if (self.navigationController == nil) {
+                [self layoutViews];
+            }
         }
     }
 }
@@ -266,6 +277,7 @@ SFSDK_USE_DEPRECATED_END
     if (self.navBarTextColor) {
         navigationBar.tintColor = self.navBarTextColor;
         [navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName: self.navBarTextColor}];
+        
     } else {
         // default color
         navigationBar.tintColor = [UIColor whiteColor];
