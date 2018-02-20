@@ -29,6 +29,7 @@
 #import <Foundation/Foundation.h>
 #import "SFSDKLoginViewControllerConfig.h"
 #import "UIColor+SFColors.h"
+
 @implementation SFSDKLoginViewControllerConfig
 
 - (instancetype)init {
@@ -36,6 +37,7 @@
     self = [super init];
     if (self) {
         _navBarColor = [UIColor salesforceBlueColor];
+        _navBarTitleColor = [UIColor blackColor];
         _navBarFont = nil;
         _navBarTextColor = [UIColor whiteColor];
         _showNavbar = YES;
