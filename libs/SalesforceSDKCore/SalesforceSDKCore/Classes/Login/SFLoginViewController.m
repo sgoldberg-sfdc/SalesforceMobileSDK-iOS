@@ -159,28 +159,28 @@ SFSDK_USE_DEPRECATED_END
 #pragma mark - Setup Navigation bar
 
 - (void)setupNavigationBar {
-    NSString *title = [SFSDKResourceUtils localizedString:@"TITLE_LOGIN"];
-    UINavigationItem *item = [[UINavigationItem alloc] initWithTitle:title];
-    
     if (self.navigationController != nil) {
         self.navBar = self.navigationController.navigationBar;
     } else {
         self.navBar = [[UINavigationBar alloc] initWithFrame:CGRectZero];
-        self.navBar.items = @[item];
+        self.navBar.items = @[[self createTitleItem]];
     }
-    
+
     // Hides the gear icon if there are no hosts to switch to.
     SFManagedPreferences *managedPreferences = [SFManagedPreferences sharedPreferences];
     if (managedPreferences.onlyShowAuthorizedHosts && managedPreferences.loginHosts.count == 0) {
         self.config.showSettingsIcon = NO;
     }
     if(self.showSettingsIcon) {
-
         // Setup right bar button.
-        UIImage *image = [[SFSDKResourceUtils imageNamed:@"login-window-gear"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        UIBarButtonItem *rightButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(showLoginHost:)];
-        rightButton.accessibilityLabel = [SFSDKResourceUtils localizedString:@"LOGIN_CHOOSE_SERVER"];
-        self.navBar.topItem.rightBarButtonItem = rightButton;
+        UIBarButtonItem *button = [self createSettingsButton];
+        if (!button.target){
+            [button setTarget:self];
+        }
+        if (!button.action){
+            [button setAction:@selector(showLoginHost:)];
+        }
+        self.navBar.topItem.rightBarButtonItem = button;
     }
     [self styleNavigationBar:self.navBar];
     
@@ -194,20 +194,45 @@ SFSDK_USE_DEPRECATED_END
 - (void)setupBackButton {
     // setup left bar button
     if ([self shouldShowBackButton]) {
-        UIImage *image = [[SFSDKResourceUtils imageNamed:@"globalheader-back-arrow"]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        self.navBar.topItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(backToPreviousHost:)];
+        UIBarButtonItem *button = [self createBackButton];
+        if (!button.target){
+            [button setTarget:self];
+        }
+        if (!button.action){
+            [button setAction:@selector(backToPreviousHost:)];
+        }
+        self.navBar.topItem.leftBarButtonItem = button;
     } else {
         self.navBar.topItem.leftBarButtonItem = nil;
     }
 }
 
 - (BOOL)shouldShowBackButton {
-    if ([SFUserAccountManager sharedInstance].idpEnabled) {
+    if (self.config.shouldDisplayBackButton || [SFUserAccountManager sharedInstance].idpEnabled) {
         return YES;
     }
     NSInteger totalAccounts = [SFUserAccountManager sharedInstance].allUserAccounts.count;
     return  (totalAccounts > 0 && [SFUserAccountManager sharedInstance].currentUser);
 }
+
+- (UIBarButtonItem *)createBackButton {
+    // setup left bar button
+    UIImage *image = [[SFSDKResourceUtils imageNamed:@"globalheader-back-arrow"]  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    return [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(backToPreviousHost:)];
+}
+
+- (UIBarButtonItem *)createSettingsButton {
+    UIImage *image = [[SFSDKResourceUtils imageNamed:@"login-window-gear"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    return [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(showLoginHost:)];
+}
+
+- (UINavigationItem *)createTitleItem {
+    NSString *title = [SFSDKResourceUtils localizedString:@"TITLE_LOGIN"];
+    // Setup top item.
+    UINavigationItem *item = [[UINavigationItem alloc] initWithTitle:title];
+    return item;
+}
+
 
 #pragma mark - Action Methods
 
@@ -215,7 +240,12 @@ SFSDK_USE_DEPRECATED_END
     [self showHostListView];
 }
 
-- (void)backToPreviousHost:(id)sender {
+- (IBAction)backToPreviousHost:(id)sender {
+    [self handleBackButtonAction];
+}
+
+- (void)handleBackButtonAction {
+    
     if (![SFUserAccountManager sharedInstance].idpEnabled) {
         [[SFSDKWindowManager sharedManager].authWindow dismissWindow];
     }else {
@@ -251,13 +281,13 @@ SFSDK_USE_DEPRECATED_END
 #pragma mark - Layout Methods
 
 - (void)layoutViews {
-
+    
     // Let navBar tell us what height it would prefer at the current orientation
     CGFloat navBarHeight = [self.navBar sizeThatFits:self.view.bounds.size].height;
-
+    
     // Resize navBar
     self.navBar.frame = CGRectMake(0, self.topLayoutGuide.length, self.view.bounds.size.width, navBarHeight);
-
+    
     // resize oAuth view
     if (_oauthView) {
         _oauthView.frame = CGRectMake(0, CGRectGetMaxY(self.navBar.frame), self.view.bounds.size.width, self.view.bounds.size.height - CGRectGetMaxY(self.navBar.frame));
@@ -305,7 +335,11 @@ SFSDK_USE_DEPRECATED_END
 }
 
 - (void)hostListViewController:(SFSDKLoginHostListViewController *)hostListViewController didChangeLoginHost:(SFSDKLoginHost *)newLoginHost {
-    if ([self.delegate respondsToSelector:@selector(loginViewController:didChangeLoginHost:)]) {
+    [self handleLoginHostSelectedAction:newLoginHost];
+}
+
+- (void)handleLoginHostSelectedAction:(SFSDKLoginHost *)newLoginHost {
+    if ([self.delegate  respondsToSelector:@selector(loginViewController:didChangeLoginHost:)]) {
         [self.delegate loginViewController:self didChangeLoginHost:newLoginHost];
     }
 }
@@ -327,7 +361,7 @@ SFSDK_USE_DEPRECATED_END
 - (void)userAccountManager:(SFUserAccountManager *)userAccountManager
         willSwitchFromUser:(SFUserAccount *)fromUser
                     toUser:(SFUserAccount *)toUser {
-        self.previousUserAccount = fromUser;
+    self.previousUserAccount = fromUser;
 }
 
 - ( UIImage * _Nonnull )headerBackgroundImage {
