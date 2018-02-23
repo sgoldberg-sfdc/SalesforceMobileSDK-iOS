@@ -147,7 +147,7 @@ static NSString * const SFDCLoginHostListCellIdentifier = @"SFDCLoginHostListCel
     }
     
     if (config.navBarTextColor) {
-         self.navigationController.navigationBar.tintColor = config.navBarTextColor;
+        self.navigationController.navigationBar.tintColor = config.navBarTextColor;
     }
     
     if (config.navBarFont && config.navBarTitleColor) {

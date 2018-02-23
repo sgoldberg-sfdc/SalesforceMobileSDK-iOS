@@ -126,9 +126,9 @@ static Class<SFSDKOAuthClientProvider> _clientProvider = nil;
                                                [strongSelf.authWindow.viewController.presentedViewController dismissViewControllerAnimated:NO completion:^{
                                                    [strongSelf.authWindow.viewController  presentViewController:controllerToPresent animated:NO completion:nil];
                                                }];
-                                            }else {
-                                                [strongSelf.authWindow.viewController  presentViewController:controllerToPresent animated:NO completion:nil];
-                                            }
+                                           } else {
+                                               [strongSelf.authWindow.viewController  presentViewController:controllerToPresent animated:NO completion:nil];
+                                           }
                                        } dismissBlock:^() {
                                            __strong typeof(weakSelf) strongSelf = weakSelf;
                                            [strongSelf dismissAuthWindow];
