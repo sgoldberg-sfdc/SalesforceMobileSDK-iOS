@@ -114,13 +114,17 @@ static NSString * const kKeyStoreDecryptionFailedMessage = @"Could not decrypt k
 }
 
 - (SFEncryptionKeyPair *)keyPairWithLabel:(NSString *)keyPairLabel andKeyLength:(NSUInteger)keyLength {
-    return [self keyPairWithLabel:keyPairLabel keyLength:keyLength andAccessibleAttribute:kSecAttrAccessibleWhenUnlockedThisDeviceOnly];
+    return [self keyPairWithLabel:keyPairLabel keyLength:keyLength andAccessibleAttribute:nil];
 }
 
 - (SFEncryptionKeyPair *)keyPairWithLabel:(NSString *)keyPairLabel keyLength:(NSUInteger)keyLength andAccessibleAttribute:(CFTypeRef)accessibleAttribute {
-    NSData *privateKey = [SFSDKCryptoUtils getRSAPrivateKeyDataWithName:keyPairLabel keyLength:keyLength andAccessibleAttribute:accessibleAttribute];
+    NSData *privateKey = [SFSDKCryptoUtils getRSAPrivateKeyDataWithName:keyPairLabel keyLength:keyLength];
     NSData *publicKey = [SFSDKCryptoUtils getRSAPublicKeyDataWithName:keyPairLabel keyLength:keyLength];
     SFEncryptionKeyPair *keyPair = [[SFEncryptionKeyPair alloc] initWithPublicKey:publicKey privateKey:privateKey];
+    if (accessibleAttribute != nil) {
+        [SFSDKCryptoUtils updateRSAPublicKeyStringWithName:keyPairLabel keyLength:keyLength withAccessiblity:accessibleAttribute];
+        [SFSDKCryptoUtils updateRSAPrivateKeyStringWithName:keyPairLabel keyLength:keyLength withAccessiblity:accessibleAttribute];
+    }
     return keyPair;
 }
 

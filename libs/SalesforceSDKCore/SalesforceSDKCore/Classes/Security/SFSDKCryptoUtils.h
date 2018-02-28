@@ -132,15 +132,6 @@ extern NSUInteger const kSFPBKDFDefaultSaltByteLength;
 + (nullable NSData *)getRSAPrivateKeyDataWithName:(NSString *)keyName keyLength:(NSUInteger)length;
 
 /**
- * Get RSA private key as NSData with given keyName and length
- * @param keyName The name string used to generate the key.
- * @param length The key length used for key
- * @param accessibleAttribute The accessibility attributed to use for keys
- * @return The key data, or `nil` if no matching key is found
- */
-+ (nullable NSData *)getRSAPrivateKeyDataWithName:(NSString *)keyName keyLength:(NSUInteger)length andAccessibleAttribute:(CFTypeRef)accessibleAttribute;
-
-/**
  * Get RSA public key as NSData with given keyName and length
  * @param keyName The name string used to generate the key.
  * @param length The key length used for key
@@ -163,6 +154,20 @@ extern NSUInteger const kSFPBKDFDefaultSaltByteLength;
  * @return The SecKeyRef, or `nil` if no matching key is found
  */
 + (nullable SecKeyRef)getRSAPrivateKeyRefWithName:(NSString *)keyName keyLength:(NSUInteger)length;
+
+/**
+ * Updates a private key's accessibility to given attribute
+ * @param keyName The name string used to generate the key.
+ * @param accessibleAttribute The accessibility attributed to use for keys
+ */
++ (void)updateRSAPrivateKeyStringWithName:(NSString *)keyName keyLength:(NSUInteger)length withAccessiblity:(CFTypeRef)accessibleAttribute;
+
+/**
+ * Updates a public key's accessibility to given attribute
+ * @param keyName The name string used to generate the key.
+ * @param accessibleAttribute The accessibility attributed to use for keys
+ */
++ (void)updateRSAPublicKeyStringWithName:(NSString *)keyName keyLength:(NSUInteger)length withAccessiblity:(CFTypeRef)accessibleAttribute;
 
 /**
  * Encrypt data with givien SecKeyRef using RSA pkcs1 algorithm

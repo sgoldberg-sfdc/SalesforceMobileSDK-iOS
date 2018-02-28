@@ -81,7 +81,7 @@ static NSString * const kSFRSAPrivateKeyTagPrefix = @"com.salesforce.rsakey.priv
  * @param length The key length used for key
  * @return The key data, or `nil` if no matching key is found
  */
-+ (nullable NSData *)getRSAKeyDataWithTag:(NSString *)keyTagString keyLength:(NSUInteger)length andAccessibleAttribute:(CFTypeRef)accessibleAttribute;
++ (nullable NSData *)getRSAKeyDataWithTag:(NSString *)keyTagString keyLength:(NSUInteger)length;
 
 /**
  * Get RSA SecKeyRef with given keyTagString and length
@@ -157,28 +157,22 @@ static NSString * const kSFRSAPrivateKeyTagPrefix = @"com.salesforce.rsakey.priv
     return [self aesDecryptData:data withKey:key keyLength:kCCKeySizeAES256 iv:iv];
 }
 
-+ (nullable NSData *)getRSAPrivateKeyDataWithName:(NSString *)keyName keyLength:(NSUInteger)length andAccessibleAttribute:(CFTypeRef)accessibleAttribute
-{
-    NSString *tagString = [NSString stringWithFormat:@"%@.%@", kSFRSAPrivateKeyTagPrefix, keyName];
-    return [self getRSAKeyDataWithTag:tagString keyLength:length andAccessibleAttribute:accessibleAttribute];
-}
-
 + (nullable NSData *)getRSAPrivateKeyDataWithName:(NSString *)keyName keyLength:(NSUInteger)length
 {
     NSString *tagString = [NSString stringWithFormat:@"%@.%@", kSFRSAPrivateKeyTagPrefix, keyName];
-    return [self getRSAKeyDataWithTag:tagString keyLength:length andAccessibleAttribute:nil];
+    return [self getRSAKeyDataWithTag:tagString keyLength:length];
 }
 
 + (nullable NSData *)getRSAPublicKeyDataWithName:(NSString *)keyName keyLength:(NSUInteger)length
 {
     NSString *tagString = [NSString stringWithFormat:@"%@.%@", kSFRSAPublicKeyTagPrefix, keyName];
-    return [self getRSAKeyDataWithTag:tagString keyLength:length andAccessibleAttribute:nil];
+    return [self getRSAKeyDataWithTag:tagString keyLength:length];
 }
 
 + (nullable NSString *)getRSAPublicKeyStringWithName:(NSString *)keyName keyLength:(NSUInteger)length
 {
     NSString *tagString = [NSString stringWithFormat:@"%@.%@", kSFRSAPublicKeyTagPrefix, keyName];
-    NSData *keyBits = [self getRSAKeyDataWithTag:tagString keyLength:length andAccessibleAttribute:nil];
+    NSData *keyBits = [self getRSAKeyDataWithTag:tagString keyLength:length];
     if (keyBits != nil) {
         NSData *pemData = [self getRSAPublicKeyAsDER:keyBits];
         if (pemData != nil) {
@@ -384,7 +378,18 @@ static NSString * const kSFRSAPrivateKeyTagPrefix = @"com.salesforce.rsakey.priv
     }
 }
 
-+(nullable NSData *)getRSAKeyDataWithTag:(NSString *)keyTagString keyLength:(NSUInteger)length andAccessibleAttribute:(CFTypeRef)accessibleAttribute {
++ (void)updateRSAPublicKeyStringWithName:(NSString *)keyName keyLength:(NSUInteger)length withAccessiblity:(CFTypeRef)accessibleAttribute {
+    NSString *keyTagString = [NSString stringWithFormat:@"%@.%@", kSFRSAPublicKeyTagPrefix, keyName];
+    [SFSDKCryptoUtils updateRSAKeyWithTag:keyTagString keyLength:length withAccessiblity:accessibleAttribute];
+    
+}
+
++ (void)updateRSAPrivateKeyStringWithName:(NSString *)keyName keyLength:(NSUInteger)length withAccessiblity:(CFTypeRef)accessibleAttribute {
+    NSString *keyTagString = [NSString stringWithFormat:@"%@.%@", kSFRSAPrivateKeyTagPrefix, keyName];
+    [SFSDKCryptoUtils updateRSAKeyWithTag:keyTagString keyLength:length withAccessiblity:accessibleAttribute];
+}
+
++ (void)updateRSAKeyWithTag:(NSString *)keyTagString keyLength:(NSUInteger)length withAccessiblity:(CFTypeRef)accessibleAttribute {
     NSData *tag = [keyTagString dataUsingEncoding:NSUTF8StringEncoding];
     
     NSDictionary *getquery = @{ (id)kSecClass: (id)kSecClassKey,
@@ -394,9 +399,39 @@ static NSString * const kSFRSAPrivateKeyTagPrefix = @"com.salesforce.rsakey.priv
                                 (id)kSecAttrKeySizeInBits: [NSNumber numberWithUnsignedInteger:length],
                                 };
     
-    if (accessibleAttribute != nil) {
-        [[getquery mutableCopy] setObject:(__bridge id)accessibleAttribute forKey:(id)kSecAttrAccessible];
+    CFTypeRef result = NULL;
+    OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)getquery,
+                                          (CFTypeRef *)&result);
+    if (status != errSecSuccess) {
+        NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
+        [SFSDKCoreLogger e:[self class] format:@"Error getting RSA key with tag %@ and length %d. Error code: %@", keyTagString, length, error.localizedDescription];
+        return;
     }
+    
+    NSDictionary *updatedAttributes = @{ (id)kSecAttrAccessible: (__bridge id)accessibleAttribute,
+                                         (id)kSecValueData: (__bridge id)result,};
+    
+    NSDictionary *updateQuery = @{(id)kSecClass: (id)kSecClassKey,
+                                  (id)kSecAttrApplicationTag: tag,
+                                  (id)kSecAttrKeyType: (id)kSecAttrKeyTypeRSA,
+                                  (id)kSecAttrKeySizeInBits: [NSNumber numberWithUnsignedInteger:length],};
+    OSStatus updateItemStatus = SecItemUpdate((CFDictionaryRef)updateQuery,
+                                              (CFDictionaryRef)updatedAttributes);
+    if (updateItemStatus != errSecSuccess) {
+        NSError *error = [NSError errorWithDomain:NSOSStatusErrorDomain code:status userInfo:nil];
+        [SFSDKCoreLogger e:[self class] format:@"Error updating RSA key with tag %@ and length %d. Error code: %@", keyTagString, length, error.localizedDescription];
+    }
+}
+
++(nullable NSData *)getRSAKeyDataWithTag:(NSString *)keyTagString keyLength:(NSUInteger)length {
+    NSData *tag = [keyTagString dataUsingEncoding:NSUTF8StringEncoding];
+    
+    NSDictionary *getquery = @{ (id)kSecClass: (id)kSecClassKey,
+                                (id)kSecAttrApplicationTag: tag,
+                                (id)kSecAttrKeyType: (id)kSecAttrKeyTypeRSA,
+                                (id)kSecReturnData: @YES,
+                                (id)kSecAttrKeySizeInBits: [NSNumber numberWithUnsignedInteger:length],
+                                };
     
     NSData *keyBits = nil;
     CFTypeRef result = NULL;
