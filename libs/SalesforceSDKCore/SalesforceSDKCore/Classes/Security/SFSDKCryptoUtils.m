@@ -81,7 +81,7 @@ static NSString * const kSFRSAPrivateKeyTagPrefix = @"com.salesforce.rsakey.priv
  * @param length The key length used for key
  * @return The key data, or `nil` if no matching key is found
  */
-+ (nullable NSData *)getRSAKeyDataWithTag:(NSString *)keyTagString keyLength:(NSUInteger)length;
++ (nullable NSData *)getRSAKeyDataWithTag:(NSString *)keyTagString keyLength:(NSUInteger)length andAccessibleAttribute:(CFTypeRef)accessibleAttribute;
 
 /**
  * Get RSA SecKeyRef with given keyTagString and length
@@ -157,16 +157,28 @@ static NSString * const kSFRSAPrivateKeyTagPrefix = @"com.salesforce.rsakey.priv
     return [self aesDecryptData:data withKey:key keyLength:kCCKeySizeAES256 iv:iv];
 }
 
++ (nullable NSData *)getRSAPrivateKeyDataWithName:(NSString *)keyName keyLength:(NSUInteger)length andAccessibleAttribute:(CFTypeRef)accessibleAttribute
+{
+    NSString *tagString = [NSString stringWithFormat:@"%@.%@", kSFRSAPrivateKeyTagPrefix, keyName];
+    return [self getRSAKeyDataWithTag:tagString keyLength:length andAccessibleAttribute:accessibleAttribute];
+}
+
 + (nullable NSData *)getRSAPrivateKeyDataWithName:(NSString *)keyName keyLength:(NSUInteger)length
 {
     NSString *tagString = [NSString stringWithFormat:@"%@.%@", kSFRSAPrivateKeyTagPrefix, keyName];
-    return [self getRSAKeyDataWithTag:tagString keyLength:length];
+    return [self getRSAKeyDataWithTag:tagString keyLength:length andAccessibleAttribute:nil];
+}
+
++ (nullable NSData *)getRSAPublicKeyDataWithName:(NSString *)keyName keyLength:(NSUInteger)length
+{
+    NSString *tagString = [NSString stringWithFormat:@"%@.%@", kSFRSAPublicKeyTagPrefix, keyName];
+    return [self getRSAKeyDataWithTag:tagString keyLength:length andAccessibleAttribute:nil];
 }
 
 + (nullable NSString *)getRSAPublicKeyStringWithName:(NSString *)keyName keyLength:(NSUInteger)length
 {
     NSString *tagString = [NSString stringWithFormat:@"%@.%@", kSFRSAPublicKeyTagPrefix, keyName];
-    NSData *keyBits = [self getRSAKeyDataWithTag:tagString keyLength:length];
+    NSData *keyBits = [self getRSAKeyDataWithTag:tagString keyLength:length andAccessibleAttribute:nil];
     if (keyBits != nil) {
         NSData *pemData = [self getRSAPublicKeyAsDER:keyBits];
         if (pemData != nil) {
@@ -372,7 +384,7 @@ static NSString * const kSFRSAPrivateKeyTagPrefix = @"com.salesforce.rsakey.priv
     }
 }
 
-+(nullable NSData *)getRSAKeyDataWithTag:(NSString *)keyTagString keyLength:(NSUInteger)length {
++(nullable NSData *)getRSAKeyDataWithTag:(NSString *)keyTagString keyLength:(NSUInteger)length andAccessibleAttribute:(CFTypeRef)accessibleAttribute {
     NSData *tag = [keyTagString dataUsingEncoding:NSUTF8StringEncoding];
     
     NSDictionary *getquery = @{ (id)kSecClass: (id)kSecClassKey,
@@ -381,6 +393,10 @@ static NSString * const kSFRSAPrivateKeyTagPrefix = @"com.salesforce.rsakey.priv
                                 (id)kSecReturnData: @YES,
                                 (id)kSecAttrKeySizeInBits: [NSNumber numberWithUnsignedInteger:length],
                                 };
+    
+    if (accessibleAttribute != nil) {
+        [[getquery mutableCopy] setObject:(__bridge id)accessibleAttribute forKey:(id)kSecAttrAccessible];
+    }
     
     NSData *keyBits = nil;
     CFTypeRef result = NULL;

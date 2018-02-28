@@ -113,6 +113,17 @@ static NSString * const kKeyStoreDecryptionFailedMessage = @"Could not decrypt k
     return key;
 }
 
+- (SFEncryptionKeyPair *)keyPairWithLabel:(NSString *)keyPairLabel andKeyLength:(NSUInteger)keyLength {
+    return [self keyPairWithLabel:keyPairLabel keyLength:keyLength andAccessibleAttribute:kSecAttrAccessibleWhenUnlockedThisDeviceOnly];
+}
+
+- (SFEncryptionKeyPair *)keyPairWithLabel:(NSString *)keyPairLabel keyLength:(NSUInteger)keyLength andAccessibleAttribute:(CFTypeRef)accessibleAttribute {
+    NSData *privateKey = [SFSDKCryptoUtils getRSAPrivateKeyDataWithName:keyPairLabel keyLength:keyLength andAccessibleAttribute:accessibleAttribute];
+    NSData *publicKey = [SFSDKCryptoUtils getRSAPublicKeyDataWithName:keyPairLabel keyLength:keyLength];
+    SFEncryptionKeyPair *keyPair = [[SFEncryptionKeyPair alloc] initWithPublicKey:publicKey privateKey:privateKey];
+    return keyPair;
+}
+
 #pragma mark - Private methods
 
 - (void)initializeKeyStores
