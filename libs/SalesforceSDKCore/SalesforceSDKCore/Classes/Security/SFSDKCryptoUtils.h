@@ -158,6 +158,7 @@ extern NSUInteger const kSFPBKDFDefaultSaltByteLength;
 /**
  * Updates a private key's accessibility to given attribute
  * @param keyName The name string used to generate the key.
+ * @param length The key length used for key
  * @param accessibleAttribute The accessibility attributed to use for keys
  */
 + (void)updateRSAPrivateKeyStringWithName:(NSString *)keyName keyLength:(NSUInteger)length withAccessiblity:(CFTypeRef)accessibleAttribute;
