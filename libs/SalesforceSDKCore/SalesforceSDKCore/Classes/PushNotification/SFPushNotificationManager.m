@@ -295,7 +295,7 @@ static NSString * const kSFAppFeaturePushNotifications = @"PN";
     NSString *name = [SFCrypto baseAppIdentifier];
     if (name != nil) {
         rsaPublicKey = [SFSDKCryptoUtils getRSAPublicKeyStringWithName:name keyLength:keyLength];
-        if(rsaPublicKey == nil) {
+        if (rsaPublicKey == nil) {
             [SFSDKCryptoUtils createRSAKeyPairWithName:name keyLength:keyLength accessibleAttribute:kSecAttrAccessibleAlways];
             rsaPublicKey = [SFSDKCryptoUtils getRSAPublicKeyStringWithName:name keyLength:keyLength];
         }
