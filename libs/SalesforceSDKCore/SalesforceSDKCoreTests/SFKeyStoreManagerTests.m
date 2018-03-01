@@ -99,4 +99,9 @@
     XCTAssertEqualObjects(key, existingKey, @"Keys should be the same");
 }
 
+// retrieve key with label, specify accessibility
+- (void)testRetrieveKeyPairWithAccessibility {
+    SFEncryptionKeyPair *key =[mgr keyPairWithLabel:@"mykeypair" keyLength:2048 andAccessibleAttribute:kSecAttrAccessibleAlwaysThisDeviceOnly];
+    XCTAssertNotNil(key, @"Should have created key");
+}
 @end

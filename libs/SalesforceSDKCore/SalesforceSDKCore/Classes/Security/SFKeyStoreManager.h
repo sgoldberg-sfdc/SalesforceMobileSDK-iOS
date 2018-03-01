@@ -24,6 +24,7 @@
 
 #import <Foundation/Foundation.h>
 #import "SFEncryptionKey.h"
+#import "SFEncryptionKeyPair.h"
 #import "SFKeyStoreKey.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -76,6 +77,25 @@ NS_ASSUME_NONNULL_BEGIN
  @return An instance of SFEncryptionKey with the described values.
  */
 - (SFEncryptionKey *)keyWithRandomValue;
+
+/**
+ Retrieves a key pair with the given label and key length from the key store. If the key
+ is not found, this will create it.
+ @param keyPairLabel The label associated with the stored key pair.
+ @param keyLength The key length associated with the stored key pair.
+ @return The encryption key pair
+ */
+- (SFEncryptionKeyPair *)keyPairWithLabel:(NSString *)keyPairLabel andKeyLength:(NSUInteger)keyLength;
+
+/**
+ Retrieves a key pair with the given label, key length, and accessibleAttribute from the key store. If the key
+ is not found, this will create it.
+ @param keyPairLabel The label associated with the stored key pair.
+ @param keyLength The key length associated with the stored key pair.
+ @param accessibleAttribute The key accessibility attribute (See kSecAttrAccessible)
+ @return The encryption key pair
+ */
+- (SFEncryptionKeyPair *)keyPairWithLabel:(NSString *)keyPairLabel keyLength:(NSUInteger)keyLength andAccessibleAttribute:(nullable CFTypeRef)accessibleAttribute;
 
 @end
 
